@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html lang="en-us" class="ie9"><![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en-us">
+    <!--<![endif]-->
+    <head>
+        <title>Blank Slate - PatternFly</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="patternfly-2.9.0/dist/img/favicon.ico">
+        <!-- iPad retina icon -->
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-152.png">
+        <!-- iPad retina icon (iOS < 7) -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-144.png">
+        <!-- iPad non-retina icon -->
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-76.png">
+        <!-- iPad non-retina icon (iOS < 7) -->
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-72.png">
+        <!-- iPhone 6 Plus icon -->
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-180.png">
+        <!-- iPhone retina icon (iOS < 7) -->
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-114.png">
+        <!-- iPhone non-retina icon (iOS < 7) -->
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-57.png">
+        <link rel="stylesheet" href="patternfly-2.9.0/dist/css/patternfly.min.css" >
+        <link rel="stylesheet" href="patternfly-2.9.0/dist/css/patternfly-additions.min.css" >
+        <link href="tests.css" rel="stylesheet" media="screen, print">
+        <script src="patternfly-2.9.0/components/jquery/dist/jquery.min.js"></script>
+        <script src="patternfly-2.9.0/components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="patternfly-2.9.0/dist/js/patternfly.min.js"></script>
+
+        <!-- Include Font Awesome. -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- Include Editor style. -->
+        <link href="froala_editor_2.0.5/css/froala_editor.min.css" rel="stylesheet" type="text/css" />
+        <link href="froala_editor_2.0.5/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- Include Editor Plugins style. -->
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/char_counter.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/code_view.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/colors.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/emoticons.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/file.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/fullscreen.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/image.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/image_manager.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/line_breaker.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/table.css">
+        <link rel="stylesheet" href="froala_editor_2.0.5/css/plugins/video.css">
+
+    </head>
+
+    <body>
+        <div class="container">
+            <form class="form-horizontal">
+                <fieldset>
+
+                    <!-- Form Name -->
+                    <legend>DZone Zone Leader Syndication Tool</legend>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="originalSource">Original Source</label>
+                        <div class="col-md-4">
+                            <input id="originalSource" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                        </div>
+                    </div>
+
+                    <!-- Button Drop Down -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="authors">Authors</label>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input id="authors" name="authors" class="form-control" placeholder="placeholder" type="text">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        Suggested Authors
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" id="suggestedAuthors">
+                                        <li><a href="#">Option one</a></li>
+                                        <li><a href="#">Option two</a></li>
+                                        <li><a href="#">Option three</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="topics">Topics</label>
+                        <div class="col-md-4">
+                            <input id="topics" name="topics" type="search" placeholder="placeholder" class="form-control input-md">
+                        </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="title">Title</label>
+                        <div class="col-md-4">
+                            <input id="title" name="title" type="text" placeholder="placeholder" class="form-control input-md">
+                        </div>
+                    </div>
+
+                </fieldset>
+
+
+                <textarea id="edit" name="content"></textarea>
+            </form>
+
+        </div><!-- /container -->
+
+        <!-- Include JS files. -->
+        <script src="froala_editor_2.0.5/js/froala_editor.min.js"></script>
+
+        <!-- Include Plugins. -->
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/align.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/char_counter.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/code_view.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/colors.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/emoticons.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/entities.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/file.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/font_family.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/font_size.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/fullscreen.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/image.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/image_manager.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/inline_style.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/line_breaker.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/link.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/lists.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/paragraph_format.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/paragraph_style.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/quote.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/table.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/save.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/url.min.js"></script>
+        <script type="text/javascript" src="froala_editor_2.0.5/js/plugins/video.min.js"></script>
+
+        <!-- Include Language file if we'll use it. -->
+        <script type="text/javascript" src="froala_editor_2.0.5/js/languages/ro.js"></script>
+
+        <!-- Initialize the editor. -->
+        <script>
+          $(function() {
+              $('#edit').froalaEditor()
+          });
+        </script>
+    </body>
+</html>
