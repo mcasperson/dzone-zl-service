@@ -1,0 +1,11 @@
+.imageList {
+    overflow-x: scroll;
+    white-space: nowrap;
+    padding-bottom: 10px;
+}
+
+.imageListItem {
+    display:inline !important;
+    list-style-type: none;
+    padding-right: 10px;
+}
