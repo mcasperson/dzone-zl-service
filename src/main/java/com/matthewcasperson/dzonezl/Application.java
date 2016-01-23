@@ -1,14 +1,10 @@
 package com.matthewcasperson.dzonezl;
 
-import java.util.Arrays;
-
-import org.apache.catalina.startup.Tomcat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 public class Application {
@@ -24,21 +20,4 @@ public class Application {
             System.out.println(beanName);
         }
     }
-
-    /**
-     * http://stackoverflow.com/questions/24941829/how-to-create-jndi-context-in-spring-boot-with-embedded-tomcat-container
-     * @return
-     */
-    @Bean
-    public TomcatEmbeddedServletContainerFactory tomcatFactory() {
-        return new TomcatEmbeddedServletContainerFactory() {
-
-            @Override
-            protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(Tomcat tomcat) {
-                tomcat.enableNaming();
-                return super.getTomcatEmbeddedServletContainer(tomcat);
-            }
-        };
-    }
-
 }
