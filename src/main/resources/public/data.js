@@ -91,7 +91,7 @@ jQuery("#import").click(function() {
             url: url
         }
     }).done(function(importedPost) {
-        if (importedPost.success) {
+        if (importedPost.success && importedPost.result.data.htmlContent.trim().length != 0) {
 
             queryDomain(url, function(domainInfo) {
                 if (domainInfo.data.length == 0) {
