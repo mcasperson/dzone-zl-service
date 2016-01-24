@@ -16,7 +16,7 @@ public class Author implements Serializable {
 	private String description;
 	private String name;
 	private String username;
-	private MVBDomain mvbdomain;
+	private MvbDomain mvbdomain;
 
 	public Author() {
 	}
@@ -60,14 +60,14 @@ public class Author implements Serializable {
 	}
 
 
-	//bi-directional many-to-one association to MVBDomain
+	//bi-directional many-to-one association to MvbDomain
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mvbDomainId")
-	public MVBDomain getMvbdomain() {
+	public MvbDomain getMvbdomain() {
 		return this.mvbdomain;
 	}
 
-	public void setMvbdomain(MVBDomain mvbdomain) {
+	public void setMvbdomain(MvbDomain mvbdomain) {
 		this.mvbdomain = mvbdomain;
 	}
 

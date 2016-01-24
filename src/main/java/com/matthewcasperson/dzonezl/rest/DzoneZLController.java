@@ -1,6 +1,5 @@
 package com.matthewcasperson.dzonezl.rest;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.yahoo.elide.Elide;
 import com.yahoo.elide.ElideResponse;
 import com.yahoo.elide.audit.Logger;
@@ -15,7 +14,6 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +24,10 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,11 +50,7 @@ public class DzoneZLController {
     private EntityManagerFactory emf;
 
     private MultivaluedMap<String, String> fromMap(final Map<String, String> input) {
-        final MultivaluedMap queryParams = new MultivaluedMapImpl();
-        for (final String key : input.keySet()) {
-            queryParams.put(key, input.get(key));
-        }
-        return queryParams;
+        return new MultivaluedHashMap<String, String>(input);
     }
 
     @CrossOrigin(origins = "*")

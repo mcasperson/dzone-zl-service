@@ -14,7 +14,7 @@ public class TagToMVBDomain implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Tag tag;
-	private MVBDomain mvbdomain;
+	private MvbDomain mvbdomain;
 
 	public TagToMVBDomain() {
 	}
@@ -43,14 +43,14 @@ public class TagToMVBDomain implements Serializable {
 	}
 
 
-	//bi-directional many-to-one association to MVBDomain
+	//bi-directional many-to-one association to MvbDomain
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mvbDomainId")
-	public MVBDomain getMvbdomain() {
+	public MvbDomain getMvbdomain() {
 		return this.mvbdomain;
 	}
 
-	public void setMvbdomain(MVBDomain mvbdomain) {
+	public void setMvbdomain(MvbDomain mvbdomain) {
 		this.mvbdomain = mvbdomain;
 	}
 

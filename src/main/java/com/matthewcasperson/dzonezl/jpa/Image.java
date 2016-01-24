@@ -2,7 +2,7 @@ package com.matthewcasperson.dzonezl.jpa;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -17,7 +17,7 @@ public class Image implements Serializable {
 	private String description;
 	private int dzoneId;
 	private String name;
-	private Set<TagToImage> tagToImages;
+	private List<TagToImage> tagToImages;
 
 	public Image() {
 	}
@@ -63,11 +63,11 @@ public class Image implements Serializable {
 
 	//bi-directional many-to-one association to TagToImage
 	@OneToMany(mappedBy="image")
-	public Set<TagToImage> getTagToImages() {
+	public List<TagToImage> getTagToImages() {
 		return this.tagToImages;
 	}
 
-	public void setTagToImages(Set<TagToImage> tagToImages) {
+	public void setTagToImages(List<TagToImage> tagToImages) {
 		this.tagToImages = tagToImages;
 	}
 

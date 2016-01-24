@@ -2,25 +2,26 @@ package com.matthewcasperson.dzonezl.jpa;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 
 /**
- * The persistent class for the MVBDomain database table.
+ * The persistent class for the MvbDomain database table.
  * 
  */
 @Entity
-@NamedQuery(name="MVBDomain.findAll", query="SELECT m FROM MVBDomain m")
-public class MVBDomain implements Serializable {
+@NamedQuery(name="MvbDomain.findAll", query="SELECT m FROM MvbDomain m")
+@Table(name="MVBDomain")
+public class MvbDomain implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String description;
 	private String domain;
 	private String name;
-	private Set<Author> authors;
-	private Set<TagToMVBDomain> tagToMvbdomains;
+	private List<Author> authors;
+	private List<TagToMVBDomain> tagToMvbdomains;
 
-	public MVBDomain() {
+	public MvbDomain() {
 	}
 
 
@@ -64,11 +65,11 @@ public class MVBDomain implements Serializable {
 
 	//bi-directional many-to-one association to Author
 	@OneToMany(mappedBy="mvbdomain")
-	public Set<Author> getAuthors() {
+	public List<Author> getAuthors() {
 		return this.authors;
 	}
 
-	public void setAuthors(Set<Author> authors) {
+	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
 	}
 
@@ -89,11 +90,11 @@ public class MVBDomain implements Serializable {
 
 	//bi-directional many-to-one association to TagToMVBDomain
 	@OneToMany(mappedBy="mvbdomain")
-	public Set<TagToMVBDomain> getTagToMvbdomains() {
+	public List<TagToMVBDomain> getTagToMvbdomains() {
 		return this.tagToMvbdomains;
 	}
 
-	public void setTagToMvbdomains(Set<TagToMVBDomain> tagToMvbdomains) {
+	public void setTagToMvbdomains(List<TagToMVBDomain> tagToMvbdomains) {
 		this.tagToMvbdomains = tagToMvbdomains;
 	}
 

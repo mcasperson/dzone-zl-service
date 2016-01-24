@@ -2,7 +2,7 @@ package com.matthewcasperson.dzonezl.jpa;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -16,8 +16,8 @@ public class Tag implements Serializable {
 	private int id;
 	private String description;
 	private String name;
-	private Set<TagToImage> tagToImages;
-	private Set<TagToMVBDomain> tagToMvbdomains;
+	private List<TagToImage> tagToImages;
+	private List<TagToMVBDomain> tagToMvbdomains;
 
 	public Tag() {
 	}
@@ -54,11 +54,11 @@ public class Tag implements Serializable {
 
 	//bi-directional many-to-one association to TagToImage
 	@OneToMany(mappedBy="tag")
-	public Set<TagToImage> getTagToImages() {
+	public List<TagToImage> getTagToImages() {
 		return this.tagToImages;
 	}
 
-	public void setTagToImages(Set<TagToImage> tagToImages) {
+	public void setTagToImages(List<TagToImage> tagToImages) {
 		this.tagToImages = tagToImages;
 	}
 
@@ -79,11 +79,11 @@ public class Tag implements Serializable {
 
 	//bi-directional many-to-one association to TagToMVBDomain
 	@OneToMany(mappedBy="tag")
-	public Set<TagToMVBDomain> getTagToMvbdomains() {
+	public List<TagToMVBDomain> getTagToMvbdomains() {
 		return this.tagToMvbdomains;
 	}
 
-	public void setTagToMvbdomains(Set<TagToMVBDomain> tagToMvbdomains) {
+	public void setTagToMvbdomains(List<TagToMVBDomain> tagToMvbdomains) {
 		this.tagToMvbdomains = tagToMvbdomains;
 	}
 
