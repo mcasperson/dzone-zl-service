@@ -189,15 +189,18 @@ public class DzoneZLController {
             @RequestParam final String jSessionIdCookie,
             @RequestParam final String title,
             @RequestParam final String content,
-            @RequestParam final String url) throws IOException {
+            @RequestParam final String url,
+            @RequestParam final String topics,
+            @RequestParam final String authors,
+            @RequestParam final Integer image) throws IOException {
 
         final String submitBody =
                 "{\"type\":\"article\"," +
                 "\"title\":\"" + title + "\"," +
                 "\"body\":\"" + content + "\"," +
-                "\"topics\":\"\"," +
+                "\"topics\":\"" + topics + "\"," +
                 "\"portal\":null," +
-                "\"thumb\":null," +
+                "\"thumb\":" + image + "," +
                 "\"sources\":[]," +
                 "\"notes\":\"\"," +
                 "\"editorsPick\":false," +
@@ -225,6 +228,10 @@ public class DzoneZLController {
         final CloseableHttpResponse response = httpclient.execute(httppost);
         try {
             final String responseBody = responseToString(response.getEntity());
+
+            // https://dzone.com/services/internal/node/1167430/authors-addAuthor
+            // {user: 343648, type: "op"}
+            // {user: 770327, type: "author"}
 
             LOGGER.info(responseBody);
 
