@@ -13,11 +13,14 @@ import org.hibernate.Transaction;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.persistence.EntityManagerFactory;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Map;
 
@@ -40,9 +43,11 @@ public class DzoneZLController {
         return queryParams;
     }
 
-    @RequestMapping("/image")
+    @RequestMapping(value={"/{entity}", "/{entity}/relationship/{entity2}", "/{entity}/{child}"})
     @Transactional
-    public String images(@RequestParam final Map<String, String> allRequestParams) {
+    public String authors(@RequestParam final Map<String, String> allRequestParams, final HttpServletRequest request) {
+        final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+
         final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
 
         /* Takes a hibernate session factory */
@@ -51,23 +56,7 @@ public class DzoneZLController {
         final Elide elide = new Elide(logger, dataStore);
         final MultivaluedMap<String, String> params = fromMap(allRequestParams);
 
-        final ElideResponse response = elide.get("image", params, new Object());
-
-        return response.getBody();
-    }
-
-    @RequestMapping("/tag")
-    @Transactional
-    public String tags(@RequestParam final Map<String, String> allRequestParams) {
-        final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
-
-        /* Takes a hibernate session factory */
-        final DataStore dataStore = new HibernateStore(sessionFactory);
-        final Logger logger = new Slf4jLogger();
-        final Elide elide = new Elide(logger, dataStore);
-        final MultivaluedMap<String, String> params = fromMap(allRequestParams);
-
-        final ElideResponse response = elide.get("tag", params, new Object());
+        final ElideResponse response = elide.get(restOfTheUrl.replaceAll("^/", ""), params, new Object());
 
         return response.getBody();
     }
