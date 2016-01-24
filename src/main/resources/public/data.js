@@ -3,19 +3,21 @@ var dataPrefix = "/data";
 var actionPrefix = "/action";
 var cookies = null;
 
-jQuery.get(dataPrefix + "/image", function(images) {
-    var imagesElement = jQuery("#images");
-    imagesElement.html("");
-    _.each(images.data, function(image) {
-        var listItem = jQuery("<li class='imageListItem'> \
-                            <input type='radio' name='radgroup' value='" + image.attributes.dzoneId + "' id='imageId" + image.attributes.dzoneId + "'> \
-                            <img src='https://dz2cdn1.dzone.com/thumbnail?fid=" + image.attributes.dzoneId + "&w=" + imageWidth + "'/> \
-                            </label> \
-                            </li>");
-        imagesElement.append(listItem);
-        imagesElement.show();
+function getAllImages() {
+    jQuery.get(dataPrefix + "/image", function(images) {
+        var imagesElement = jQuery("#images");
+        imagesElement.html("");
+        _.each(images.data, function(image) {
+            var listItem = jQuery("<li class='imageListItem'> \
+                                <input type='radio' class='image' name='radgroup' value='" + image.attributes.dzoneId + "' id='imageId" + image.attributes.dzoneId + "'> \
+                                <img src='https://dz2cdn1.dzone.com/thumbnail?fid=" + image.attributes.dzoneId + "&w=" + imageWidth + "'/> \
+                                </label> \
+                                </li>");
+            imagesElement.append(listItem);
+            imagesElement.show();
+        });
     });
-});
+}
 
 jQuery("#login").click(function() {
     /*
@@ -67,6 +69,10 @@ jQuery("#import").click(function() {
 
 
             queryDomain(url, function(domainInfo) {
+                if (domainInfo.data.length == 0) {
+                    alert("There was no matching information in the database for this domain");
+                }
+
                 getAuthors(domainInfo);
                 getTags(domainInfo);
                 getImages(domainInfo);
@@ -75,6 +81,7 @@ jQuery("#import").click(function() {
                 jQuery("#title").removeAttr("disabled");
                 jQuery("#topics").removeAttr("disabled");
                 jQuery("#submit").removeAttr("disabled");
+                jQuery("#restart").removeAttr("disabled");
                 jQuery("#authors").removeAttr("disabled");
 
                 jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
@@ -91,14 +98,24 @@ jQuery("#import").click(function() {
 
 });
 
+jQuery("#restart").click(function(){
+    submitSucceeded();
+});
+
 jQuery("#submit").click(function(){
 
     var content = jQuery("#edit").froalaEditor('html.get');
     var title = jQuery("#title").val();
+    var topics = jQuery("#topics").val();
+    var author = jQuery("#authors").val();
+    var imageId = jQuery('.image:checked').val();
 
-
-    if (content.trim().length == 0 || title.trim().length == 0) {
-        window.alert("Invalid content or title");
+    if (!content || content.trim().length == 0 ||
+        !title || title.trim().length == 0 ||
+        !topics || topics.trim().length == 0 ||
+        !author || author.trim().length == 0 ||
+        !imageId  || imageId.trim().length == 0) {
+        window.alert("Invalid content, title, author, image or topics");
         return;
     }
 
@@ -107,6 +124,7 @@ jQuery("#submit").click(function(){
     jQuery("#title").attr("disabled", "disabled");
     jQuery("#topics").attr("disabled", "disabled");
     jQuery("#submit").attr("disabled", "disabled");
+    jQuery("#restart").attr("disabled", "disabled");
     jQuery("#authors").attr("disabled", "disabled");
 
     jQuery.ajax({
@@ -119,14 +137,15 @@ jQuery("#submit").click(function(){
                 jSessionIdCookie: cookies.JSESSIONID,
                 url: jQuery("#originalSource").val(),
                 content: content,
-                title: title
+                title: title,
+                topics: topics,
+                authors: author,
+                image: imageId
 
             }
         }).done(function(importedPost) {
             if (importedPost.success) {
-                jQuery("#edit").froalaEditor('html.set', "<p/>");
-                jQuery("#import").removeAttr("disabled");
-                jQuery("#originalSource").removeAttr("disabled");
+                submitSucceeded();
             } else {
                 submitFailed();
             }
@@ -151,11 +170,20 @@ function queryDomain(domain, success) {
 function getAuthors(domainInfo) {
     var authorsList = jQuery("#suggestedAuthors");
     authorsList.html("");
+    var count = 0;
     _.each(domainInfo.included, function(included) {
         if (included.type == "author") {
+            ++count;
             authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-userid='" + included.attributes.username + "'>" + included.attributes.name + "</a></li>"));
         }
     });
+
+    /*
+        Where there is only 1 author, add it automatically
+    */
+    if (count == 1) {
+        authorsList.val(jQuery(".authorEntry").data("userid"));
+    }
 }
 
 function getTags(domainInfo) {
@@ -172,11 +200,17 @@ function getTags(domainInfo) {
 }
 
 function getImages(domainInfo) {
+    var count = 0;
     _.each(domainInfo.included, function(included) {
         if (included.type == "image") {
+            ++count;
             jQuery("#imageId" + included.attributes.dzoneId).prop("checked", true);
         }
     });
+
+    if (count != 0) {
+        jQuery(".image").prop("checked", false).remove();
+    }
 }
 
 function importFailed() {
@@ -192,7 +226,17 @@ function submitFailed() {
     jQuery("#title").removeAttr("disabled");
     jQuery("#topics").removeAttr("disabled");
     jQuery("#submit").removeAttr("disabled");
+    jQuery("#restart").removeAttr("disabled");
     jQuery("#authors").removeAttr("disabled");
 }
+
+function submitSucceeded() {
+    jQuery("#edit").froalaEditor('html.set', "<p/>");
+    jQuery("#import").removeAttr("disabled");
+    jQuery("#originalSource").removeAttr("disabled");
+    getAllImages();
+}
+
+getAllImages();
 
 
