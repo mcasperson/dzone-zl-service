@@ -41,6 +41,14 @@ jQuery("#login").click(function() {
 });
 
 jQuery("#import").click(function() {
+
+    var url = jQuery("#originalSource").val();
+
+    if (url.trim().length == 0) {
+        alert("The url is invalid");
+        return;
+    }
+
     jQuery("#import").attr("disabled", "disabled");
     jQuery("#originalSource").attr("disabled", "disabled");
 
@@ -52,20 +60,28 @@ jQuery("#import").click(function() {
             thCsrfCookie: cookies.TH_CSRF,
             springSecurityCookie: cookies.SPRING_SECURITY_REMEMBER_ME_COOKIE,
             jSessionIdCookie: cookies.JSESSIONID,
-            url: jQuery("#originalSource").val()
+            url: url
         }
     }).done(function(importedPost) {
         if (importedPost.success) {
-            jQuery("#suggestedAuthorsList").removeAttr("disabled");
-            jQuery("#title").removeAttr("disabled");
-            jQuery("#topics").removeAttr("disabled");
-            jQuery("#submit").removeAttr("disabled");
-            jQuery("#authors").removeAttr("disabled");
 
-            jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
-            jQuery("#title").val(importedPost.result.data.title);
 
-            jQuery("#edit").froalaEditor('edit.on');
+            queryDomain(url, function(domainInfo) {
+                getAuthors(domainInfo);
+                getTags(domainInfo);
+                getImages(domainInfo);
+
+                jQuery("#suggestedAuthorsList").removeAttr("disabled");
+                jQuery("#title").removeAttr("disabled");
+                jQuery("#topics").removeAttr("disabled");
+                jQuery("#submit").removeAttr("disabled");
+                jQuery("#authors").removeAttr("disabled");
+
+                jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
+                jQuery("#title").val(importedPost.result.data.title);
+
+                jQuery("#edit").froalaEditor('edit.on');
+            });
         } else {
             importFailed();
         }
@@ -118,6 +134,50 @@ jQuery("#submit").click(function(){
             submitFailed();
         });
 });
+
+jQuery("body").on("click", ".authorEntry", function(event) {
+    jQuery("#authors").val(jQuery(event.target).data("userid"));
+});
+
+
+function queryDomain(domain, success) {
+    var hostname = URI(domain).hostname();
+    jQuery.get(
+        dataPrefix + "/mvbDomain?include=authors,tagToMvbdomains.tag.tagToImages.image&filter[mvbDomain.domain]=apievangelist.com",
+        success
+    );
+}
+
+function getAuthors(domainInfo) {
+    var authorsList = jQuery("#suggestedAuthors");
+    authorsList.html("");
+    _.each(domainInfo.included, function(included) {
+        if (included.type == "author") {
+            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-userid='" + included.attributes.username + "'>" + included.attributes.name + "</a></li>"));
+        }
+    });
+}
+
+function getTags(domainInfo) {
+    var topics = jQuery("#topics");
+    topics.val("");
+    _.each(domainInfo.included, function(included) {
+        if (included.type == "tag") {
+            if (topics.val().trim().length != 0) {
+                topics.val(topics.val() + ", ");
+            }
+            topics.val(topics.val() + included.attributes.name);
+        }
+    });
+}
+
+function getImages(domainInfo) {
+    _.each(domainInfo.included, function(included) {
+        if (included.type == "image") {
+            jQuery("#imageId" + included.attributes.dzoneId).prop("checked", true);
+        }
+    });
+}
 
 function importFailed() {
     jQuery("#import").removeAttr("disabled");
