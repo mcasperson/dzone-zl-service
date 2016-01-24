@@ -12,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
@@ -41,7 +42,9 @@ public class DzoneZLController {
     }
 
     @CrossOrigin(origins = "*")
-    @RequestMapping(value={"/data/{entity}", "/data/{entity}/relationship/{entity2}", "/data/{entity}/{child}"})
+    @RequestMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            value={"/data/{entity}", "/data/{entity}/relationship/{entity2}", "/data/{entity}/{child}"})
     @Transactional
     public String authors(@RequestParam final Map<String, String> allRequestParams, final HttpServletRequest request) {
         final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
