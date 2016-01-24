@@ -59,9 +59,31 @@ jQuery("#import").click(function() {
         jQuery("#title").removeAttr("disabled");
         jQuery("#topics").removeAttr("disabled");
         jQuery("#submit").removeAttr("disabled");
+        jQuery("#authors").removeAttr("disabled");
 
         jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
         jQuery("#title").val(importedPost.result.data.title);
+
+        jQuery("#edit").froalaEditor('edit.on');
+    }).error(function(){
+        jQuery("#import").removeAttr("disabled");
+        jQuery("#originalSource").removeAttr("disabled");
     });
+
 });
+
+jQuery("#submit").click(function(){
+    jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
+    jQuery("#title").attr("disabled", "disabled");
+    jQuery("#topics").attr("disabled", "disabled");
+    jQuery("#submit").attr("disabled", "disabled");
+    jQuery("#authors").attr("disabled", "disabled");
+
+    jQuery("#import").removeAttr("disabled");
+    jQuery("#originalSource").removeAttr("disabled");
+
+    jQuery("#edit").froalaEditor('html.set', "<p/>");
+    jQuery("#edit").froalaEditor('edit.off');
+})
+
 
