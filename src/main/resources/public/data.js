@@ -7,6 +7,9 @@ var randomImageStartIndex = 900000;
 var randomImageRange = 100000;
 
 function getAllImages() {
+    var imagesElement = jQuery("#images");
+    imagesElement.html("");
+
     /*
         Randomly select 100 images from some of the more recent posts
     */
@@ -27,8 +30,7 @@ function getAllImages() {
         Get any images we entered into the database
     */
     jQuery.get(dataPrefix + "/image", function(images) {
-        var imagesElement = jQuery("#images");
-        imagesElement.html("");
+
         _.each(images.data, function(image) {
             var listItem = jQuery("<li class='imageListItem'> \
                                 <input type='radio' class='image' name='radgroup' value='" + image.attributes.dzoneId + "' id='imageId" + image.attributes.dzoneId + "'> \
