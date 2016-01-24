@@ -49,8 +49,25 @@ public class DzoneZLController {
         final DataStore dataStore = new HibernateStore(sessionFactory);
         final Logger logger = new Slf4jLogger();
         final Elide elide = new Elide(logger, dataStore);
+        final MultivaluedMap<String, String> params = fromMap(allRequestParams);
 
-        final ElideResponse response = elide.get("/image", fromMap(allRequestParams), new Object());
+        final ElideResponse response = elide.get("image", params, new Object());
+
+        return response.getBody();
+    }
+
+    @RequestMapping("/tag")
+    @Transactional
+    public String tags(@RequestParam final Map<String, String> allRequestParams) {
+        final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
+
+        /* Takes a hibernate session factory */
+        final DataStore dataStore = new HibernateStore(sessionFactory);
+        final Logger logger = new Slf4jLogger();
+        final Elide elide = new Elide(logger, dataStore);
+        final MultivaluedMap<String, String> params = fromMap(allRequestParams);
+
+        final ElideResponse response = elide.get("tag", params, new Object());
 
         return response.getBody();
     }
