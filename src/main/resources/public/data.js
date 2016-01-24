@@ -231,15 +231,25 @@ function getTags(domainInfo) {
 }
 
 function getImages(domainInfo) {
+    var imagesElement = jQuery("#images");
     var count = 0;
     _.each(domainInfo.included, function(included) {
         if (included.type == "image") {
             ++count;
-            jQuery("#imageId" + included.attributes.dzoneId).prop("checked", true);
+            var image = jQuery("#imageId" + included.attributes.dzoneId);
+            /*
+                Select the image
+            */
+            image.prop("checked", true);
+            /*
+                Move it to the start of the list
+            */
+            image.parent().remove();
+            imagesElement.prepend(image.parent());
         }
     });
 
-    if (count != 0) {
+    /*if (count != 0) {
         var images = jQuery(".imageListItem > input");
         _.each(images, function(image) {
             var imageElement = jQuery(image);
@@ -247,7 +257,7 @@ function getImages(domainInfo) {
                 imageElement.parent().remove();
             }
         });
-    }
+    }*/
 }
 
 function importFailed() {
