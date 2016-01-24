@@ -7,14 +7,16 @@ import com.yahoo.elide.audit.Logger;
 import com.yahoo.elide.audit.Slf4jLogger;
 import com.yahoo.elide.core.DataStore;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Map;
@@ -39,9 +41,12 @@ public class DzoneZLController {
     }
 
     @RequestMapping("/image")
+    @Transactional
     public String images(@RequestParam final Map<String, String> allRequestParams) {
+        final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
+
         /* Takes a hibernate session factory */
-        final DataStore dataStore = new HibernateStore(emf.unwrap(SessionFactory.class));
+        final DataStore dataStore = new HibernateStore(sessionFactory);
         final Logger logger = new Slf4jLogger();
         final Elide elide = new Elide(logger, dataStore);
 
