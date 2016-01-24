@@ -6,15 +6,20 @@ import com.yahoo.elide.audit.Logger;
 import com.yahoo.elide.audit.Slf4jLogger;
 import com.yahoo.elide.core.DataStore;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
+import org.hibernate.internal.util.collections.ConcurrentReferenceHashMap;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,10 +31,15 @@ import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Matthew on 24/01/2016.
@@ -45,6 +55,11 @@ public class DzoneZLController {
     private static final String JSESSIONID_COOKIE = "JSESSIONID";
     private static final String SESSION_STARTED_COOKIE = "SESSION_STARTED";
     private static final String X_TH_CSRF_HEADER = "X-TH-CSRF";
+
+    private static final String SUCCESS = "\"success\":true";
+    private static final Pattern ID_RE = Pattern.compile("\"id\":(?<id>\\d+)");
+    private static final Pattern ID_QUOTE_RE = Pattern.compile("\"id\":\"(?<id>\\d+)\"");
+    private static final Pattern DATA_RE = Pattern.compile("\"data\":\"(?<data>.*?)\"");
 
     @Autowired
     private EntityManagerFactory emf;
@@ -116,7 +131,15 @@ public class DzoneZLController {
             httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie.get());
             httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-            final HttpResponse loginResponse = makeRequest(httppost);
+            final CloseableHttpClient httpclient = HttpClients.createDefault();
+            final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
+            try {
+                final String responseBody = responseToString(loginResponse.getEntity());
+
+                LOGGER.info(responseBody);
+            } finally {
+                loginResponse.close();
+            }
 
             final Optional<String> springSecurityCookie = getCookie(loginResponse, SPRING_SECUITY_COOKIE);
 
@@ -186,54 +209,253 @@ public class DzoneZLController {
             @RequestParam final String url,
             @RequestParam final String topics,
             @RequestParam final String authors,
+            @RequestParam final Integer poster,
             @RequestParam final Integer image) throws IOException {
 
-        final String submitBody =
-                "{\"type\":\"article\"," +
-                "\"title\":\"" + title + "\"," +
-                "\"body\":\"" + content + "\"," +
-                "\"topics\":\"" + topics + "\"," +
-                "\"portal\":null," +
-                "\"thumb\":" + image + "," +
-                "\"sources\":[]," +
-                "\"notes\":\"\"," +
-                "\"editorsPick\":false," +
-                "\"metaDescription\":\"\"," +
-                "\"tldr\":\"\"," +
-                "\"originalSource\":\"" + url + "\"," +
-                "\"visibility\":\"draft\"}";
+        final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, image);
 
-        final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
-        httppost.setHeader("Cookie",
+        if (newImageId.isPresent()) {
+
+            final String submitBody =
+                    "{\"type\":\"article\"," +
+                            "\"title\":\"" + title + "\"," +
+                            "\"body\":\"" + content + "\"," +
+                            "\"topics\":\"" + topics + "\"," +
+                            "\"portal\":null," +
+                            "\"thumb\":" + newImageId.get() + "," +
+                            "\"sources\":[]," +
+                            "\"notes\":\"\"," +
+                            "\"editorsPick\":false," +
+                            "\"metaDescription\":\"\"," +
+                            "\"tldr\":\"\"," +
+                            "\"originalSource\":\"" + url + "\"," +
+                            "\"visibility\":\"draft\"}";
+
+            final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
+            httppost.setHeader("Cookie",
+                    AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                            TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                            SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                            JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                            SESSION_STARTED_COOKIE + "=true");
+
+            final StringEntity requestEntity = new StringEntity(submitBody);
+            requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            httppost.setEntity(requestEntity);
+
+            httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+            httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+            final CloseableHttpClient httpclient = HttpClients.createDefault();
+            final CloseableHttpResponse response = httpclient.execute(httppost);
+            try {
+                final String responseBody = responseToString(response.getEntity());
+                final Matcher idMatcher = ID_QUOTE_RE.matcher(responseBody);
+
+                if (responseBody.indexOf(SUCCESS) != -1) {
+
+                    if (idMatcher.find()) {
+                        try {
+                            final Integer articleId = Integer.parseInt(idMatcher.group("id"));
+
+                            /*
+                                Associate the poster with the article
+                             */
+                            if (!addPosterToArticle(articleId, poster, false, awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie)) {
+                                throw new Exception("Failed to associated poster with article");
+                            }
+
+                            /*
+                                Associate all the authors with the article
+                             */
+                            final String[] authorsCollection = authors.split(",");
+                            for (final String author : authorsCollection) {
+                                final Integer authorId = Integer.parseInt(author);
+                                if (!addPosterToArticle(articleId, authorId, true, awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie)) {
+                                    throw new Exception("Failed to associated author with article");
+                                }
+                            }
+
+                        } catch (final Exception ex) {
+                            /*
+                                We didn't find the expected article id
+                             */
+                            return "{\"success\":false}";
+                        }
+                    }
+
+                }
+
+
+                LOGGER.info(responseBody);
+
+            /*
+                Return failure to the client
+             */
+                return responseBody;
+            } finally {
+                response.close();
+            }
+        }
+
+        return "{\"success\":false}";
+    }
+
+    private Optional<String> getImageUploadTrackingCode(final String awselbCookie,
+                                                        final String thCsrfCookie,
+                                                        final String springSecurityCookie,
+                                                        final String jSessionIdCookie) throws IOException {
+        final HttpGet getImageId = new HttpGet("https://dzone.com/services/internal/data/uploads-authorize?image=true&type=node");
+        getImageId.setHeader("Cookie",
+                AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                SESSION_STARTED_COOKIE + "=true");
+
+
+        getImageId.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+        getImageId.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse loginResponse = httpclient.execute(getImageId);
+        try {
+            final String imageIdResponse = responseToString(loginResponse.getEntity());
+
+            final Matcher dataMatcher = DATA_RE.matcher(imageIdResponse);
+            if (dataMatcher.find()) {
+                final String dataId = dataMatcher.group("data");
+                return Optional.of(dataId);
+
+            }
+        } finally {
+            loginResponse.close();
+        }
+
+        return Optional.empty();
+    }
+
+    private Optional<String> uploadImage(final String awselbCookie,
+                                         final String thCsrfCookie,
+                                         final String springSecurityCookie,
+                                         final String jSessionIdCookie,
+                                         final String tackingId,
+                                         final File imageFile) throws IOException {
+        final HttpPost uploadPost = new HttpPost("https://dzone.com/uploadFile.json?trackingId=" + tackingId);
+
+        final FileBody fileBody = new FileBody(imageFile);
+
+        final HttpEntity fileEntity = MultipartEntityBuilder.create()
+            .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+            .addPart("file", fileBody)
+            .build();
+
+        uploadPost.setEntity(fileEntity);
+
+        uploadPost.setHeader("Cookie",
                 AWSELB_COOKIE + "=" + awselbCookie + "; " +
                 TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                 SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
                 JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
                 SESSION_STARTED_COOKIE + "=true");
 
-        final StringEntity requestEntity = new StringEntity(submitBody);
-        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        httppost.setEntity(requestEntity);
-
-        httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-        httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+        uploadPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse response = httpclient.execute(httppost);
+        final CloseableHttpResponse response = httpclient.execute(uploadPost);
         try {
             final String responseBody = responseToString(response.getEntity());
-
-            // https://dzone.com/services/internal/node/1167430/authors-addAuthor
-            // {user: 343648, type: "op"}
-            // {user: 770327, type: "author"}
-
-            LOGGER.info(responseBody);
-
-            return responseBody;
+            final Matcher idMatcher = ID_RE.matcher(responseBody);
+            if (idMatcher.find()) {
+                return Optional.of(idMatcher.group("id"));
+            }
         } finally {
             response.close();
         }
+
+        return Optional.empty();
     }
+
+    /**
+     * This is a reasonably complex process. We need to
+     * 1. Download the image already hosted by DZone
+     * 2. Get a tracking id for the upload
+     * 3. Upload the file
+     * 4. Return the new ID
+     * @param awselbCookie
+     * @param thCsrfCookie
+     * @param springSecurityCookie
+     * @param jSessionIdCookie
+     * @throws IOException
+     */
+    private Optional<String> uploadImage(final String awselbCookie,
+                             final String thCsrfCookie,
+                             final String springSecurityCookie,
+                             final String jSessionIdCookie,
+                             final Integer imageId) throws IOException {
+
+        /*
+            1. Download the existing file
+         */
+        final File imageFile = File.createTempFile("dzoneTempImage", ".img");
+        IOUtils.copy(
+                new URL("https://dz2cdn1.dzone.com/thumbnail?fid=" + imageId + "&w=600").openStream(),
+                new FileOutputStream(imageFile));
+
+        /*
+            2. Get a tracking code
+         */
+        final Optional<String> trackingId = getImageUploadTrackingCode(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie);
+
+        /*
+            3. Upload the file, and get the new image id
+         */
+        if (trackingId.isPresent()) {
+            final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, trackingId.get(), imageFile);
+
+            return newImageId;
+        }
+
+        return Optional.empty();
+    }
+
+    private boolean addPosterToArticle(final Integer articleId,
+                                        final Integer user,
+                                        final boolean author,
+                                        final String awselbCookie,
+                                        final String thCsrfCookie,
+                                        final String springSecurityCookie,
+                                        final String jSessionIdCookie) throws IOException {
+
+        final String posterBody = author ?
+                "{\"user\": " + user + ", \"type\": \"author\"}" :
+                "{\"user\": " + user + ", \"type\": \"op\"}";
+
+        final HttpPost posterAssignment = new HttpPost("https://dzone.com/services/internal/node/" + articleId + "/authors-addAuthor");
+        posterAssignment.setHeader("Cookie",
+                AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                SESSION_STARTED_COOKIE + "=true");
+
+        final StringEntity posterEntity = new StringEntity(posterBody);
+        posterEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        posterAssignment.setEntity(posterEntity);
+
+        posterAssignment.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+        posterAssignment.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment);
+        try {
+            final String responseBody = responseToString(posterResponse.getEntity());
+            return responseBody.indexOf(SUCCESS) != -1;
+        } finally {
+            posterResponse.close();
+        }
+    }
+
     private Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
         final Header[] headers = httpResponse.getHeaders("Set-Cookie");
         for (final Header header : headers) {

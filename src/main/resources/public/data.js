@@ -83,6 +83,7 @@ jQuery("#import").click(function() {
                 jQuery("#submit").removeAttr("disabled");
                 jQuery("#restart").removeAttr("disabled");
                 jQuery("#authors").removeAttr("disabled");
+                jQuery("#poster").removeAttr("disabled");
 
                 jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
                 jQuery("#title").val(importedPost.result.data.title);
@@ -109,11 +110,13 @@ jQuery("#submit").click(function(){
     var topics = jQuery("#topics").val();
     var author = jQuery("#authors").val();
     var imageId = jQuery('.image:checked').val();
+    var poster = jQuery('#poster').val();
 
     if (!content || content.trim().length == 0 ||
         !title || title.trim().length == 0 ||
         !topics || topics.trim().length == 0 ||
         !author || author.trim().length == 0 ||
+        !poster || poster.trim().length == 0 ||
         !imageId  || imageId.trim().length == 0) {
         window.alert("Invalid content, title, author, image or topics");
         return;
@@ -126,6 +129,7 @@ jQuery("#submit").click(function(){
     jQuery("#submit").attr("disabled", "disabled");
     jQuery("#restart").attr("disabled", "disabled");
     jQuery("#authors").attr("disabled", "disabled");
+    jQuery("#poster").attr("disabled", "disabled");
 
     jQuery.ajax({
             url: actionPrefix + "/submit",
@@ -140,7 +144,8 @@ jQuery("#submit").click(function(){
                 title: title,
                 topics: topics,
                 authors: author,
-                image: imageId
+                image: imageId,
+                poster: poster
 
             }
         }).done(function(importedPost) {
@@ -235,12 +240,14 @@ function submitFailed() {
     jQuery("#submit").removeAttr("disabled");
     jQuery("#restart").removeAttr("disabled");
     jQuery("#authors").removeAttr("disabled");
+    jQuery("#poster").removeAttr("disabled");
 }
 
 function submitSucceeded() {
     jQuery("#edit").froalaEditor('html.set', "<p/>");
     jQuery("#import").removeAttr("disabled");
     jQuery("#originalSource").removeAttr("disabled");
+    imagesElement.html("");
     getAllImages();
 }
 
