@@ -168,6 +168,7 @@ function queryDomain(domain, success) {
 }
 
 function getAuthors(domainInfo) {
+    var authors = jQuery("#authors");
     var authorsList = jQuery("#suggestedAuthors");
     authorsList.html("");
     var count = 0;
@@ -182,7 +183,7 @@ function getAuthors(domainInfo) {
         Where there is only 1 author, add it automatically
     */
     if (count == 1) {
-        authorsList.val(jQuery(".authorEntry").data("userid"));
+        authors.val(jQuery(".authorEntry").data("userid"));
     }
 }
 
@@ -209,7 +210,13 @@ function getImages(domainInfo) {
     });
 
     if (count != 0) {
-        jQuery(".image").prop("checked", false).remove();
+        var images = jQuery(".imageListItem > input");
+        _.each(images, function(image) {
+            var imageElement = jQuery(image);
+            if (imageElement.prop("checked") == false) {
+                imageElement.parent().remove();
+            }
+        });
     }
 }
 
