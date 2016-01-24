@@ -103,7 +103,7 @@ jQuery("#import").click(function() {
                 jQuery("#authors").removeAttr("disabled");
                 jQuery("#poster").removeAttr("disabled");
 
-                jQuery("#edit").froalaEditor('html.set', importedPost.result.data.fullContent);
+                jQuery("#edit").froalaEditor('html.set', importedPost.result.data.htmlContent);
                 jQuery("#title").val(importedPost.result.data.title);
 
                 jQuery("#edit").froalaEditor('edit.on');
@@ -244,6 +244,7 @@ function getImages(domainInfo) {
 }
 
 function importFailed() {
+    alert("Import process failed");
     jQuery("#import").removeAttr("disabled");
     jQuery("#originalSource").removeAttr("disabled");
 }
@@ -263,8 +264,20 @@ function submitFailed() {
 
 function submitSucceeded() {
     jQuery("#edit").froalaEditor('html.set', "<p/>");
+    jQuery("#edit").froalaEditor('edit.off');
+
+    jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
+    jQuery("#title").attr("disabled", "disabled");
+    jQuery("#topics").attr("disabled", "disabled");
+    jQuery("#submit").attr("disabled", "disabled");
+    jQuery("#restart").attr("disabled", "disabled");
+    jQuery("#authors").attr("disabled", "disabled");
+    jQuery("#poster").attr("disabled", "disabled");
+
     jQuery("#import").removeAttr("disabled");
     jQuery("#originalSource").removeAttr("disabled");
+
+    var imagesElement = jQuery("#images");
     imagesElement.html("");
     getAllImages();
 }

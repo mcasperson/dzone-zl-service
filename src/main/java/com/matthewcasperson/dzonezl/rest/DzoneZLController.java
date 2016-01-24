@@ -8,6 +8,7 @@ import com.yahoo.elide.core.DataStore;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -218,17 +219,17 @@ public class DzoneZLController {
 
             final String submitBody =
                     "{\"type\":\"article\"," +
-                            "\"title\":\"" + title + "\"," +
-                            "\"body\":\"" + content + "\"," +
-                            "\"topics\":\"" + topics + "\"," +
+                            "\"title\":\"" + StringEscapeUtils.escapeJson(title) + "\"," +
+                            "\"body\":\"" + StringEscapeUtils.escapeJson(content) + "\"," +
+                            "\"topics\":\"" + StringEscapeUtils.escapeJson(topics) + "\"," +
                             "\"portal\":null," +
-                            "\"thumb\":" + newImageId.get() + "," +
+                            "\"thumb\":" + StringEscapeUtils.escapeJson(newImageId.get()) + "," +
                             "\"sources\":[]," +
                             "\"notes\":\"\"," +
                             "\"editorsPick\":false," +
                             "\"metaDescription\":\"\"," +
                             "\"tldr\":\"\"," +
-                            "\"originalSource\":\"" + url + "\"," +
+                            "\"originalSource\":\"" + StringEscapeUtils.escapeJson(url) + "\"," +
                             "\"visibility\":\"draft\"}";
 
             final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
