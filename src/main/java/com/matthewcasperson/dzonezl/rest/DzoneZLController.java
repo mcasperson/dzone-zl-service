@@ -47,6 +47,9 @@ public class DzoneZLController {
     private static final String SPRING_SECUITY_COOKIE = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
     private static final String AWSELB_COOKIE = "AWSELB";
     private static final String TH_CSRF_COOKIE = "TH_CSRF";
+    private static final String JSESSIONID_COOKIE = "JSESSIONID";
+    private static final String SESSION_STARTED_COOKIE = "SESSION_STARTED";
+    private static final String X_TH_CSRF_HEADER = "X-TH-CSRF";
 
     @Autowired
     private EntityManagerFactory emf;
@@ -99,54 +102,57 @@ public class DzoneZLController {
         final HttpGet initialGet = new HttpGet("https://dzone.com");
         final HttpResponse initialResponse = makeRequest(initialGet);
         final Optional<String> awselbCookie = getCookie(initialResponse, AWSELB_COOKIE);
+        final Optional<String> thCsrfCookie = getCookie(initialResponse, TH_CSRF_COOKIE);
+        final Optional<String> jSessionIdCookie = getCookie(initialResponse, JSESSIONID_COOKIE);
 
-        if (awselbCookie.isPresent()) {
+        if (awselbCookie.isPresent() && thCsrfCookie.isPresent() && jSessionIdCookie.isPresent()) {
             /*
-                Simulate the redirect, after which we'll get a csrf cookie
+                Now we do the actual login
              */
-            final HttpGet secondLoad = new HttpGet("https://dzone.com");
-            secondLoad.setHeader("Cookie", AWSELB_COOKIE + "=" + awselbCookie.get());
-            final HttpResponse secondLoadResponse = makeRequest(secondLoad);
-            final Optional<String> thCsrfCookie = getCookie(secondLoadResponse, TH_CSRF_COOKIE);
+            final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
 
-            if (thCsrfCookie.isPresent()) {
-                /*
-                    Now we do the actual login
-                 */
-                final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+            final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
+            httppost.setHeader("Cookie",
+                AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
+                TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
+                JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
+                SESSION_STARTED_COOKIE + "=true");
 
-                final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
-                httppost.setHeader("Cookie", AWSELB_COOKIE + "=" + awselbCookie.get());
-                httppost.setHeader("Cookie", TH_CSRF_COOKIE + "=" + thCsrfCookie.get());
+            final StringEntity requestEntity = new StringEntity(loginJson);
+            requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            httppost.setEntity(requestEntity);
 
-                final StringEntity requestEntity = new StringEntity(loginJson);
+            httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie.get());
+            httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-                requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                httppost.setEntity(requestEntity);
+            final HttpResponse loginResponse = makeRequest(httppost);
 
-                httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+            final Optional<String> springSecurityCookie = getCookie(loginResponse, SPRING_SECUITY_COOKIE);
 
-                final HttpResponse loginResponse = makeRequest(httppost);
+            if (springSecurityCookie.isPresent()) {
+                return "{\"" + AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
+                       "\"" + TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
+                        "\"" + JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
+                        "\"" + SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
 
-                final Optional<String> springSecurityCookie = getCookie(loginResponse, SPRING_SECUITY_COOKIE);
-
-                if (springSecurityCookie.isPresent()) {
-                    return "{\"" + AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
-                           "\"" + TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
-                            "\"" + SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
-                }
             }
         }
 
         return null;
     }
 
-    private Optional<String> getCookie(final HttpResponse httpResponse, final String cookie) {
+    private Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
         final Header[] headers = httpResponse.getHeaders("Set-Cookie");
         for (final Header header : headers) {
-            final String[] cookieDetails = header.getValue().split("=");
-            if (cookieDetails.length == 2 && cookie.equals(cookieDetails[0])) {
-                return Optional.of(cookieDetails[1]);
+            final String[] cookies = header.getValue().split(",");
+            for (final String cookie : cookies) {
+                final String[] cookieDetails = cookie.split("=");
+                if (cookieDetails.length >= 2 && cookieName.equals(cookieDetails[0])) {
+                    /*
+                        We only want the value, not any other details like paths
+                     */
+                    return Optional.of(cookieDetails[1].split(";")[0]);
+                }
             }
         }
 
