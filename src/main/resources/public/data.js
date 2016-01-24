@@ -2,6 +2,9 @@ var imageWidth = 250;
 var dataPrefix = "/data";
 var actionPrefix = "/action";
 var cookies = null;
+var randomImages = 100;
+var randomImageStartIndex = 900000;
+var randomImageRange = 100000;
 
 function getAllImages() {
     jQuery.get(dataPrefix + "/image", function(images) {
@@ -16,6 +19,22 @@ function getAllImages() {
             imagesElement.append(listItem);
             imagesElement.show();
         });
+
+        /*
+            Randomly select 100 images from some of the more recent posts
+        */
+        for (var count = 0; count < randomImages; ++count) {
+            var random = Math.floor(Math.random() * randomImageRange + randomImageStartIndex);
+            if (jQuery("#imageId" + random).length == 0) {
+                var listItem = jQuery("<li class='imageListItem'> \
+                                    <input type='radio' class='image' name='radgroup' value='" + random + "' id='imageId" + random + "'> \
+                                    <img src='https://dz2cdn1.dzone.com/thumbnail?fid=" + random + "&w=" + imageWidth + "'/> \
+                                    </label> \
+                                    </li>");
+                imagesElement.append(listItem);
+                imagesElement.show();
+            }
+        }
     });
 }
 
