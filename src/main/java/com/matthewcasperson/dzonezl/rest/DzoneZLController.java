@@ -141,6 +141,48 @@ public class DzoneZLController {
         return null;
     }
 
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/action/import", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String importPost(
+        @RequestParam final String awselbCookie,
+        @RequestParam final String thCsrfCookie,
+        @RequestParam final String springSecurityCookie,
+        @RequestParam final String jSessionIdCookie,
+        @RequestParam final String url) throws IOException {
+
+        /*
+            Do the initial login to get any security cookies
+         */
+        final HttpPost importPost = new HttpPost("https://dzone.com/services/internal/action/links-getData");
+
+        final String importJson = "{\"url\":\"" + url + "\",\"parse\":true}";
+
+        final StringEntity requestEntity = new StringEntity(importJson);
+        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        importPost.setEntity(requestEntity);
+
+        importPost.setHeader("Cookie",
+                AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                SESSION_STARTED_COOKIE + "=true");
+
+        importPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse response = httpclient.execute(importPost);
+        try {
+            final String responseBody = responseToString(response.getEntity());
+
+            LOGGER.info(responseBody);
+
+            return responseBody;
+        } finally {
+            response.close();
+        }
+    }
+
     private Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
         final Header[] headers = httpResponse.getHeaders("Set-Cookie");
         for (final Header header : headers) {
