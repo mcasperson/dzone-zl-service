@@ -63,11 +63,9 @@
                     <legend>DZone Zone Leader Syndication Tool</legend>
 
                     <div class="form-group">
-                        <label class="col-md-2 control-label" for="username">Username</label>
-                        <div class="col-md-2">
-                            <div class="input-group">
-                                <input id="username" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
-                            </div>
+                        <label class="col-md-4 control-label" for="username">Username</label>
+                        <div class="col-md-4">
+                            <input id="username" name="username" type="text" class="form-control input-md" value="matthewcasperson@gmail.com">
                         </div>
                     </div>
 
@@ -75,19 +73,22 @@
                         <label class="col-md-4 control-label" for="password">Password</label>
                         <div class="col-md-4">
                             <div class="input-group">
-                                <input id="password" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                                <input id="password" name="password" type="text" class="form-control input-md" value="jAhaaMfUd47G">
                                 <span class="input-group-btn"> <button class="btn btn-default" type="button" id="login">Login</button> </span>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Text input-->
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="originalSource">Original Source</label>
                         <div class="col-md-4">
                             <div class="input-group">
-                                <input id="originalSource" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
-                                <span class="input-group-btn"> <button class="btn btn-default" type="button" id="import">Import</button> </span>
+                                <input disabled="disabled" id="originalSource" name="originalSource" type="text" class="form-control input-md">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" id="import" disabled="disabled">Import</button>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -97,9 +98,9 @@
                         <label class="col-md-4 control-label" for="authors">Authors</label>
                         <div class="col-md-4">
                             <div class="input-group">
-                                <input id="authors" name="authors" class="form-control" placeholder="placeholder" type="text">
+                                <input disabled="disabled" id="authors" name="authors" class="form-control" type="text">
                                 <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled" id="suggestedAuthorsList">
                                         Suggested Authors
                                         <span class="caret"></span>
                                     </button>
@@ -117,7 +118,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="topics">Topics</label>
                         <div class="col-md-4">
-                            <input id="topics" name="topics" type="search" placeholder="placeholder" class="form-control input-md">
+                            <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md">
                         </div>
                     </div>
 
@@ -125,7 +126,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="title">Title</label>
                         <div class="col-md-4">
-                            <input id="title" name="title" type="text" placeholder="placeholder" class="form-control input-md">
+                            <input disabled="disabled" id="title" name="title" type="text" class="form-control input-md">
                         </div>
                     </div>
 
@@ -139,7 +140,7 @@
 
                 <br/>
 
-                <button type="button" class="btn btn-primary btn-lg">Submit</button>
+                <button type="button" class="btn btn-primary btn-lg" disabled="disabled" id="submit">Submit</button>
             </form>
 
         </div><!-- /container -->
