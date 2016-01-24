@@ -10,5 +10,6 @@ jQuery.get(dataPrefix + "/image", function(images) {
                             </label> \
                             </li>");
         imagesElement.append(listItem);
+        imagesElement.show();
     });
 });

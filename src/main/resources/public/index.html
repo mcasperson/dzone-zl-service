@@ -62,11 +62,33 @@
                     <!-- Form Name -->
                     <legend>DZone Zone Leader Syndication Tool</legend>
 
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="username">Username</label>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <input id="username" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="password">Password</label>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input id="password" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                                <span class="input-group-btn"> <button class="btn btn-default" type="button" id="login">Login</button> </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Text input-->
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="originalSource">Original Source</label>
                         <div class="col-md-4">
-                            <input id="originalSource" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                            <div class="input-group">
+                                <input id="originalSource" name="originalSource" type="text" placeholder="placeholder" class="form-control input-md">
+                                <span class="input-group-btn"> <button class="btn btn-default" type="button" id="import">Import</button> </span>
+                            </div>
                         </div>
                     </div>
 
@@ -109,10 +131,8 @@
 
                 </fieldset>
 
-                <ul id="images" class="imageList">
-                    <li class="imageListItem">
-                    <input type="radio" name="radgroup" value="A"><img src="https://dz2cdn1.dzone.com/thumbnail?fid=994972&w=370"/></label>
-                    </li>
+                <ul id="images" class="imageList" style="display: none">
+
                 </ul>
 
                 <textarea id="edit" name="content"></textarea>
