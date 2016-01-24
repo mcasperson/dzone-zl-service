@@ -67,7 +67,6 @@ jQuery("#import").click(function() {
     }).done(function(importedPost) {
         if (importedPost.success) {
 
-
             queryDomain(url, function(domainInfo) {
                 if (domainInfo.data.length == 0) {
                     alert("There was no matching information in the database for this domain");
@@ -167,7 +166,7 @@ jQuery("body").on("click", ".authorEntry", function(event) {
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();
     jQuery.get(
-        dataPrefix + "/mvbDomain?include=authors,tagToMvbdomains.tag.tagToImages.image&filter[mvbDomain.domain]=apievangelist.com",
+        dataPrefix + "/mvbDomain?include=authors,tagToMvbdomains.tag.tagToImages.image&filter[mvbDomain.domain]=" + hostname,
         success
     );
 }
