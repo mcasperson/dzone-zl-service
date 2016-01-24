@@ -11,10 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -183,6 +180,59 @@ public class DzoneZLController {
         }
     }
 
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/action/submit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String submitPost(
+            @RequestParam final String awselbCookie,
+            @RequestParam final String thCsrfCookie,
+            @RequestParam final String springSecurityCookie,
+            @RequestParam final String jSessionIdCookie,
+            @RequestParam final String title,
+            @RequestParam final String content,
+            @RequestParam final String url) throws IOException {
+
+        final String submitBody =
+                "{\"type\":\"article\"," +
+                "\"title\":\"" + title + "\"," +
+                "\"body\":\"" + content + "\"," +
+                "\"topics\":\"\"," +
+                "\"portal\":null," +
+                "\"thumb\":null," +
+                "\"sources\":[]," +
+                "\"notes\":\"\"," +
+                "\"editorsPick\":false," +
+                "\"metaDescription\":\"\"," +
+                "\"tldr\":\"\"," +
+                "\"originalSource\":\"" + url + "\"," +
+                "\"visibility\":\"draft\"}";
+
+        final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
+        httppost.setHeader("Cookie",
+                AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                SESSION_STARTED_COOKIE + "=true");
+
+        final StringEntity requestEntity = new StringEntity(submitBody);
+        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httppost.setEntity(requestEntity);
+
+        httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+        httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse response = httpclient.execute(httppost);
+        try {
+            final String responseBody = responseToString(response.getEntity());
+
+            LOGGER.info(responseBody);
+
+            return responseBody;
+        } finally {
+            response.close();
+        }
+    }
     private Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
         final Header[] headers = httpResponse.getHeaders("Set-Cookie");
         for (final Header header : headers) {
