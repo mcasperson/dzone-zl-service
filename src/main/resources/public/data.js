@@ -117,33 +117,13 @@ var url = jQuery("#originalSource").val();
             importedPost.result.data.htmlContent &&
             importedPost.result.data.htmlContent.trim().length != 0) {
 
-            queryDomain(url, function(domainInfo) {
-                if (domainInfo.data.length == 0) {
-                    alert("There was no matching information in the database for this domain");
-                }
+            importSucceeded(url, importedPost.result.data.htmlContent);
 
-                getAuthors(domainInfo);
-                getTags(domainInfo);
-                getImages(domainInfo);
-
-                jQuery("#suggestedAuthorsList").removeAttr("disabled");
-                jQuery("#title").removeAttr("disabled");
-                jQuery("#topics").removeAttr("disabled");
-                jQuery("#submit").removeAttr("disabled");
-                jQuery("#restart").removeAttr("disabled");
-                jQuery("#authors").removeAttr("disabled");
-                jQuery("#poster").removeAttr("disabled");
-
-                jQuery("#edit").froalaEditor('html.set', importedPost.result.data.htmlContent);
-                jQuery("#title").val(importedPost.result.data.title);
-
-                jQuery("#edit").froalaEditor('edit.on');
-            });
         } else {
-            importFailed();
+            importFailed(url);
         }
     }).error(function(){
-        importFailed();
+        importFailed(url);
     });
 }
 
@@ -310,10 +290,39 @@ function getImages(domainInfo) {
     }*/
 }
 
-function importFailed() {
-    alert("Import process failed");
-    jQuery("#import").removeAttr("disabled");
-    jQuery("#originalSource").removeAttr("disabled");
+function importSucceeded(url, content) {
+    queryDomain(url, function(domainInfo) {
+        if (domainInfo.data.length == 0) {
+            alert("There was no matching information in the database for this domain");
+        }
+
+        getAuthors(domainInfo);
+        getTags(domainInfo);
+        getImages(domainInfo);
+
+        jQuery("#suggestedAuthorsList").removeAttr("disabled");
+        jQuery("#title").removeAttr("disabled");
+        jQuery("#topics").removeAttr("disabled");
+        jQuery("#submit").removeAttr("disabled");
+        jQuery("#restart").removeAttr("disabled");
+        jQuery("#authors").removeAttr("disabled");
+        jQuery("#poster").removeAttr("disabled");
+
+        jQuery("#edit").froalaEditor('html.set', content);
+        jQuery("#title").val(importedPost.result.data.title);
+
+        jQuery("#edit").froalaEditor('edit.on');
+    });
+}
+
+function importFailed(url) {
+    var continueImport = confirm("Import process failed. Do you wish to continue?");
+    if (!continueImport) {
+        jQuery("#import").removeAttr("disabled");
+        jQuery("#originalSource").removeAttr("disabled");
+    } else {
+        importSucceeded(url, '');
+    }
 }
 
 function submitFailed() {
