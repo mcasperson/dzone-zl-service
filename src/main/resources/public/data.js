@@ -5,7 +5,6 @@ var cookies = null;
 var randomImages = 250;
 var randomImageStartIndex = 900000;
 var randomImageRange = 100000;
-var localStorageCookiesKey = "cookies"
 
 /*
     Perform some tasks at startup
@@ -25,23 +24,18 @@ function getParameterByName(name) {
     We can skip the login if we have the cookies ready to go
 */
 function quickLoad() {
-    var retrievedObject = localStorage.getItem(localStorageCookiesKey);
-    if (retrievedObject) {
-        cookies = JSON.parse(retrievedObject);
+    var username = jQuery("#username").val();
+    var password = jQuery("#password").val();
 
-        jQuery("#login").attr("disabled", "disabled");
-        jQuery("#username").attr("disabled", "disabled");
-        jQuery("#password").attr("disabled", "disabled");
-
-        jQuery("#import").removeAttr("disabled");
-        jQuery("#originalSource").removeAttr("disabled");
-
-        /*
-            If we have a import url, start the process
-        */
-        if (jQuery('#originalSource').val()) {
-            doImport();
-        }
+    if (username && password) {
+        login(function(){
+            /*
+                If we have a import url, start the process
+            */
+            if (jQuery('#originalSource').val()) {
+                doImport();
+            }
+        });
     }
 }
 
@@ -128,28 +122,7 @@ var url = jQuery("#originalSource").val();
 }
 
 jQuery("#login").click(function() {
-    /*
-        Disable UI while we perform the login
-    */
-    jQuery("#login").attr("disabled", "disabled");
-    jQuery("#username").attr("disabled", "disabled");
-    jQuery("#password").attr("disabled", "disabled");
-
-    jQuery.ajax({
-        method: "POST",
-        url: actionPrefix + "/login",
-        data: {username: jQuery("#username").val(), password: jQuery("#password").val()}
-    }).done(function(myCookies) {
-        cookies = myCookies;
-        localStorage.setItem(localStorageCookiesKey, JSON.stringify(cookies));
-
-        jQuery("#import").removeAttr("disabled");
-        jQuery("#originalSource").removeAttr("disabled");
-    }).error(function() {
-        jQuery("#login").removeAttr("disabled");
-        jQuery("#username").removeAttr("disabled");
-        jQuery("#password").removeAttr("disabled");
-    });
+    login();
 });
 
 jQuery("#import").click(doImport);
@@ -218,6 +191,33 @@ jQuery("body").on("click", ".authorEntry", function(event) {
     jQuery("#authors").val(jQuery(event.target).data("userid"));
 });
 
+function login(success) {
+    /*
+        Disable UI while we perform the login
+    */
+    jQuery("#login").attr("disabled", "disabled");
+    jQuery("#username").attr("disabled", "disabled");
+    jQuery("#password").attr("disabled", "disabled");
+
+    jQuery.ajax({
+        method: "POST",
+        url: actionPrefix + "/login",
+        data: {username: jQuery("#username").val(), password: jQuery("#password").val()}
+    }).done(function(myCookies) {
+        cookies = myCookies;
+
+        jQuery("#import").removeAttr("disabled");
+        jQuery("#originalSource").removeAttr("disabled");
+
+        if (success) {
+            success();
+        }
+    }).error(function() {
+        jQuery("#login").removeAttr("disabled");
+        jQuery("#username").removeAttr("disabled");
+        jQuery("#password").removeAttr("disabled");
+    });
+}
 
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();
