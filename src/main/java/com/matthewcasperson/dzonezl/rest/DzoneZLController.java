@@ -281,22 +281,24 @@ public class DzoneZLController {
                             /*
                                 We didn't find the expected article id
                              */
+                            LOGGER.error("Exception associating user to article", ex);
                             return "{\"success\":false}";
                         }
                     }
 
                 }
 
-
                 LOGGER.info(responseBody);
 
-            /*
-                Return failure to the client
-             */
+                /*
+                    Return failure to the client
+                 */
                 return responseBody;
             } finally {
                 response.close();
             }
+        } else {
+            LOGGER.error("Failed to upload image");
         }
 
         return "{\"success\":false}";
@@ -451,6 +453,9 @@ public class DzoneZLController {
         final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment);
         try {
             final String responseBody = responseToString(posterResponse.getEntity());
+
+            LOGGER.info("Image Upload Response Body: " + responseBody);
+
             return responseBody.indexOf(SUCCESS) != -1;
         } finally {
             posterResponse.close();
