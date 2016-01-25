@@ -113,7 +113,9 @@ var url = jQuery("#originalSource").val();
             url: url
         }
     }).done(function(importedPost) {
-        if (importedPost.success && importedPost.result.data.htmlContent.trim().length != 0) {
+        if (importedPost.success &&
+            importedPost.result.data.htmlContent &&
+            importedPost.result.data.htmlContent.trim().length != 0) {
 
             queryDomain(url, function(domainInfo) {
                 if (domainInfo.data.length == 0) {
