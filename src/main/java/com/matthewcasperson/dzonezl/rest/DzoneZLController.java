@@ -5,6 +5,7 @@ import com.yahoo.elide.ElideResponse;
 import com.yahoo.elide.audit.Logger;
 import com.yahoo.elide.audit.Slf4jLogger;
 import com.yahoo.elide.core.DataStore;
+import com.yahoo.elide.core.SecurityMode;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -23,10 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.persistence.EntityManagerFactory;
@@ -72,10 +70,11 @@ public class DzoneZLController {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE,
-            value={"/data/{entity}", "/data/{entity}/relationship/{entity2}", "/data/{entity}/{child}"})
+            value={"/data/{entity}", "/data/{entity}/{id}/relationship/{entity2}", "/data/{entity}/{id}/{child}", "/data/{entity}/{id}"})
     @Transactional
-    public String authors(@RequestParam final Map<String, String> allRequestParams, final HttpServletRequest request) {
+    public String jsonApiGet(@RequestParam final Map<String, String> allRequestParams, final HttpServletRequest request) {
         final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
         final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
@@ -86,7 +85,30 @@ public class DzoneZLController {
         final Elide elide = new Elide(logger, dataStore);
         final MultivaluedMap<String, String> params = fromMap(allRequestParams);
 
-        final ElideResponse response = elide.get(restOfTheUrl.replaceAll("^/data/", ""), params, new Object());
+        final String path = restOfTheUrl.replaceAll("^/data/", "");
+
+        final ElideResponse response = elide.get(path, params, new Object());
+
+        return response.getBody();
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            value={"/data/{entity}"})
+    @Transactional
+    public String jsonApiPost(@RequestBody final String body, final HttpServletRequest request) {
+        final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+
+        final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
+
+        /* Takes a hibernate session factory */
+        final DataStore dataStore = new HibernateStore(sessionFactory);
+        final Logger logger = new Slf4jLogger();
+        final Elide elide = new Elide(logger, dataStore);
+
+        final ElideResponse response = elide.post(restOfTheUrl.replaceAll("^/data/", ""),body, new Object(), SecurityMode.BYPASS_SECURITY);
 
         return response.getBody();
     }

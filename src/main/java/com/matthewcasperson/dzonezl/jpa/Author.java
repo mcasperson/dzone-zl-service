@@ -1,5 +1,9 @@
 package com.matthewcasperson.dzonezl.jpa;
 
+import com.yahoo.elide.annotation.ReadPermission;
+import com.yahoo.elide.annotation.UpdatePermission;
+import com.yahoo.elide.security.Role;
+
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -61,6 +65,8 @@ public class Author implements Serializable {
 
 
 	//bi-directional many-to-one association to MvbDomain
+	@UpdatePermission(any = { Role.ALL.class })
+	@ReadPermission(any = { Role.ALL.class })
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="mvbDomainId")
 	public MvbDomain getMvbdomain() {
