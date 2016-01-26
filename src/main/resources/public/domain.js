@@ -17,6 +17,11 @@ var imagelist = jQuery("#imagelist");
 var submit = jQuery('#submit');
 var restart = jQuery('#restart');
 
+restart.click(function() {
+    restart();
+});
+
+
 adduser.click(function() {
     jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + user.val(), function(userdata) {
         if (userdata.success) {
@@ -85,6 +90,13 @@ submit.click(function() {
 
 
 });
+
+function restart() {
+    user.val("");
+    userlist.html("");
+    topic.val("");
+    topiclist.html("");
+}
 
 function processDomain(newMvbDomainId) {
     addAuthors(newMvbDomainId);

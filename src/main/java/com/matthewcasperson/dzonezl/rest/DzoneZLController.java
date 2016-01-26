@@ -1,5 +1,7 @@
 package com.matthewcasperson.dzonezl.rest;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.yahoo.elide.Elide;
 import com.yahoo.elide.ElideResponse;
 import com.yahoo.elide.audit.Logger;
@@ -36,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -240,11 +243,26 @@ public class DzoneZLController {
 
         if (newImageId.isPresent()) {
 
+            final List<String> topicsSplit =  Lists.newArrayList(
+                    Splitter.on(',')
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .split(topics)
+            );
+
+            final StringBuilder topicsArray = new StringBuilder();
+            for (final String topic : topicsSplit) {
+                if (topicsArray.length() != 0) {
+                    topicsArray.append(",");
+                }
+                topicsArray.append("\"" + StringEscapeUtils.escapeJson(topic.trim()) + "\"");
+            }
+
             final String submitBody =
                     "{\"type\":\"article\"," +
                             "\"title\":\"" + StringEscapeUtils.escapeJson(title) + "\"," +
                             "\"body\":\"" + StringEscapeUtils.escapeJson(content) + "\"," +
-                            "\"topics\":\"" + StringEscapeUtils.escapeJson(topics) + "\"," +
+                            "\"topics\":[" + topicsArray.toString() + "]," +
                             "\"portal\":null," +
                             "\"thumb\":" + StringEscapeUtils.escapeJson(newImageId.get()) + "," +
                             "\"sources\":[]," +
