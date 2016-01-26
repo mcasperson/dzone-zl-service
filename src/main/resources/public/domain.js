@@ -88,70 +88,95 @@ submit.click(function() {
 
 function processDomain(newMvbDomainId) {
     addAuthors(newMvbDomainId);
-    //addTopics(newMvbDomainId);
+    addTopics(newMvbDomainId);
 }
 
 function addAuthors(newMvbDomainId) {
     $("#userlist > option").each(function() {
 
-        var author =
-                {
-                  data: {
-                    type: "author",
-                    attributes: {
-                      name: this.text,
-                      username: this.value
-                    },
-                    relationships: {
-                        mvbdomain: {
-                            data: {
-                                type: "mvbDomain",
-                                id: newMvbDomainId
-                            }
-                        }
-                    }
-                  }
-                };
+        var name = this.text;
+        var username = this.value;
 
-        jQuery.ajax({
-                url: dataPrefix + '/author',
-                method: 'POST',
-                data: JSON.stringify(author),
-                contentType: "application/json",
-                dataType : 'json'
-            }).done(function(newAuthor) {
-                console.log(JSON.stringify(newAuthor));
-            });
+        jQuery.get(
+                dataPrefix + "/author?filter[author.username]=" + username,
+                function(existingUser) {
+
+                    if (existingUser.data.length == 0) {
+
+                        var author =
+                                {
+                                  data: {
+                                    type: "author",
+                                    attributes: {
+                                      name: name,
+                                      username: username
+                                    },
+                                    relationships: {
+                                        mvbdomain: {
+                                            data: {
+                                                type: "mvbDomain",
+                                                id: newMvbDomainId
+                                            }
+                                        }
+                                    }
+                                  }
+                                };
+
+                        jQuery.ajax({
+                                url: dataPrefix + '/author',
+                                method: 'POST',
+                                data: JSON.stringify(author),
+                                contentType: "application/json",
+                                dataType : 'json'
+                            }).done(function(newAuthor) {
+                                console.log(JSON.stringify(newAuthor));
+                            });
+                    }
+                }
+        )
     });
 }
 
-function addTopics(newMvbDomain) {
+function addTopics(newMvbDomainId) {
     $("#topiclist > option").each(function() {
 
-        var tag =
-                {
-                  data: {
-                    type: "tag",
-                    attributes: {
-                      name: this.text
-                    }
-                  }
-                };
+        var name = this.text;
 
-        jQuery.ajax({
-                url: dataPrefix + '/tag',
-                method: 'POST',
-                data: JSON.stringify(tag),
-                contentType: "application/json",
-                dataType : 'json'
-            }).done(function(newTag) {
-                console.log(JSON.stringify(newTag));
-                addTopicToDomain(newMvbDomain, newTag);
-            });
+        jQuery.get(
+                dataPrefix + "/tag?filter[tag.name]=" + name,
+                function(existingTags) {
+                    if (existingTags.data.length == 0) {
+                        var tag =
+                                {
+                                  data: {
+                                    type: "tag",
+                                    attributes: {
+                                      name: name
+                                    }
+                                  }
+                                };
+
+                        jQuery.ajax({
+                                url: dataPrefix + '/tag',
+                                method: 'POST',
+                                data: JSON.stringify(tag),
+                                contentType: "application/json",
+                                dataType : 'json'
+                            }).done(function(newTag) {
+                                console.log(JSON.stringify(newTag));
+                                addTopicToDomain(newMvbDomainId, newTag.data.id);
+                            });
+                    } else {
+                        addTopicToDomain(newMvbDomainId, existingTags.data[0].id);
+                    }
+                }
+        );
+
+
     });
 }
 
-function addTopicToDomain(newMvbDomainId, newTag) {
+function addTopicToDomain(newMvbDomainId, newTagId) {
 
     var tagToMVBDomain =
         {
@@ -167,7 +192,7 @@ function addTopicToDomain(newMvbDomainId, newTag) {
                     tag: {
                         data: {
                               type: "tag",
-                              id: newTag.data.id
+                              id: newTagId
                         }
                     }
                 }

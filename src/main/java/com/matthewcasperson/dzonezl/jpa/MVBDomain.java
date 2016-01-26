@@ -1,5 +1,8 @@
 package com.matthewcasperson.dzonezl.jpa;
 
+import com.yahoo.elide.annotation.SharePermission;
+import com.yahoo.elide.security.Role;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.List;
  * The persistent class for the MvbDomain database table.
  * 
  */
+@SharePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="MvbDomain.findAll", query="SELECT m FROM MvbDomain m")
 @Table(name="MVBDomain")
