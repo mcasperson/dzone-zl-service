@@ -15,9 +15,9 @@ var addimage = jQuery('#addimage');
 var imagelist = jQuery("#imagelist");
 
 var submit = jQuery('#submit');
-var restart = jQuery('#restart');
+var restartButton = jQuery('#restart');
 
-restart.click(function() {
+restartButton.click(function() {
     restart();
 });
 
@@ -92,6 +92,7 @@ submit.click(function() {
 });
 
 function restart() {
+    domain.val("");
     user.val("");
     userlist.html("");
     topic.val("");
