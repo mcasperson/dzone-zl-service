@@ -127,11 +127,11 @@ jQuery("#login").click(function() {
 
 jQuery("#import").click(doImport);
 
-jQuery("#restart").click(function(){
+jQuery("#restart, #restartTop").click(function(){
     submitSucceeded();
 });
 
-jQuery("#submit").click(function(){
+jQuery("#submit, #submitTop").click(function(){
 
     var content = jQuery("#edit").froalaEditor('html.get');
     var title = jQuery("#title").val();
@@ -154,8 +154,8 @@ jQuery("#submit").click(function(){
     jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
     jQuery("#title").attr("disabled", "disabled");
     jQuery("#topics").attr("disabled", "disabled");
-    jQuery("#submit").attr("disabled", "disabled");
-    jQuery("#restart").attr("disabled", "disabled");
+    jQuery("#submit, #submitTop").attr("disabled", "disabled");
+    jQuery("#restart, #restartTop").attr("disabled", "disabled");
     jQuery("#authors").attr("disabled", "disabled");
     jQuery("#poster").attr("disabled", "disabled");
 
@@ -303,8 +303,8 @@ function importSucceeded(url, content, title) {
         jQuery("#suggestedAuthorsList").removeAttr("disabled");
         jQuery("#title").removeAttr("disabled");
         jQuery("#topics").removeAttr("disabled");
-        jQuery("#submit").removeAttr("disabled");
-        jQuery("#restart").removeAttr("disabled");
+        jQuery("#submit, #submitTop").removeAttr("disabled");
+        jQuery("#restart, #restartTop").removeAttr("disabled");
         jQuery("#authors").removeAttr("disabled");
         jQuery("#poster").removeAttr("disabled");
 
@@ -332,8 +332,8 @@ function submitFailed() {
     jQuery("#suggestedAuthorsList").removeAttr("disabled");
     jQuery("#title").removeAttr("disabled");
     jQuery("#topics").removeAttr("disabled");
-    jQuery("#submit").removeAttr("disabled");
-    jQuery("#restart").removeAttr("disabled");
+    jQuery("#submit, #submitTop").removeAttr("disabled");
+    jQuery("#restart, #restartTop").removeAttr("disabled");
     jQuery("#authors").removeAttr("disabled");
     jQuery("#poster").removeAttr("disabled");
 }
@@ -345,8 +345,8 @@ function submitSucceeded(submittedPost) {
     jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
     jQuery("#title").attr("disabled", "disabled");
     jQuery("#topics").attr("disabled", "disabled");
-    jQuery("#submit").attr("disabled", "disabled");
-    jQuery("#restart").attr("disabled", "disabled");
+    jQuery("#submit, #submitTop").attr("disabled", "disabled");
+    jQuery("#restart, #restartTop").attr("disabled", "disabled");
     jQuery("#authors").attr("disabled", "disabled");
     jQuery("#poster").attr("disabled", "disabled");
 
