@@ -1,5 +1,8 @@
 package com.matthewcasperson.dzonezl.jpa;
 
+import com.yahoo.elide.annotation.SharePermission;
+import com.yahoo.elide.security.Role;
+
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -8,6 +11,7 @@ import javax.persistence.*;
  * The persistent class for the TagToMVBDomain database table.
  * 
  */
+@SharePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="TagToMVBDomain.findAll", query="SELECT t FROM TagToMVBDomain t")
 public class TagToMVBDomain implements Serializable {

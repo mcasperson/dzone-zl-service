@@ -1,6 +1,7 @@
 package com.matthewcasperson.dzonezl.jpa;
 
 import com.yahoo.elide.annotation.ReadPermission;
+import com.yahoo.elide.annotation.SharePermission;
 import com.yahoo.elide.annotation.UpdatePermission;
 import com.yahoo.elide.security.Role;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
  * The persistent class for the Author database table.
  * 
  */
+@SharePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="Author.findAll", query="SELECT a FROM Author a")
 public class Author implements Serializable {

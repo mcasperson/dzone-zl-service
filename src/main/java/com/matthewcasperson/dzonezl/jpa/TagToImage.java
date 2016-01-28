@@ -1,5 +1,8 @@
 package com.matthewcasperson.dzonezl.jpa;
 
+import com.yahoo.elide.annotation.SharePermission;
+import com.yahoo.elide.security.Role;
+
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -8,6 +11,7 @@ import javax.persistence.*;
  * The persistent class for the TagToImage database table.
  * 
  */
+@SharePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="TagToImage.findAll", query="SELECT t FROM TagToImage t")
 public class TagToImage implements Serializable {

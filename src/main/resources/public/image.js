@@ -1,3 +1,7 @@
+var topic = jQuery('#topic');
+var addtopic = jQuery('#addtopic');
+var topiclist = jQuery("#topiclist");
+
 jQuery("#submit").click(function() {
     var username = jQuery("#username").val();
     var password = jQuery("#password").val();
@@ -32,8 +36,117 @@ function uploadImage(myCookies) {
         type: 'POST',
         success: function(data){
             console.log(data);
-            alert(data);
+            window.open('https://dz2cdn1.dzone.com/thumbnail?fid=' + data + "&w=800");
+
+            addImage(data, function(newImage) {
+                addTopics(newImage.data.id);
+            });
         }
     });
+}
 
+addtopic.click(function() {
+    jQuery.get('https://dzone.com/services/internal/data/topics-search?term=' + topic.val(), function(topicdata) {
+        if (topicdata.success) {
+            topiclist.append(jQuery('<option value="' + topicdata.result.data[0].id + '">' +  topicdata.result.data[0].title + "</option>"));
+            topic.val("");
+        }
+    });
+});
+
+function addTopics(imageId) {
+    $("#topiclist > option").each(function() {
+
+        var name = this.text;
+
+        jQuery.get(
+                dataPrefix + "/tag?filter[tag.name]=" + name,
+                function(existingTags) {
+                    if (existingTags.data.length == 0) {
+                        var tag =
+                                {
+                                  data: {
+                                    type: "tag",
+                                    attributes: {
+                                      name: name
+                                    }
+                                  }
+                                };
+
+                        jQuery.ajax({
+                                url: dataPrefix + '/tag',
+                                method: 'POST',
+                                data: JSON.stringify(tag),
+                                contentType: "application/json",
+                                dataType : 'json'
+                            }).done(function(newTag) {
+                                console.log(JSON.stringify(newTag));
+                                addTopicToImage(imageId, newTag.data.id);
+                            });
+                    } else {
+                        addTopicToImage(imageId, existingTags.data[0].id);
+                    }
+                }
+        );
+
+
+    });
+}
+
+function addImage(imageId, success) {
+
+    var image =
+        {
+            data: {
+                type: "image",
+                attributes: {
+                    dzoneId: imageId
+                }
+            }
+        };
+
+    jQuery.ajax({
+            url: dataPrefix + '/image',
+            method: 'POST',
+            data: JSON.stringify(image),
+            contentType: "application/json",
+            dataType : 'json'
+        }).done(function(newImage) {
+            console.log(JSON.stringify(newImage));
+            success(newImage);
+        });
+}
+
+function addTopicToImage(imageId, newTagId) {
+
+    var tagToImage =
+        {
+            data: {
+                type: "tagToImage",
+                relationships: {
+                    image: {
+                        data: {
+                              type: "image",
+                              id: imageId
+                        }
+                    },
+                    tag: {
+                        data: {
+                              type: "tag",
+                              id: newTagId
+                        }
+                    }
+                }
+            }
+        };
+
+    jQuery.ajax({
+            url: dataPrefix + '/tagToImage',
+            method: 'POST',
+            data: JSON.stringify(tagToImage),
+            contentType: "application/json",
+            dataType : 'json'
+        }).done(function(newTagToMVBDomain) {
+            console.log(JSON.stringify(newTagToMVBDomain));
+        });
 }
