@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.persistence.EntityManagerFactory;
@@ -343,6 +344,45 @@ public class DzoneZLController {
         }
 
         return "{\"success\":false}";
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            value = "/action/uploadImage",
+            method=RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    private String uploadImageToDzone(
+            @RequestParam final String awselbCookie,
+            @RequestParam final String thCsrfCookie,
+            @RequestParam final String springSecurityCookie,
+            @RequestParam final String jSessionIdCookie,
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        /*
+            1. Download the existing file
+         */
+        final File imageFile = File.createTempFile("dzoneTempImage", ".img");
+        IOUtils.copy(
+                file.getInputStream(),
+                new FileOutputStream(imageFile));
+
+        /*
+            2. Get a tracking code
+         */
+        final Optional<String> trackingId = getImageUploadTrackingCode(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie);
+
+        /*
+            3. Upload the file, and get the new image id
+         */
+        if (trackingId.isPresent()) {
+            final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, trackingId.get(), imageFile);
+
+            if (newImageId.isPresent()) {
+                return newImageId.get();
+            }
+        }
+
+        return "";
     }
 
     private Optional<String> getImageUploadTrackingCode(final String awselbCookie,

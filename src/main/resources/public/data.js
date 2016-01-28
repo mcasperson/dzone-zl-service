@@ -1,7 +1,4 @@
 var imageWidth = 250;
-var dataPrefix = "/data";
-var actionPrefix = "/action";
-var cookies = null;
 var randomImages = 250;
 var randomImageStartIndex = 900000;
 var randomImageRange = 100000;
@@ -190,34 +187,6 @@ jQuery("#submit, #submitTop").click(function(){
 jQuery("body").on("click", ".authorEntry", function(event) {
     jQuery("#authors").val(jQuery(event.target).data("userid"));
 });
-
-function login(success) {
-    /*
-        Disable UI while we perform the login
-    */
-    jQuery("#login").attr("disabled", "disabled");
-    jQuery("#username").attr("disabled", "disabled");
-    jQuery("#password").attr("disabled", "disabled");
-
-    jQuery.ajax({
-        method: "POST",
-        url: actionPrefix + "/login",
-        data: {username: jQuery("#username").val(), password: jQuery("#password").val()}
-    }).done(function(myCookies) {
-        cookies = myCookies;
-
-        jQuery("#import").removeAttr("disabled");
-        jQuery("#originalSource").removeAttr("disabled");
-
-        if (success) {
-            success();
-        }
-    }).error(function() {
-        jQuery("#login").removeAttr("disabled");
-        jQuery("#username").removeAttr("disabled");
-        jQuery("#password").removeAttr("disabled");
-    });
-}
 
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();
