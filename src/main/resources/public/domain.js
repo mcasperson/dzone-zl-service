@@ -23,12 +23,18 @@ restartButton.click(function() {
 
 
 adduser.click(function() {
-    jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + user.val(), function(userdata) {
-        if (userdata.success) {
-            userlist.append(jQuery('<option value="' + userdata.result.data[0].id + '">' +  userdata.result.data[0].name + "</option>"));
-            user.val("");
-        }
+    var usersSplit = user.val().split(',');
+
+    _.each(usersSplit, function(user) {
+        jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + user.trim(), function(userdata) {
+                if (userdata.success) {
+                    userlist.append(jQuery('<option value="' + userdata.result.data[0].id + '">' +  userdata.result.data[0].name + "</option>"));
+
+                }
+            });
     });
+
+    user.val("");
 });
 
 addtopic.click(function() {

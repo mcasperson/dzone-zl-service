@@ -111,7 +111,7 @@ var url = jQuery("#originalSource").val();
             importedPost.result.data.htmlContent &&
             importedPost.result.data.htmlContent.trim().length != 0) {
 
-            importSucceeded(url, importedPost.result.data.htmlContent);
+            importSucceeded(url, importedPost.result.data.htmlContent, importedPost.result.data.title);
 
         } else {
             importFailed(url);
@@ -178,7 +178,7 @@ jQuery("#submit").click(function(){
             }
         }).done(function(importedPost) {
             if (importedPost.success) {
-                submitSucceeded();
+                submitSucceeded(importedPost);
             } else {
                 submitFailed();
             }
@@ -290,7 +290,7 @@ function getImages(domainInfo) {
     }*/
 }
 
-function importSucceeded(url, content) {
+function importSucceeded(url, content, title) {
     queryDomain(url, function(domainInfo) {
         if (domainInfo.data.length == 0) {
             alert("There was no matching information in the database for this domain");
@@ -309,7 +309,7 @@ function importSucceeded(url, content) {
         jQuery("#poster").removeAttr("disabled");
 
         jQuery("#edit").froalaEditor('html.set', content);
-        jQuery("#title").val(importedPost.result.data.title);
+        jQuery("#title").val(title);
 
         jQuery("#edit").froalaEditor('edit.on');
     });
@@ -338,7 +338,7 @@ function submitFailed() {
     jQuery("#poster").removeAttr("disabled");
 }
 
-function submitSucceeded() {
+function submitSucceeded(submittedPost) {
     jQuery("#edit").froalaEditor('html.set', "<p/>");
     jQuery("#edit").froalaEditor('edit.off');
 
@@ -356,6 +356,9 @@ function submitSucceeded() {
     var imagesElement = jQuery("#images");
     imagesElement.html("");
     getAllImages();
+
+    window.open("https://dzone.com/articles/" + submittedPost.result.article.plug + "?preview=true");
+    window.open("https://dzone.com/content/" + submittedPost.result.article.id + "/edit.html");
 }
 
 
