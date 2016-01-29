@@ -1,6 +1,12 @@
 var topic = jQuery('#topic');
 var addtopic = jQuery('#addtopic');
 var topiclist = jQuery("#topiclist");
+var fileSelect = jQuery("#file");
+
+jQuery("#reset").click(function() {
+    topiclist.html("");
+    topic.val("");
+});
 
 jQuery("#submit").click(function() {
     var username = jQuery("#username").val();
@@ -18,7 +24,7 @@ jQuery("#submit").click(function() {
  */
 function uploadImage(myCookies) {
 
-    var file = jQuery("#file")[0].files[0];
+    var file = fileSelect[0].files[0];
 
     var fd = new FormData();
     fd.append('file', file);
