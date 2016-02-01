@@ -51,6 +51,11 @@
 
         <link rel="stylesheet" href="style.css">
 
+        <link rel="stylesheet" href="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css" >
+
+        <script src="typeahead.bundle.js"></script>
+        <script src="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
     </head>
 
@@ -115,7 +120,7 @@
                         <label class="col-md-1 control-label" for="authors">Authors</label>
                         <div class="col-md-11">
                             <div class="input-group">
-                                <input disabled="disabled" id="authors" name="authors" class="form-control" type="text">
+                                <input disabled="disabled" id="authors" name="authors" class="form-control" type="text" data-role="tagsinput">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled" id="suggestedAuthorsList">
                                         Suggested Authors
@@ -133,7 +138,7 @@
                     <div class="form-group">
                         <label class="col-md-1 control-label" for="topics">Topics</label>
                         <div class="col-md-11">
-                            <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md">
+                            <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md" data-role="tagsinput">
                         </div>
                     </div>
 

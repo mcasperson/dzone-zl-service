@@ -1,68 +1,14 @@
 var dataPrefix = "/data";
 
 var domain = jQuery('#domain');
-
-var user = jQuery('#user');
-var adduser = jQuery('#adduser');
-var userlist = jQuery("#userlist");
-
-var topic = jQuery('#topic');
-var addtopic = jQuery('#addtopic');
-var topiclist = jQuery("#topiclist");
-
-var image = jQuery('#image');
-var addimage = jQuery('#addimage');
-var imagelist = jQuery("#imagelist");
-
 var submit = jQuery('#submit');
 var restartButton = jQuery('#restart');
 
 initTags();
-
-function initTags() {
-    var tagNames = new Bloodhound({
-      datumTokenizer: function (datum) {
-          return Bloodhound.tokenizers.whitespace(datum.title);
-      },
-      queryTokenizer: Bloodhound.tokenizers.whitespace,
-      remote: {
-        url: 'https://dzone.com/services/internal/data/topics-search?term=%QUERY',
-        wildcard: '%QUERY',
-        filter: function(topics) {
-          return topics.result.data;
-        }
-      }
-    });
-    tagNames.initialize();
-
-    topic.tagsinput({
-      typeaheadjs: {
-        name: 'topic',
-        displayKey: 'title',
-        valueKey: 'title',
-        source: tagNames.ttAdapter()
-      }
-    });
-}
+initAuthors();
 
 restartButton.click(function() {
     restart();
-});
-
-
-adduser.click(function() {
-    var usersSplit = user.val().split(',');
-
-    _.each(usersSplit, function(user) {
-        jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + user.trim(), function(userdata) {
-                if (userdata.success) {
-                    userlist.append(jQuery('<option value="' + userdata.result.data[0].id + '">' +  userdata.result.data[0].name + "</option>"));
-
-                }
-            });
-    });
-
-    user.val("");
 });
 
 submit.click(function() {
@@ -114,10 +60,8 @@ submit.click(function() {
 
 function restart() {
     domain.val("");
-    user.val("");
-    userlist.html("");
+    authors.val("");
     topic.val("");
-    topiclist.html("");
 }
 
 function processDomain(newMvbDomainId) {
@@ -126,10 +70,12 @@ function processDomain(newMvbDomainId) {
 }
 
 function addAuthors(newMvbDomainId) {
-    $("#userlist > option").each(function() {
+    var authorsSplit = authors.tagsinput('items');
 
-        var name = this.text;
-        var username = this.value;
+    _.each(authorsSplit, function(author) {
+
+        var name = author.name;
+        var username = author.id;
 
         jQuery.get(
                 dataPrefix + "/author?filter[author.username]=" + username,
@@ -175,9 +121,9 @@ function addAuthors(newMvbDomainId) {
 }
 
 function addTopics(newMvbDomainId) {
-    var topics = topic.val().split(",");
+    var topicSplit = topics.val().split(",");
 
-    _.each(topics, function(name) {
+    _.each(topicSplit, function(name) {
 
         jQuery.get(
                 dataPrefix + "/tag?filter[tag.name]=" + name,

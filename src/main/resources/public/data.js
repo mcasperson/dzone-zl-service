@@ -6,6 +6,8 @@ var randomImageRange = 100000;
 /*
     Perform some tasks at startup
 */
+initTags();
+initAuthors();
 getAllImages();
 populateImportUrl();
 quickLoad();
@@ -210,7 +212,7 @@ function getAuthors(domainInfo) {
     _.each(domainInfo.included, function(included) {
         if (included.type == "author") {
             ++count;
-            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-userid='" + included.attributes.username + "'>" + included.attributes.name + "</a></li>"));
+            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-username='" + included.attributes.name + "' data-userid='" + included.attributes.username + "'>" + included.attributes.name + "</a></li>"));
         }
     });
 
@@ -218,7 +220,8 @@ function getAuthors(domainInfo) {
         Where there is only 1 author, add it automatically
     */
     if (count == 1) {
-        authors.val(jQuery(".authorEntry").data("userid"));
+        var authorEntry = jQuery(".authorEntry");
+        authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
     }
 }
 
@@ -227,10 +230,7 @@ function getTags(domainInfo) {
     topics.val("");
     _.each(domainInfo.included, function(included) {
         if (included.type == "tag") {
-            if (topics.val().trim().length != 0) {
-                topics.val(topics.val() + ", ");
-            }
-            topics.val(topics.val() + included.attributes.name);
+            topics.tagsinput('add', {title: included.attributes.name});
         }
     });
 }
@@ -319,14 +319,17 @@ function submitSucceeded(submittedPost) {
 
     jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
     jQuery("#title").attr("disabled", "disabled");
-    jQuery("#topics").attr("disabled", "disabled");
     jQuery("#submit, #submitTop").attr("disabled", "disabled");
     jQuery("#restart, #restartTop").attr("disabled", "disabled");
-    jQuery("#authors").attr("disabled", "disabled");
     jQuery("#poster").attr("disabled", "disabled");
-
     jQuery("#import").removeAttr("disabled");
     jQuery("#originalSource").removeAttr("disabled");
+
+    authors.attr("disabled", "disabled");
+    topics.attr("disabled", "disabled");
+
+    topics.tagsinput('removeAll');
+    authors.tagsinput('removeAll');
 
     var imagesElement = jQuery("#images");
     imagesElement.html("");
