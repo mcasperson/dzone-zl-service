@@ -1,11 +1,9 @@
-var topic = jQuery('#topic');
-var addtopic = jQuery('#addtopic');
-var topiclist = jQuery("#topiclist");
 var fileSelect = jQuery("#file");
 
+initTags();
+
 jQuery("#reset").click(function() {
-    topiclist.html("");
-    topic.val("");
+    topics.tagsinput("removeAll");
 });
 
 jQuery("#submit").click(function() {
@@ -61,9 +59,9 @@ addtopic.click(function() {
 });
 
 function addTopics(imageId) {
-    $("#topiclist > option").each(function() {
+    var topicSplit = topics.val().split(",");
 
-        var name = this.text;
+    _.each(topicSplit, function(name) {
 
         jQuery.get(
                 dataPrefix + "/tag?filter[tag.name]=" + name,

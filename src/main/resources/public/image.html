@@ -31,6 +31,11 @@
 
         <link rel="stylesheet" href="style.css">
 
+        <link rel="stylesheet" href="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css" >
+
+        <script src="typeahead.bundle.js"></script>
+        <script src="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
     </head>
 
@@ -65,23 +70,9 @@
 
                     <!-- Text input-->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="topic">Topic</label>
+                        <label class="col-md-1 control-label" for="topics">Topics</label>
                         <div class="col-md-11">
-                            <div class="input-group">
-                                <input id="topic" name="topic" type="text" class="form-control input-md">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" id="addtopic">Add</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-md-1 control-label" for="topic">Topics</label>
-                        <div class="col-md-11">
-                            <div class="input-group newdetailsselect">
-                                <select size="5" class="newdetailsselect" id="topiclist"></select>
-                            </div>
+                                <input id="topics" name="topics" type="text" class="form-control input-md">
                         </div>
                     </div>
 
