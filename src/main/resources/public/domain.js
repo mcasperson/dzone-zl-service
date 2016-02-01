@@ -17,6 +17,34 @@ var imagelist = jQuery("#imagelist");
 var submit = jQuery('#submit');
 var restartButton = jQuery('#restart');
 
+initTags();
+
+function initTags() {
+    var tagNames = new Bloodhound({
+      datumTokenizer: function (datum) {
+          return Bloodhound.tokenizers.whitespace(datum.title);
+      },
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      remote: {
+        url: 'https://dzone.com/services/internal/data/topics-search?term=%QUERY',
+        wildcard: '%QUERY',
+        filter: function(topics) {
+          return topics.result.data;
+        }
+      }
+    });
+    tagNames.initialize();
+
+    topic.tagsinput({
+      typeaheadjs: {
+        name: 'topic',
+        displayKey: 'title',
+        valueKey: 'title',
+        source: tagNames.ttAdapter()
+      }
+    });
+}
+
 restartButton.click(function() {
     restart();
 });
@@ -35,24 +63,6 @@ adduser.click(function() {
     });
 
     user.val("");
-});
-
-addtopic.click(function() {
-    jQuery.get('https://dzone.com/services/internal/data/topics-search?term=' + topic.val(), function(topicdata) {
-        if (topicdata.success) {
-            topiclist.append(jQuery('<option value="' + topicdata.result.data[0].id + '">' +  topicdata.result.data[0].title + "</option>"));
-            topic.val("");
-        }
-    });
-});
-
-addimage.click(function() {
-    jQuery.get('https://dzone.com/services/internal/data/topics-search?term=' + topic.val(), function(topicdata) {
-        if (topicdata.success) {
-            imagelist.append(jQuery('<option value="' + image.val() + '">' +  image.val() + "</option>"));
-            image.val("");
-        }
-    });
 });
 
 submit.click(function() {
@@ -165,9 +175,9 @@ function addAuthors(newMvbDomainId) {
 }
 
 function addTopics(newMvbDomainId) {
-    $("#topiclist > option").each(function() {
+    var topics = topic.val().split(",");
 
-        var name = this.text;
+    _.each(topics, function(name) {
 
         jQuery.get(
                 dataPrefix + "/tag?filter[tag.name]=" + name,

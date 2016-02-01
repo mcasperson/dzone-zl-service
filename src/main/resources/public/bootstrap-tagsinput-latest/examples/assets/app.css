@@ -1,19 +1,3 @@
-.imageList {
-    overflow-x: scroll;
-    white-space: nowrap;
-    padding-bottom: 10px;
-}
-
-.imageListItem {
-    display:inline !important;
-    list-style-type: none;
-    padding-right: 10px;
-}
-
-.newdetailsselect {
-    width: 100%
-}
-
 .icon-github {
     background: no-repeat url('../img/github-16px.png');
     width: 16px;
