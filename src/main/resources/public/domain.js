@@ -86,6 +86,9 @@ submit.click(function() {
                 jQuery.ajax({
                     url: 'http://localhost:8090' + dataPrefix + '/mvbDomain',
                     method: 'POST',
+                    xhrFields: {
+                        withCredentials: true
+                    },
                     data: JSON.stringify(mvdDomain),
                     contentType: "application/json",
                     dataType : 'json'
@@ -146,6 +149,9 @@ function addAuthors(newMvbDomainId) {
                         jQuery.ajax({
                                 url: dataPrefix + '/author',
                                 method: 'POST',
+                                xhrFields: {
+                                    withCredentials: true
+                                },
                                 data: JSON.stringify(author),
                                 contentType: "application/json",
                                 dataType : 'json'
@@ -180,6 +186,9 @@ function addTopics(newMvbDomainId) {
                         jQuery.ajax({
                                 url: dataPrefix + '/tag',
                                 method: 'POST',
+                                xhrFields: {
+                                    withCredentials: true
+                                },
                                 data: JSON.stringify(tag),
                                 contentType: "application/json",
                                 dataType : 'json'
@@ -223,6 +232,9 @@ function addTopicToDomain(newMvbDomainId, newTagId) {
     jQuery.ajax({
             url: dataPrefix + '/tagToMVBDomain',
             method: 'POST',
+            xhrFields: {
+                withCredentials: true
+            },
             data: JSON.stringify(tagToMVBDomain),
             contentType: "application/json",
             dataType : 'json'

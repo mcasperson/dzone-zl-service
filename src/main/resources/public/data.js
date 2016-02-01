@@ -96,6 +96,9 @@ var url = jQuery("#originalSource").val();
     jQuery.ajax({
         url: actionPrefix + "/import",
         method: "POST",
+        xhrFields: {
+            withCredentials: true
+        },
         data: {
             awselbCookie: cookies.AWSELB,
             thCsrfCookie: cookies.TH_CSRF,
@@ -159,6 +162,9 @@ jQuery("#submit, #submitTop").click(function(){
     jQuery.ajax({
             url: actionPrefix + "/submit",
             method: "POST",
+            xhrFields: {
+                withCredentials: true
+            },
             data: {
                 awselbCookie: cookies.AWSELB,
                 thCsrfCookie: cookies.TH_CSRF,
