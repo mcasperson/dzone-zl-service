@@ -193,7 +193,8 @@ jQuery("#submit, #submitTop").click(function(){
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
-    jQuery("#authors").val(jQuery(event.target).data("userid"));
+    var authorEntry = jQuery(event.target);
+    authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
 });
 
 function queryDomain(domain, success) {
