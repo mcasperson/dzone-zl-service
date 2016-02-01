@@ -14,6 +14,9 @@ function login(success) {
     jQuery.ajax({
         method: "POST",
         url: actionPrefix + "/login",
+        xhrFields: {
+            withCredentials: true
+        },
         data: {username: jQuery("#username").val(), password: jQuery("#password").val()}
     }).done(function(myCookies) {
         cookies = myCookies;
