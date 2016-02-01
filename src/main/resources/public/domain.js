@@ -56,6 +56,8 @@ addimage.click(function() {
 });
 
 submit.click(function() {
+    var domainUri = URI(domain.val());
+
     /*
         Does this domain already exist?
     */
@@ -76,7 +78,7 @@ submit.click(function() {
                       data: {
                         type: "mvbDomain",
                         attributes: {
-                          domain: domain.val(),
+                          domain: domainUri.hostname(),
                         }
                       }
                     };
