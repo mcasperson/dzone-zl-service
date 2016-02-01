@@ -84,7 +84,7 @@ submit.click(function() {
                     };
 
                 jQuery.ajax({
-                    url: 'http://localhost:8090' + dataPrefix + '/mvbDomain',
+                    url: dataPrefix + '/mvbDomain',
                     method: 'POST',
                     xhrFields: {
                         withCredentials: true
