@@ -14,6 +14,7 @@ function login(success) {
     jQuery.ajax({
         method: "POST",
         url: actionPrefix + "/login",
+        crossDomain : true,
         xhrFields: {
             withCredentials: true
         },
