@@ -66,7 +66,7 @@ function processText(contents) {
             }
         },
         function(err){
-            console.log("Finished processing hostname " + domainUri.hostname());
+            console.log("Finished importing");
         }
     );
 }
