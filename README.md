@@ -1,3 +1,7 @@
+```
+git commit -am "Uploading to Heroku"; git push heroku master; heroku logs --tail
+```
+
 Ideas
 ======
 * Create table for posters, add drop down list, and save last used in local storage.
