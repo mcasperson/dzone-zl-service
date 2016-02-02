@@ -272,7 +272,7 @@ function getImages(domainInfo) {
     });
 }
 
-function importSucceeded(url, content, title) {
+function importSucceeded(url, content, articleTitle) {
     queryDomain(url, function(domainInfo) {
         if (domainInfo.data.length == 0) {
             alert("There was no matching information in the database for this domain");
@@ -291,7 +291,7 @@ function importSucceeded(url, content, title) {
         poster.removeAttr("disabled");
 
         edit.froalaEditor('html.set', content);
-        title.val(title);
+        title.val(articleTitle);
 
         edit.froalaEditor('edit.on');
     });

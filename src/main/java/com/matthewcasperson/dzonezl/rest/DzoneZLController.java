@@ -53,6 +53,10 @@ public class DzoneZLController {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DzoneZLController.class);
 
+    private static final String FAILED_RESPONSE = "{\"success\":false}";
+    private static final String COOKIE_HEADER = "Cookie";
+    private static final String ACCEPT_HEADER = "Accept";
+
     private static final String SPRING_SECUITY_COOKIE = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
     private static final String AWSELB_COOKIE = "AWSELB";
     private static final String TH_CSRF_COOKIE = "TH_CSRF";
@@ -152,7 +156,7 @@ public class DzoneZLController {
             final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
 
             final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
-            httppost.setHeader("Cookie",
+            httppost.setHeader(COOKIE_HEADER,
                 AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
                 TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
                 JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
@@ -163,7 +167,7 @@ public class DzoneZLController {
             httppost.setEntity(requestEntity);
 
             httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie.get());
-            httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+            httppost.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
             final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
@@ -211,7 +215,7 @@ public class DzoneZLController {
             requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
             importPost.setEntity(requestEntity);
 
-            importPost.setHeader("Cookie",
+            importPost.setHeader(COOKIE_HEADER,
                     AWSELB_COOKIE + "=" + awselbCookie + "; " +
                             TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                             SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
@@ -304,7 +308,7 @@ public class DzoneZLController {
                             "\"visibility\":\"draft\"}";
 
             final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
-            httppost.setHeader("Cookie",
+            httppost.setHeader(COOKIE_HEADER,
                     AWSELB_COOKIE + "=" + awselbCookie + "; " +
                             TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                             SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
@@ -316,7 +320,7 @@ public class DzoneZLController {
             httppost.setEntity(requestEntity);
 
             httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-            httppost.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+            httppost.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
             final CloseableHttpResponse response = httpclient.execute(httppost);
@@ -353,7 +357,7 @@ public class DzoneZLController {
                                 We didn't find the expected article id
                              */
                             LOGGER.error("Exception associating user to article", ex);
-                            return "{\"success\":false}";
+                            return FAILED_RESPONSE;
                         }
                     }
 
@@ -372,7 +376,7 @@ public class DzoneZLController {
             LOGGER.error("Failed to upload image");
         }
 
-        return "{\"success\":false}";
+        return FAILED_RESPONSE;
     }
 
     @CrossOrigin(origins = "*")
@@ -419,7 +423,7 @@ public class DzoneZLController {
                                                         final String springSecurityCookie,
                                                         final String jSessionIdCookie) throws IOException {
         final HttpGet getImageId = new HttpGet("https://dzone.com/services/internal/data/uploads-authorize?image=true&type=node");
-        getImageId.setHeader("Cookie",
+        getImageId.setHeader(COOKIE_HEADER,
                 AWSELB_COOKIE + "=" + awselbCookie + "; " +
                 TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                 JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
@@ -428,7 +432,7 @@ public class DzoneZLController {
 
 
         getImageId.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-        getImageId.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+        getImageId.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse loginResponse = httpclient.execute(getImageId);
@@ -465,7 +469,7 @@ public class DzoneZLController {
 
         uploadPost.setEntity(fileEntity);
 
-        uploadPost.setHeader("Cookie",
+        uploadPost.setHeader(COOKIE_HEADER,
                 AWSELB_COOKIE + "=" + awselbCookie + "; " +
                 TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                 SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
@@ -545,7 +549,7 @@ public class DzoneZLController {
                 "{\"user\": " + user + ", \"type\": \"op\"}";
 
         final HttpPost posterAssignment = new HttpPost("https://dzone.com/services/internal/node/" + articleId + "/authors-addAuthor");
-        posterAssignment.setHeader("Cookie",
+        posterAssignment.setHeader(COOKIE_HEADER,
                 AWSELB_COOKIE + "=" + awselbCookie + "; " +
                 TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
                 SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
@@ -557,7 +561,7 @@ public class DzoneZLController {
         posterAssignment.setEntity(posterEntity);
 
         posterAssignment.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-        posterAssignment.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
+        posterAssignment.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment);
