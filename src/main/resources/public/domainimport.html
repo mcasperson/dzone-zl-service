@@ -37,6 +37,7 @@
     <script src="bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/async/1.5.2/async.min.js"></script>
 
     <script src="URI.js"></script>
 </head>
@@ -48,6 +49,11 @@
 
             <!-- Form Name -->
             <legend>DZone Zone Leader Syndication Tool</legend>
+
+            <div class="col-md-12">
+                <p>This tool will do a rough import of domains and user from an OPML file exported from Feedly.</p>
+                <p>The process only works for usernames that are a single word (optionally with symbols like @ or .).</p>
+            </div>
 
             <div class="form-group">
                 <label class="col-md-1 control-label" for="file">OPML File</label>
