@@ -32,7 +32,7 @@ function processText(contents) {
                     var titleSplit = title.split(/[^A-Za-z0-9@.]/);
                     var authorCount = 0;
 
-                    processTitle(titleSplit, function(authorCount) {
+                    processTitle(domainUri, titleSplit, function(authorCount) {
                        if (authorCount != 0) {
                            async.setImmediate(function () {
                                lineCallback();
@@ -68,7 +68,7 @@ function processText(contents) {
     );
 }
 
-function processTitle(titleSplit, lineCallback) {
+function processTitle(domainUri, titleSplit, lineCallback) {
     var authorCount = 0;
 
     async.eachSeries(
