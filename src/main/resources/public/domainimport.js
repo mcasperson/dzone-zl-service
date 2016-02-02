@@ -32,7 +32,7 @@ function processText(contents) {
                     var titleSplit = title.split(/[^A-Za-z0-9@.]/);
                     var authorCount = 0;
 
-                    processTitle(titleSplit, function() {
+                    processTitle(titleSplit, function(authorCount) {
                        if (authorCount != 0) {
                            async.setImmediate(function () {
                                lineCallback();
@@ -69,6 +69,8 @@ function processText(contents) {
 }
 
 function processTitle(titleSplit, lineCallback) {
+    var authorCount = 0;
+
     async.eachSeries(
         titleSplit,
         function(titleElement, authorCallback) {
@@ -97,7 +99,7 @@ function processTitle(titleSplit, lineCallback) {
         },
         function(err){
            console.log("Finished processing " + authorCount + " authors for " + domainUri.hostname());
-           lineCallback();
+           lineCallback(authorCount);
         }
     );
 }
