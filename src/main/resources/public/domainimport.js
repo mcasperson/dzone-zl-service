@@ -78,13 +78,13 @@ function processTitle(titleSplit, lineCallback) {
                         ++authorCount;
                         var authorId = authors.result.data[0].id;
                         addAuthors(authors.result.data, domainId, function() {
-                            sync.setImmediate(function () {
+                            async.setImmediate(function () {
                                 authorCallback();
                             });
                         });
 
                     } else {
-                        sync.setImmediate(function () {
+                       async.setImmediate(function () {
                             authorCallback();
                         });
                     }
