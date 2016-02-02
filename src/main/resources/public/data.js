@@ -136,15 +136,15 @@ restartButtons.click(function(){
 submitButtons.click(function(){
 
     var content = edit.froalaEditor('html.get');
-    var title = title.val();
-    var topics = topics.val();
+    var titleContent = title.val();
+    var topicsContent = topics.val();
     var author = authors.val();
     var imageId = jQuery('.image:checked').val();
-    var poster = poster.val();
+    var posterContent = poster.val();
 
     if (!content || content.trim().length == 0 ||
-        !title || title.trim().length == 0 ||
-        !topics || topics.trim().length == 0 ||
+        !titleContent || titleContent.trim().length == 0 ||
+        !topicsContent || topicsContent.trim().length == 0 ||
         !author || author.trim().length == 0 ||
         !poster || poster.trim().length == 0 ||
         !imageId  || imageId.trim().length == 0) {
@@ -174,11 +174,11 @@ submitButtons.click(function(){
                 jSessionIdCookie: cookies.JSESSIONID,
                 url: originalSource.val(),
                 content: content,
-                title: title,
-                topics: topics,
+                title: titleContent,
+                topics: topicsContent,
                 authors: author,
                 image: imageId,
-                poster: poster
+                poster: posterContent
 
             }
         }).done(function(importedPost) {
