@@ -156,7 +156,7 @@ function processDomain(domainUri, processDomain) {
 /*
     TODO: use async.js and fix the callback to this function
 */
-function addAuthors(authorsSplit, newMvbDomainId, callback) {
+function addAuthorsToDomain(authorsSplit, newMvbDomainId, callback) {
     _.each(authorsSplit, function(author) {
 
         var name = author.name;
@@ -217,7 +217,7 @@ function addAuthors(authorsSplit, newMvbDomainId, callback) {
 /*
     TODO: use async.js and add a callback to this function
 */
-function addTopics(topicSplit, newMvbDomainId) {
+function addTopicsToDomain(topicSplit, newMvbDomainId) {
     _.each(topicSplit, function(name) {
 
         jQuery.get(

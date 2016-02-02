@@ -82,7 +82,7 @@ function processTitle(domainUri, domainId, titleSplit, lineCallback) {
                     if (authors.result.data.length === 1) {
                         ++authorCount;
                         var authorId = authors.result.data[0].id;
-                        addAuthors(authors.result.data, domainId, function() {
+                        addAuthorsToDomain(authors.result.data, domainId, function() {
                             async.setImmediate(function () {
                                 authorCallback();
                             });

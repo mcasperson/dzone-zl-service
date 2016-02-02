@@ -159,7 +159,7 @@ jQuery("#submit, #submitTop").click(function(){
     jQuery("#authors").attr("disabled", "disabled");
     jQuery("#poster").attr("disabled", "disabled");
 
-    /*jQuery.ajax({
+    jQuery.ajax({
             url: actionPrefix + "/submit",
             method: "POST",
             xhrFields: {
@@ -187,9 +187,7 @@ jQuery("#submit, #submitTop").click(function(){
             }
         }).error(function(){
             submitFailed();
-        });*/
-
-        submitSucceeded();
+        });
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
@@ -202,12 +200,18 @@ jQuery("body").on("click", ".authorEntry", function(event) {
 */
 function saveNewAuthorsAndTags() {
         var domainUri = URI(jQuery('#originalSource').val());
-        var selectedAuthors = authors.tagsinput('items');
+        /*
+            We need a copy of this object, because the authors field will be cleared,
+            which in turn clears the tags that are referenced by authors.tagsinput('items').
+
+            This is hacky, but does the job
+        */
+        var selectedAuthors = JSON.parse(JSON.stringify(authors.tagsinput('items')));
         var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            addAuthors(selectedAuthors, domainId);
-            addTopics(selectedTopics, domainId);
+            addAuthorsToDomain(selectedAuthors, domainId);
+            addTopicsToDomain(selectedTopics, domainId);
         });
 }
 
