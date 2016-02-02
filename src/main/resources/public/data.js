@@ -200,10 +200,12 @@ jQuery("body").on("click", ".authorEntry", function(event) {
 */
 function saveNewAuthorsAndTags() {
         var domainUri = URI(jQuery('#originalSource').val());
+        var selectedAuthors = authors.tagsinput('items');
+        var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            addAuthors(authors.tagsinput('items'), newMvbDomainId);
-            addTopics(topics.val().split(","), newMvbDomainId);
+            addAuthors(selectedAuthors, newMvbDomainId);
+            addTopics(selectedTopics, newMvbDomainId);
         });
 }
 
