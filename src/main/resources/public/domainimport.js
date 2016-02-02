@@ -32,7 +32,7 @@ function processText(contents) {
                     var titleSplit = title.split(/[^A-Za-z0-9@.]/);
                     var authorCount = 0;
 
-                    processTitle(domainUri, titleSplit, function(authorCount) {
+                    processTitle(domainUri, domainId, titleSplit, function(authorCount) {
                        if (authorCount != 0) {
                            async.setImmediate(function () {
                                lineCallback();
@@ -48,7 +48,7 @@ function processText(contents) {
                                 combinedTitleSplit.push(titleSplit[titleSplitIndex] + ' ' + titleSplit[titleSplitIndex + 1]);
                             }
 
-                            processTitle(domainUri, combinedTitleSplit, function() {
+                            processTitle(domainUri, domainId, combinedTitleSplit, function() {
                                 async.setImmediate(function () {
                                     lineCallback();
                                 });
@@ -68,7 +68,7 @@ function processText(contents) {
     );
 }
 
-function processTitle(domainUri, titleSplit, lineCallback) {
+function processTitle(domainUri, domainId, titleSplit, lineCallback) {
     var authorCount = 0;
 
     async.eachSeries(
