@@ -136,7 +136,7 @@ function processDomain(domainUri, processDomain) {
     );
 }
 
-function addAuthors(authorsSplit, newMvbDomainId) {
+function addAuthors(authorsSplit, newMvbDomainId, callback) {
     _.each(authorsSplit, function(author) {
 
         var name = author.name;
@@ -179,9 +179,11 @@ function addAuthors(authorsSplit, newMvbDomainId) {
                         }).done(function(newAuthor) {
                             console.log("Create a new author for " + username);
                             console.log(JSON.stringify(newAuthor));
+                            callback();
                         });
                 } else {
                     console.log("Author " + username + " already exists, so will not create a new one");
+                    callback();
                 }
             }
         )

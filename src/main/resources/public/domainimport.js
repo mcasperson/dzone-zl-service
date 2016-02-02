@@ -38,12 +38,19 @@ function processText(contents) {
                             if (titleElement.trim().length !== 0) {
                                 jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + titleElement, function(authors) {
                                     if (authors.result.data.length === 1) {
-                                        var authorId = authors.result.data[0].id;
-                                        addAuthors(authors.result.data, domainId);
                                         ++authorCount;
-                                    }
+                                        var authorId = authors.result.data[0].id;
+                                        addAuthors(authors.result.data, domainId, function() {
+                                            sync.setImmediate(function () {
+                                                authorCallback();
+                                            });
+                                        });
 
-                                    authorCallback();
+                                    } else {
+                                        sync.setImmediate(function () {
+                                            authorCallback();
+                                        });
+                                    }
                                 });
                             } else {
                                 async.setImmediate(function () {
