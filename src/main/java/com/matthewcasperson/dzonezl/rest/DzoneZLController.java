@@ -65,6 +65,12 @@ public class DzoneZLController {
     private static final Pattern ID_QUOTE_RE = Pattern.compile("\"id\":\"(?<id>\\d+)\"");
     private static final Pattern DATA_RE = Pattern.compile("\"data\":\"(?<data>.*?)\"");
 
+    /**
+     * How many times we'll retry the import process
+     */
+    private static final int IMPORT_RETRY_COUNT = 3;
+    private static final int SLEEP_BEFORE_RETRY = 1000;
+
     @Autowired
     private EntityManagerFactory emf;
 
@@ -195,34 +201,53 @@ public class DzoneZLController {
         /*
             Do the initial login to get any security cookies
          */
-        final HttpPost importPost = new HttpPost("https://dzone.com/services/internal/action/links-getData");
+        String responseBody = null;
+        for (int count = 0; count < IMPORT_RETRY_COUNT; ++count) {
+            final HttpPost importPost = new HttpPost("https://dzone.com/services/internal/action/links-getData");
 
-        final String importJson = "{\"url\":\"" + url + "\",\"parse\":true}";
+            final String importJson = "{\"url\":\"" + url + "\",\"parse\":true}";
 
-        final StringEntity requestEntity = new StringEntity(importJson);
-        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        importPost.setEntity(requestEntity);
+            final StringEntity requestEntity = new StringEntity(importJson);
+            requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            importPost.setEntity(requestEntity);
 
-        importPost.setHeader("Cookie",
-                AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                SESSION_STARTED_COOKIE + "=true");
+            importPost.setHeader("Cookie",
+                    AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                            TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                            SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                            JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                            SESSION_STARTED_COOKIE + "=true");
 
-        importPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+            importPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
 
-        final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse response = httpclient.execute(importPost);
-        try {
-            final String responseBody = responseToString(response.getEntity());
+            final CloseableHttpClient httpclient = HttpClients.createDefault();
+            final CloseableHttpResponse response = httpclient.execute(importPost);
+            try {
+                responseBody = responseToString(response.getEntity());
 
-            LOGGER.info(responseBody);
+                LOGGER.info(responseBody);
 
-            return responseBody;
-        } finally {
-            response.close();
+                /*
+                    Return if there was a success, or if we are done retrying
+                 */
+                if (responseBody.indexOf(SUCCESS) != -1 || count >= IMPORT_RETRY_COUNT - 1) {
+                    break;
+                }
+
+                /*
+                    Wait before retrying
+                 */
+                try {
+                    Thread.sleep(SLEEP_BEFORE_RETRY);
+                } catch (final InterruptedException ex) {
+                    LOGGER.error("Sleep Interrupted", ex);
+                }
+            } finally {
+                response.close();
+            }
         }
+
+        return responseBody;
     }
 
     @CrossOrigin(origins = "*")
