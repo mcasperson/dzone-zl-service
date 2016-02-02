@@ -48,7 +48,7 @@ function processText(contents) {
                                 combinedTitleSplit.push(titleSplit[titleSplitIndex] + ' ' + titleSplit[titleSplitIndex + 1]);
                             }
 
-                            processTitle(combinedTitleSplit, function() {
+                            processTitle(domainUri, combinedTitleSplit, function() {
                                 async.setImmediate(function () {
                                     lineCallback();
                                 });
