@@ -1,8 +1,15 @@
+var imageWidth = 250;
+var randomImages = 250;
+var randomImageStartIndex = 900000;
+var randomImageRange = 100000;
 var dataPrefix = "/data";
 var actionPrefix = "/action";
 
 var authors = jQuery('#authors');
 var topics = jQuery('#topics');
+var imageTopics = jQuery('#imagetopics');
+var imageClose = jQuery('#close');
+var submitImage = jQuery("#submitImage");
 
 var cookies = null;
 
@@ -23,6 +30,16 @@ function initTags() {
     tagNames.initialize();
 
     topics.tagsinput({
+      itemValue: 'title',
+      itemText: 'title',
+      typeaheadjs: {
+        name: 'topic',
+        displayKey: 'title',
+        source: tagNames.ttAdapter()
+      }
+    });
+
+    imageTopics.tagsinput({
       itemValue: 'title',
       itemText: 'title',
       typeaheadjs: {

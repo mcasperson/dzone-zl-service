@@ -65,7 +65,7 @@
                 <fieldset>
 
                     <!-- Form Name -->
-                    <legend>DZone Zone Leader Syndication Tool | <a href="domain.html">DOMAIN</a> | <a href="image.html">IMAGE</a></legend>
+                    <legend>DZone Zone Leader Syndication Tool | <a href="domainimport.html">IMPORT</a></legend>
 
                     <div class="form-group">
                         <label class="col-md-1 control-label" for="bookmarklet">Bookmarklet</label>
@@ -111,7 +111,7 @@
                     <div class="form-group">
                         <label class="col-md-1 control-label" for="topics">Poster</label>
                         <div class="col-md-11">
-                            <input disabled="disabled" id="poster" name="topics" type="search" class="form-control input-md" value="343648">
+                            <input disabled="disabled" id="poster" name="poster" type="search" class="form-control input-md" value="343648">
                         </div>
                     </div>
 
@@ -138,7 +138,12 @@
                     <div class="form-group">
                         <label class="col-md-1 control-label" for="topics">Topics</label>
                         <div class="col-md-11">
-                            <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md" data-role="tagsinput">
+                            <div class="input-group">
+                                <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md topics" data-role="tagsinput">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" onclick="displayImageModal">Upload Image</button>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -176,9 +181,47 @@
 
         </div><!-- /container -->
 
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Upload Image</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="col-md-1 control-label" for="file">Image File</label>
+                                    <div class="col-md-11">
+                                        <input id="file" type="file" name="file">
+                                    </div>
+                                </div>
+
+                                <!-- Text input-->
+                                <div class="form-group">
+                                    <label class="col-md-1 control-label" for="imagetopics">Topics</label>
+                                    <div class="col-md-11">
+                                        <input id="imagetopics" name="imagetopics" type="text" class="form-control input-md topics">
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-lg" id="submitImage">Upload Image</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="close" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="URI.js"></script>
         <script src="common.js"></script>
         <script src="data.js"></script>
+        <script src="image.js"></script>
 
 
         <!-- Include JS files. -->

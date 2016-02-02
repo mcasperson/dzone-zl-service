@@ -1,21 +1,24 @@
 var fileSelect = jQuery("#file");
+var imagesElement = jQuery("#images");
 
-initTags();
-
-jQuery("#reset").click(function() {
-    topics.tagsinput("removeAll");
-});
-
-jQuery("#submit").click(function() {
+jQuery("#submitImage").click(function() {
     var username = jQuery("#username").val();
     var password = jQuery("#password").val();
 
     if (username && password) {
+        submitImage.attr("disabled", "disabled");
+        imageClose.attr("disabled", "disabled");
+
         login(function(myCookies){
             uploadImage(myCookies);
         });
     }
 });
+
+function displayImageModal() {
+    submitImage.removeAttr("disabled");
+    imageClose.removeAttr("disabled");
+}
 
 /**
  * http://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
@@ -40,8 +43,30 @@ function uploadImage(myCookies) {
         type: 'POST',
         success: function(data){
             console.log(data);
-            window.open('https://dz2cdn1.dzone.com/thumbnail?fid=' + data + "&w=800");
+            //window.open('https://dz2cdn1.dzone.com/thumbnail?fid=' + data + "&w=800");
 
+            /*
+                Add the new image to the start of the list
+            */
+            var listItem = jQuery("<li class='imageListItem'> \
+                                <label> \
+                                <input type='radio' class='image' name='radgroup' value='" + data + "' id='imageId" + data + "'> \
+                                <img src='https://dz2cdn1.dzone.com/thumbnail?fid=" + data + "&w=" + imageWidth + "'/> \
+                                </label> \
+                                </li>");
+            imagesElement.prepend(listItem);
+
+            submitImage.removeAttr("disabled");
+            imageClose.removeAttr("disabled");
+
+            /*
+                Close the modal
+            */
+            imageClose.click();
+
+            /*
+                Associate the image with the tags in the background
+            */
             addImage(data, function(newImage) {
                 addTopics(newImage.data.id);
             });
@@ -59,7 +84,7 @@ addtopic.click(function() {
 });
 
 function addTopics(imageId) {
-    var topicSplit = topics.val().split(",");
+    var topicSplit = imageTopics.val().split(",");
 
     _.each(topicSplit, function(name) {
 

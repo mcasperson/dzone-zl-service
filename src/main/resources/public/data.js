@@ -1,7 +1,4 @@
-var imageWidth = 250;
-var randomImages = 250;
-var randomImageStartIndex = 900000;
-var randomImageRange = 100000;
+
 
 /*
     Perform some tasks at startup
@@ -62,7 +59,6 @@ function getAllImages() {
                                 </label> \
                                 </li>");
             imagesElement.append(listItem);
-            imagesElement.show();
         }
     }
 
@@ -199,6 +195,18 @@ jQuery("body").on("click", ".authorEntry", function(event) {
     authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
 });
 
+/*
+    Any new authors or topics that were defined for this post will be saved in the database
+*/
+function saveNewAuthorsAndTags() {
+        var domainUri = URI(jQuery('#originalSource').val());
+
+        processDomain(domainUri, function(domainId) {
+            addAuthors(authors.tagsinput('items'), newMvbDomainId);
+            addTopics(topics.val().split(","), newMvbDomainId);
+        });
+}
+
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();
     jQuery.get(
@@ -256,16 +264,6 @@ function getImages(domainInfo) {
             imagesElement.prepend(image.parent());
         }
     });
-
-    /*if (count != 0) {
-        var images = jQuery(".imageListItem > input");
-        _.each(images, function(image) {
-            var imageElement = jQuery(image);
-            if (imageElement.prop("checked") == false) {
-                imageElement.parent().remove();
-            }
-        });
-    }*/
 }
 
 function importSucceeded(url, content, title) {
@@ -317,6 +315,8 @@ function submitFailed() {
 }
 
 function submitSucceeded(submittedPost) {
+    saveNewAuthorsAndTags();
+
     jQuery("#edit").froalaEditor('html.set', "<p/>");
     jQuery("#edit").froalaEditor('edit.off');
 

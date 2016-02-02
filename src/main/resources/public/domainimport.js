@@ -29,7 +29,10 @@ function processText(contents) {
                 var domainUri = URI(url);
 
                 processDomain(domainUri, function(domainId) {
-                    var titleSplit = title.split(/[^A-Za-z0-9@.]/);
+                    /*
+                        Split up the title, and remove empty strings
+                    */
+                    var titleSplit = title.split(/[^A-Za-z0-9@.]/).filter(function(n){ return n.trim().length !== 0 }); ;
                     var authorCount = 0;
 
                     processTitle(domainUri, domainId, titleSplit, function(authorCount) {
