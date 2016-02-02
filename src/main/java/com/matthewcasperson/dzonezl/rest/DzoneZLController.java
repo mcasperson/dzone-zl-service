@@ -230,7 +230,11 @@ public class DzoneZLController {
                 /*
                     Return if there was a success, or if we are done retrying
                  */
-                if (responseBody.indexOf(SUCCESS) != -1 || count >= IMPORT_RETRY_COUNT - 1) {
+                if (responseBody.indexOf(SUCCESS) != -1) {
+                    LOGGER.info("DZone article import was a success!");
+                    break;
+                } else if (count >= IMPORT_RETRY_COUNT - 1) {
+                    LOGGER.info("DZone article import was a failure!");
                     break;
                 }
 
