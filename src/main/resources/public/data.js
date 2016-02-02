@@ -146,7 +146,7 @@ submitButtons.click(function(){
         !titleContent || titleContent.trim().length == 0 ||
         !topicsContent || topicsContent.trim().length == 0 ||
         !author || author.trim().length == 0 ||
-        !poster || poster.trim().length == 0 ||
+        !posterContent || posterContent.trim().length == 0 ||
         !imageId  || imageId.trim().length == 0) {
         window.alert("Invalid content, title, author, image or topics");
         return;
