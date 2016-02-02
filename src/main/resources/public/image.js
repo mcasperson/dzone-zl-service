@@ -68,13 +68,13 @@ function uploadImage(myCookies) {
                 Associate the image with the tags in the background
             */
             addImage(data, function(newImage) {
-                addTopics(newImage.data.id);
+                addTopicsToImage(newImage.data.id);
             });
         }
     });
 }
 
-function addTopics(imageId) {
+function addTopicsToImage(imageId) {
     var topicSplit = imageTopics.val().split(",");
 
     _.each(topicSplit, function(name) {
