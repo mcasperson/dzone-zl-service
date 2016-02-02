@@ -21,7 +21,7 @@ function processText(contents) {
     async.eachSeries(
         lines,
         function(line, lineCallback) {
-            var match = /^\s*<outline type="rss" text="(.*?)".*?xmlUrl="(.*?)".*?$/.exec(line)
+            var match = /^\s*<outline type="rss" text="(.*?)".*?htmlUrl="(.*?)".*?$/.exec(line)
             if (match) {
                 var title = match[1];
                 var url = match[2];
@@ -32,37 +32,29 @@ function processText(contents) {
                     var titleSplit = title.split(/[^A-Za-z0-9@.]/);
                     var authorCount = 0;
 
-                    async.eachSeries(
-                        titleSplit,
-                        function(titleElement, authorCallback) {
-                            if (titleElement.trim().length !== 0) {
-                                jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + titleElement, function(authors) {
-                                    if (authors.result.data.length === 1) {
-                                        ++authorCount;
-                                        var authorId = authors.result.data[0].id;
-                                        addAuthors(authors.result.data, domainId, function() {
-                                            sync.setImmediate(function () {
-                                                authorCallback();
-                                            });
-                                        });
-
-                                    } else {
-                                        sync.setImmediate(function () {
-                                            authorCallback();
-                                        });
-                                    }
-                                });
-                            } else {
-                                async.setImmediate(function () {
-                                    authorCallback();
-                                });
+                    processTitle(titleSplit, function() {
+                       if (authorCount != 0) {
+                           async.setImmediate(function () {
+                               lineCallback();
+                           });
+                       } else {
+                            /*
+                                try combining two individual words to create user names
+                                if matching individual elements of the title didn't match
+                                any users.
+                            */
+                            var combinedTitleSplit = [];
+                            for (var titleSplitIndex = 0; titleSplitIndex < titleSplit.length - 1; ++titleSplitIndex) {
+                                combinedTitleSplit.push(titleSplit[titleSplitIndex] + ' ' + titleSplit[titleSplitIndex + 1]);
                             }
-                        },
-                        function(err){
-                           console.log("Finished processing " + authorCount + " authors for " + domainUri.hostname());
-                           lineCallback();
-                        }
-                    );
+
+                            processTitle(combinedTitleSplit, function() {
+                                async.setImmediate(function () {
+                                    lineCallback();
+                                });
+                            });
+                       }
+                    });
                 });
             } else {
                 async.setImmediate(function () {
@@ -72,6 +64,40 @@ function processText(contents) {
         },
         function(err){
             console.log("Finished processing hostname " + domainUri.hostname());
+        }
+    );
+}
+
+function processTitle(titleSplit, lineCallback) {
+    async.eachSeries(
+        titleSplit,
+        function(titleElement, authorCallback) {
+            if (titleElement.trim().length !== 0) {
+                jQuery.get('https://dzone.com/services/widget/article-postV2/searchAuthors?q=' + titleElement, function(authors) {
+                    if (authors.result.data.length === 1) {
+                        ++authorCount;
+                        var authorId = authors.result.data[0].id;
+                        addAuthors(authors.result.data, domainId, function() {
+                            sync.setImmediate(function () {
+                                authorCallback();
+                            });
+                        });
+
+                    } else {
+                        sync.setImmediate(function () {
+                            authorCallback();
+                        });
+                    }
+                });
+            } else {
+                async.setImmediate(function () {
+                    authorCallback();
+                });
+            }
+        },
+        function(err){
+           console.log("Finished processing " + authorCount + " authors for " + domainUri.hostname());
+           lineCallback();
         }
     );
 }
