@@ -74,15 +74,6 @@ function uploadImage(myCookies) {
     });
 }
 
-addtopic.click(function() {
-    jQuery.get('https://dzone.com/services/internal/data/topics-search?term=' + topic.val(), function(topicdata) {
-        if (topicdata.success) {
-            topiclist.append(jQuery('<option value="' + topicdata.result.data[0].id + '">' +  topicdata.result.data[0].title + "</option>"));
-            topic.val("");
-        }
-    });
-});
-
 function addTopics(imageId) {
     var topicSplit = imageTopics.val().split(",");
 
