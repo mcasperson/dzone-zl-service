@@ -20,15 +20,18 @@ function getParameterByName(name) {
     We can skip the login if we have the cookies ready to go
 */
 function quickLoad() {
-    var username = jQuery("#username").val();
-    var password = jQuery("#password").val();
+    /*
+        Restore credentials from local storage
+    */
+    username.val(localStorage.getItem('username'));
+    password.val(localStorage.getItem('password'));
 
-    if (username && password) {
+    if (username.val() && password.val()) {
         login(function(){
             /*
                 If we have a import url, start the process
             */
-            if (jQuery('#originalSource').val()) {
+            if (originalSource.val()) {
                 doImport();
             }
         });
@@ -38,12 +41,11 @@ function quickLoad() {
 function populateImportUrl() {
     var importUrl = getParameterByName('importUrl');
     if (importUrl) {
-        jQuery('#originalSource').val(importUrl);
+        originalSource.val(importUrl);
     }
 }
 
 function getAllImages() {
-    var imagesElement = jQuery("#images");
     imagesElement.html("");
 
     /*
@@ -83,15 +85,15 @@ function getAllImages() {
 }
 
 function doImport() {
-var url = jQuery("#originalSource").val();
+var url = originalSource.val();
 
     if (url.trim().length == 0) {
         alert("The url is invalid");
         return;
     }
 
-    jQuery("#import").attr("disabled", "disabled");
-    jQuery("#originalSource").attr("disabled", "disabled");
+    importButton.attr("disabled", "disabled");
+    originalSource.attr("disabled", "disabled");
 
     jQuery.ajax({
         url: actionPrefix + "/import",
@@ -121,24 +123,24 @@ var url = jQuery("#originalSource").val();
     });
 }
 
-jQuery("#login").click(function() {
+loginButton.click(function() {
     login();
 });
 
-jQuery("#import").click(doImport);
+importButton.click(doImport);
 
-jQuery("#restart, #restartTop").click(function(){
+restartButtons.click(function(){
     submitSucceeded();
 });
 
-jQuery("#submit, #submitTop").click(function(){
+submitButtons.click(function(){
 
-    var content = jQuery("#edit").froalaEditor('html.get');
-    var title = jQuery("#title").val();
-    var topics = jQuery("#topics").val();
-    var author = jQuery("#authors").val();
+    var content = edit.froalaEditor('html.get');
+    var title = title.val();
+    var topics = topics.val();
+    var author = authors.val();
     var imageId = jQuery('.image:checked').val();
-    var poster = jQuery('#poster').val();
+    var poster = poster.val();
 
     if (!content || content.trim().length == 0 ||
         !title || title.trim().length == 0 ||
@@ -150,14 +152,14 @@ jQuery("#submit, #submitTop").click(function(){
         return;
     }
 
-    jQuery("#edit").froalaEditor('edit.off');
-    jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
-    jQuery("#title").attr("disabled", "disabled");
-    jQuery("#topics").attr("disabled", "disabled");
-    jQuery("#submit, #submitTop").attr("disabled", "disabled");
-    jQuery("#restart, #restartTop").attr("disabled", "disabled");
-    jQuery("#authors").attr("disabled", "disabled");
-    jQuery("#poster").attr("disabled", "disabled");
+    edit.froalaEditor('edit.off');
+    suggestedAuthorsList.attr("disabled", "disabled");
+    title.attr("disabled", "disabled");
+    topics.attr("disabled", "disabled");
+    submitButtons.attr("disabled", "disabled");
+    restartButtons.attr("disabled", "disabled");
+    authors.attr("disabled", "disabled");
+    poster.attr("disabled", "disabled");
 
     jQuery.ajax({
             url: actionPrefix + "/submit",
@@ -170,7 +172,7 @@ jQuery("#submit, #submitTop").click(function(){
                 thCsrfCookie: cookies.TH_CSRF,
                 springSecurityCookie: cookies.SPRING_SECURITY_REMEMBER_ME_COOKIE,
                 jSessionIdCookie: cookies.JSESSIONID,
-                url: jQuery("#originalSource").val(),
+                url: originalSource.val(),
                 content: content,
                 title: title,
                 topics: topics,
@@ -199,7 +201,7 @@ jQuery("body").on("click", ".authorEntry", function(event) {
     Any new authors or topics that were defined for this post will be saved in the database
 */
 function saveNewAuthorsAndTags() {
-        var domainUri = URI(jQuery('#originalSource').val());
+        var domainUri = URI(originalSource.val());
         /*
             We need a copy of this object, because the authors field will be cleared,
             which in turn clears the tags that are referenced by authors.tagsinput('items').
@@ -224,8 +226,6 @@ function queryDomain(domain, success) {
 }
 
 function getAuthors(domainInfo) {
-    var authors = jQuery("#authors");
-    var authorsList = jQuery("#suggestedAuthors");
     authorsList.html("");
     var count = 0;
     _.each(domainInfo.included, function(included) {
@@ -245,7 +245,6 @@ function getAuthors(domainInfo) {
 }
 
 function getTags(domainInfo) {
-    var topics = jQuery("#topics");
     topics.val("");
     _.each(domainInfo.included, function(included) {
         if (included.type == "tag") {
@@ -255,7 +254,6 @@ function getTags(domainInfo) {
 }
 
 function getImages(domainInfo) {
-    var imagesElement = jQuery("#images");
     var count = 0;
     _.each(domainInfo.included, function(included) {
         if (included.type == "image") {
@@ -284,26 +282,26 @@ function importSucceeded(url, content, title) {
         getTags(domainInfo);
         getImages(domainInfo);
 
-        jQuery("#suggestedAuthorsList").removeAttr("disabled");
-        jQuery("#title").removeAttr("disabled");
-        jQuery("#topics").removeAttr("disabled");
-        jQuery("#submit, #submitTop").removeAttr("disabled");
-        jQuery("#restart, #restartTop").removeAttr("disabled");
-        jQuery("#authors").removeAttr("disabled");
-        jQuery("#poster").removeAttr("disabled");
+        suggestedAuthorsList.removeAttr("disabled");
+        title.removeAttr("disabled");
+        topics.removeAttr("disabled");
+        submitButtons.removeAttr("disabled");
+        restartButtons.removeAttr("disabled");
+        authors.removeAttr("disabled");
+        poster.removeAttr("disabled");
 
-        jQuery("#edit").froalaEditor('html.set', content);
-        jQuery("#title").val(title);
+        edit.froalaEditor('html.set', content);
+        title.val(title);
 
-        jQuery("#edit").froalaEditor('edit.on');
+        edit.froalaEditor('edit.on');
     });
 }
 
 function importFailed(url) {
     var continueImport = confirm("Import process failed. Do you wish to continue?");
     if (!continueImport) {
-        jQuery("#import").removeAttr("disabled");
-        jQuery("#originalSource").removeAttr("disabled");
+        importButton.removeAttr("disabled");
+        originalSource.removeAttr("disabled");
     } else {
         importSucceeded(url, '');
     }
@@ -312,29 +310,29 @@ function importFailed(url) {
 function submitFailed() {
     alert("Submission of the post failed");
 
-    jQuery("#edit").froalaEditor('edit.on');
-    jQuery("#suggestedAuthorsList").removeAttr("disabled");
-    jQuery("#title").removeAttr("disabled");
-    jQuery("#topics").removeAttr("disabled");
-    jQuery("#submit, #submitTop").removeAttr("disabled");
-    jQuery("#restart, #restartTop").removeAttr("disabled");
-    jQuery("#authors").removeAttr("disabled");
-    jQuery("#poster").removeAttr("disabled");
+    edit.froalaEditor('edit.on');
+    suggestedAuthorsList.removeAttr("disabled");
+    title.removeAttr("disabled");
+    topics.removeAttr("disabled");
+    submitButtons.removeAttr("disabled");
+    restartButtons.removeAttr("disabled");
+    authors.removeAttr("disabled");
+    poster.removeAttr("disabled");
 }
 
 function submitSucceeded(submittedPost) {
     saveNewAuthorsAndTags();
 
-    jQuery("#edit").froalaEditor('html.set', "<p/>");
-    jQuery("#edit").froalaEditor('edit.off');
+    edit.froalaEditor('html.set', "<p/>");
+    edit.froalaEditor('edit.off');
 
-    jQuery("#suggestedAuthorsList").attr("disabled", "disabled");
-    jQuery("#title").attr("disabled", "disabled");
-    jQuery("#submit, #submitTop").attr("disabled", "disabled");
-    jQuery("#restart, #restartTop").attr("disabled", "disabled");
-    jQuery("#poster").attr("disabled", "disabled");
-    jQuery("#import").removeAttr("disabled");
-    jQuery("#originalSource").removeAttr("disabled");
+    suggestedAuthorsList.attr("disabled", "disabled");
+    title.attr("disabled", "disabled");
+    submitButtons.attr("disabled", "disabled");
+    restartButtons.attr("disabled", "disabled");
+    poster.attr("disabled", "disabled");
+    importButton.removeAttr("disabled");
+    originalSource.removeAttr("disabled");
 
     authors.attr("disabled", "disabled");
     topics.attr("disabled", "disabled");

@@ -10,6 +10,20 @@ var topics = jQuery('#topics');
 var imageTopics = jQuery('#imagetopics');
 var imageClose = jQuery('#close');
 var submitImage = jQuery("#submitImage");
+var username = jQuery("#username");
+var password = jQuery("#password");
+var loginButton = jQuery("#login");
+var importButton = jQuery("#import");
+var originalSource = jQuery("#originalSource");
+var authors = jQuery("#authors");
+var authorsList = jQuery("#suggestedAuthors");
+var imagesElement = jQuery("#images");
+var suggestedAuthorsList = jQuery("#suggestedAuthorsList");
+var edit = jQuery("#edit");
+var title = jQuery("#title");
+var submitButtons = jQuery("#submit, #submitTop");
+var restartButtons = jQuery("#restart, #restartTop");
+var poster = jQuery("#poster");
 
 var cookies = null;
 
@@ -81,9 +95,12 @@ function login(success) {
     /*
         Disable UI while we perform the login
     */
-    jQuery("#login").attr("disabled", "disabled");
-    jQuery("#username").attr("disabled", "disabled");
-    jQuery("#password").attr("disabled", "disabled");
+    loginButton.attr("disabled", "disabled");
+    username.attr("disabled", "disabled");
+    password.attr("disabled", "disabled");
+
+    localStorage.setItem('username', username.val());
+    localStorage.setItem('password', password.val());
 
     jQuery.ajax({
         method: "POST",
@@ -91,20 +108,20 @@ function login(success) {
         xhrFields: {
             withCredentials: true
         },
-        data: {username: jQuery("#username").val(), password: jQuery("#password").val()}
+        data: {username: username.val(), password: password.val()}
     }).done(function(myCookies) {
         cookies = myCookies;
 
-        jQuery("#import").removeAttr("disabled");
-        jQuery("#originalSource").removeAttr("disabled");
+        importButton.removeAttr("disabled");
+        originalSource.removeAttr("disabled");
 
         if (success) {
             success(myCookies);
         }
     }).error(function() {
-        jQuery("#login").removeAttr("disabled");
-        jQuery("#username").removeAttr("disabled");
-        jQuery("#password").removeAttr("disabled");
+        loginButton.removeAttr("disabled");
+        username.removeAttr("disabled");
+        password.removeAttr("disabled");
     });
 }
 
