@@ -2,7 +2,30 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>Spring Security Example </title>
+    <title>DZone Zone Leader Syndication Tool</title>
+    <meta charset="UTF-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <link rel="shortcut icon" href="libraries/patternfly-2.9.0/dist/img/favicon.ico"></link>
+    <!-- iPad retina icon -->
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-152.png"></link>
+    <!-- iPad retina icon (iOS < 7) -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-144.png"></link>
+    <!-- iPad non-retina icon -->
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-76.png"></link>
+    <!-- iPad non-retina icon (iOS < 7) -->
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-72.png"></link>
+    <!-- iPhone 6 Plus icon -->
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-180.png"></link>
+    <!-- iPhone retina icon (iOS < 7) -->
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-114.png"></link>
+    <!-- iPhone non-retina icon (iOS < 7) -->
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="libraries/patternfly-2.9.0/dist/img/apple-touch-icon-precomposed-57.png"></link>
+    <link rel="stylesheet" href="libraries/patternfly-2.9.0/dist/css/patternfly.min.css" ></link>
+    <link rel="stylesheet" href="libraries/patternfly-2.9.0/dist/css/patternfly-additions.min.css" ></link>
+    <script src="libraries/patternfly-2.9.0/components/jquery/dist/jquery.min.js"></script>
+    <script src="libraries/patternfly-2.9.0/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="libraries/patternfly-2.9.0/dist/js/patternfly.min.js"></script>
 </head>
 <body>
 <div th:if="${param.error}">
@@ -11,10 +34,33 @@
 <div th:if="${param.logout}">
     You have been logged out.
 </div>
-<form th:action="@{/login}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-</form>
+<div class="container">
+    <form class="form-horizontal" th:action="@{/login}" method="post">
+        <fieldset>
+
+            <!-- Form Name -->
+            <legend>DZone Zone Leader Syndication Tool</legend>
+
+            <div class="form-group">
+                <label class="col-md-1 control-label" for="username">Username</label>
+                <div class="col-md-11">
+                    <input id="username" name="username" type="text" class="form-control input-md" value="user"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-1 control-label" for="password">Password</label>
+                <div class="col-md-11">
+                    <input id="password" name="password" type="password" class="form-control input-md"/>
+                </div>
+            </div>
+
+            <input type="submit" value="Sign In"/>
+
+        </fieldset>
+
+    </form>
+
+</div>
 </body>
 </html>
