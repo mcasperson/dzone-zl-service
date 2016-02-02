@@ -204,8 +204,8 @@ function saveNewAuthorsAndTags() {
         var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            addAuthors(selectedAuthors, newMvbDomainId);
-            addTopics(selectedTopics, newMvbDomainId);
+            addAuthors(selectedAuthors, domainId);
+            addTopics(selectedTopics, domainId);
         });
 }
 
