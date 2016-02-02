@@ -153,6 +153,9 @@ function processDomain(domainUri, processDomain) {
     );
 }
 
+/*
+    TODO: use async.js and fix the callback to this function
+*/
 function addAuthors(authorsSplit, newMvbDomainId, callback) {
     _.each(authorsSplit, function(author) {
 
@@ -196,17 +199,24 @@ function addAuthors(authorsSplit, newMvbDomainId, callback) {
                         }).done(function(newAuthor) {
                             console.log("Create a new author for " + username);
                             console.log(JSON.stringify(newAuthor));
-                            callback();
+                            if (callback) {
+                                callback();
+                            }
                         });
                 } else {
                     console.log("Author " + username + " already exists, so will not create a new one");
-                    callback();
+                    if (callback) {
+                        callback();
+                    }
                 }
             }
         )
     });
 }
 
+/*
+    TODO: use async.js and add a callback to this function
+*/
 function addTopics(topicSplit, newMvbDomainId) {
     _.each(topicSplit, function(name) {
 

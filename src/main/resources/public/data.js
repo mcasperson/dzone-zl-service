@@ -159,7 +159,7 @@ jQuery("#submit, #submitTop").click(function(){
     jQuery("#authors").attr("disabled", "disabled");
     jQuery("#poster").attr("disabled", "disabled");
 
-    jQuery.ajax({
+    /*jQuery.ajax({
             url: actionPrefix + "/submit",
             method: "POST",
             xhrFields: {
@@ -187,7 +187,9 @@ jQuery("#submit, #submitTop").click(function(){
             }
         }).error(function(){
             submitFailed();
-        });
+        });*/
+
+        submitSucceeded();
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
