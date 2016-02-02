@@ -102,6 +102,7 @@ function processDomain(domainUri, processDomain) {
                 /*
                     Domain does exist, so add to it
                 */
+                console.log("Domain " + domainUri.hostname() + " already exists, so will not create a new one");
                 processDomain(existingDomains.data[0].id);
             } else {
                 /*
@@ -127,6 +128,7 @@ function processDomain(domainUri, processDomain) {
                     contentType: "application/json",
                     dataType : 'json'
                 }).done(function(newMvbDomain) {
+                    console.log("Create a new domain for " + domainUri.hostname());
                     processDomain(newMvbDomain.data.id);
                 });
             }
@@ -141,44 +143,47 @@ function addAuthors(authorsSplit, newMvbDomainId) {
         var username = author.id;
 
         jQuery.get(
-                dataPrefix + "/author?filter[author.username]=" + username,
-                function(existingUser) {
+            dataPrefix + "/author?filter[author.username]=" + username,
+            function(existingUser) {
 
-                    if (existingUser.data.length == 0) {
+                if (existingUser.data.length == 0) {
 
-                        var author =
-                                {
-                                  data: {
-                                    type: "author",
-                                    attributes: {
-                                      name: name,
-                                      username: username
-                                    },
-                                    relationships: {
-                                        mvbdomain: {
-                                            data: {
-                                                type: "mvbDomain",
-                                                id: newMvbDomainId
-                                            }
+                    var author =
+                            {
+                              data: {
+                                type: "author",
+                                attributes: {
+                                  name: name,
+                                  username: username
+                                },
+                                relationships: {
+                                    mvbdomain: {
+                                        data: {
+                                            type: "mvbDomain",
+                                            id: newMvbDomainId
                                         }
                                     }
-                                  }
-                                };
+                                }
+                              }
+                            };
 
-                        jQuery.ajax({
-                                url: dataPrefix + '/author',
-                                method: 'POST',
-                                xhrFields: {
-                                    withCredentials: true
-                                },
-                                data: JSON.stringify(author),
-                                contentType: "application/json",
-                                dataType : 'json'
-                            }).done(function(newAuthor) {
-                                console.log(JSON.stringify(newAuthor));
-                            });
-                    }
+                    jQuery.ajax({
+                            url: dataPrefix + '/author',
+                            method: 'POST',
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            data: JSON.stringify(author),
+                            contentType: "application/json",
+                            dataType : 'json'
+                        }).done(function(newAuthor) {
+                            console.log("Create a new author for " + username);
+                            console.log(JSON.stringify(newAuthor));
+                        });
+                } else {
+                    console.log("Author " + username + " already exists, so will not create a new one");
                 }
+            }
         )
     });
 }

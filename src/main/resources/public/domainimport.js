@@ -30,6 +30,7 @@ function processText(contents) {
 
                 processDomain(domainUri, function(domainId) {
                     var titleSplit = title.split(/[^A-Za-z0-9@.]/);
+                    var authorCount = 0;
 
                     async.eachSeries(
                         titleSplit,
@@ -39,6 +40,7 @@ function processText(contents) {
                                     if (authors.result.data.length === 1) {
                                         var authorId = authors.result.data[0].id;
                                         addAuthors(authors.result.data, domainId);
+                                        ++authorCount;
                                     }
 
                                     authorCallback();
@@ -50,7 +52,8 @@ function processText(contents) {
                             }
                         },
                         function(err){
-                           console.log("Finished processing authors for " + domainUri.hostname());
+                           console.log("Finished processing " + authorCount + " authors for " + domainUri.hostname());
+                           lineCallback();
                         }
                     );
                 });
