@@ -5,7 +5,7 @@ import org.apache.http.HttpEntity;
 import java.io.IOException;
 
 /**
- * Created by Matthew on 3/02/2016.
+ * A service that exposes some common HTTP entity utility methods
  */
 public interface HttpEntityUtils {
     String responseToString(final HttpEntity responseEntity) throws IOException;
