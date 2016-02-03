@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -50,12 +51,18 @@ public class ReadabilityContentExtractor implements ContentExtractor {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
 
-                    final String htmlContent = topLevelObject.getString("content");
-                    final String titleContent = topLevelObject.getString("title");
+                    final Optional<JsonString> htmlContent = Optional.of(topLevelObject.getJsonString("content"));
+                    final Optional<JsonString> titleContent = Optional.of(topLevelObject.getJsonString("title"));
 
-                    if (StringUtils.isNotBlank(htmlContent) && StringUtils.isNotBlank(titleContent)) {
+                    if (htmlContent.isPresent() &&
+                            StringUtils.isNotBlank(htmlContent.get().getString()) &&
+                            titleContent.isPresent() &&
+                            StringUtils.isNotBlank(titleContent.get().getString())) {
                         LOGGER.info("Successfully extracted content via Readability");
-                        return Optional.of(new ContentImport(htmlContent, titleContent));
+                        return Optional.of(new ContentImport(
+                                htmlContent.get().getString(),
+                                titleContent.get().getString()
+                        ));
                     }
                 }
             }

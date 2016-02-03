@@ -504,15 +504,13 @@ public class DzoneZLController {
         uploadPost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse response = httpclient.execute(uploadPost);
-        try {
+
+        try (final CloseableHttpResponse response = httpclient.execute(uploadPost)){
             final String responseBody = httpEntityUtils.responseToString(response.getEntity());
             final Matcher idMatcher = Constants.ID_RE.matcher(responseBody);
             if (idMatcher.find()) {
                 return Optional.of(idMatcher.group("id"));
             }
-        } finally {
-            response.close();
         }
 
         return Optional.empty();
@@ -547,13 +545,23 @@ public class DzoneZLController {
         /*
             2. Get a tracking code
          */
-        final Optional<String> trackingId = getImageUploadTrackingCode(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie);
+        final Optional<String> trackingId = getImageUploadTrackingCode(
+                awselbCookie,
+                thCsrfCookie,
+                springSecurityCookie,
+                jSessionIdCookie);
 
         /*
             3. Upload the file, and get the new image id
          */
         if (trackingId.isPresent()) {
-            final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, trackingId.get(), imageFile);
+            final Optional<String> newImageId = uploadImage(
+                    awselbCookie,
+                    thCsrfCookie,
+                    springSecurityCookie,
+                    jSessionIdCookie,
+                    trackingId.get(),
+                    imageFile);
 
             return newImageId;
         }
@@ -589,15 +597,13 @@ public class DzoneZLController {
         posterAssignment.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment);
-        try {
+
+        try (final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment)) {
             final String responseBody = httpEntityUtils.responseToString(posterResponse.getEntity());
 
             LOGGER.info("Image Upload Response Body: " + responseBody);
 
             return responseBody.indexOf(Constants.SUCCESS) != -1;
-        } finally {
-            posterResponse.close();
         }
     }
 }
