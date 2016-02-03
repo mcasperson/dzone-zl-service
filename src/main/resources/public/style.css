@@ -99,3 +99,7 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
 .label-info {
     background-color: rgb(0, 153, 211);
 }
+
+#authorsInputParent > .bootstrap-tagsinput > .tag {
+    text-decoration: underline;
+}

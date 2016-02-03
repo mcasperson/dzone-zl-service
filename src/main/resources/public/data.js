@@ -207,7 +207,7 @@ jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', functio
     });
 
     if (matchingAuthors.length != 0) {
-        window.open('https://dzone.com/users/' + matchingAuthors[0].id);
+        window.open('https://dzone.com/users/' + matchingAuthors[0].id + "/");
     }
 });
 
