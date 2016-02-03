@@ -72,7 +72,7 @@ public class DzoneZLController {
     /**
      * How many times we'll retry the import process
      */
-    private static final int IMPORT_RETRY_COUNT = 3;
+    private static final int IMPORT_RETRY_COUNT = 5;
     private static final int SLEEP_BEFORE_RETRY = 1000;
 
     @Autowired
@@ -206,6 +206,7 @@ public class DzoneZLController {
             Do the initial login to get any security cookies
          */
         String responseBody = null;
+        int sleep = 0;
         for (int count = 0; count < IMPORT_RETRY_COUNT; ++count) {
             final HttpPost importPost = new HttpPost("https://dzone.com/services/internal/action/links-getData");
 
@@ -246,7 +247,8 @@ public class DzoneZLController {
                     Wait before retrying
                  */
                 try {
-                    Thread.sleep(SLEEP_BEFORE_RETRY);
+                    sleep += SLEEP_BEFORE_RETRY;
+                    Thread.sleep(sleep);
                 } catch (final InterruptedException ex) {
                     LOGGER.error("Sleep Interrupted", ex);
                 }
