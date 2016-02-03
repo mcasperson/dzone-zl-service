@@ -39,10 +39,10 @@ public class DZoneContentExtractor implements ContentExtractor {
     public Optional<ContentImport> extractContent(final String url, final Map<String, String> data) {
         checkArgument(StringUtils.isNotBlank(url));
         checkNotNull(data);
-        checkArgument(data.containsKey(Constants.AWSELB_COOKIE));
-        checkArgument(data.containsKey(Constants.TH_CSRF_COOKIE));
-        checkArgument(data.containsKey(Constants.SPRING_SECUITY_COOKIE));
-        checkArgument(data.containsKey(Constants.JSESSIONID_COOKIE));
+        checkArgument(data.containsKey(Constants.AWSELB_COOKIE), "AWS ELB Cookie required");
+        checkArgument(data.containsKey(Constants.TH_CSRF_COOKIE), "Spring CSRF Cookie required");
+        checkArgument(data.containsKey(Constants.SPRING_SECUITY_COOKIE), "Spring security cookie required");
+        checkArgument(data.containsKey(Constants.JSESSIONID_COOKIE), "Java JSESSION ID cookie required");
 
         try {
             /*
@@ -73,6 +73,11 @@ public class DZoneContentExtractor implements ContentExtractor {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
 
+                    /*
+                        We don't actually know if the result will contain the json elements
+                        accessed here, so we use Optional and map() to deal with null
+                        values.
+                     */
                     final Optional<JsonObject> dataObject =
                             Optional.of(topLevelObject.getJsonObject("result"))
                             .map(n -> n.getJsonObject("data"));
