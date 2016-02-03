@@ -15,7 +15,6 @@ import com.yahoo.elide.core.SecurityMode;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
@@ -143,10 +142,10 @@ public class DzoneZLController {
             Do the initial login to get any security cookies
          */
         final HttpGet initialGet = new HttpGet("https://dzone.com");
-        final HttpResponse initialResponse = makeRequest(initialGet);
-        final Optional<String> awselbCookie = getCookie(initialResponse, Constants.AWSELB_COOKIE);
-        final Optional<String> thCsrfCookie = getCookie(initialResponse, Constants.TH_CSRF_COOKIE);
-        final Optional<String> jSessionIdCookie = getCookie(initialResponse, Constants.JSESSIONID_COOKIE);
+        final HttpResponse initialResponse = httpEntityUtils.makeRequest(initialGet);
+        final Optional<String> awselbCookie = httpEntityUtils.getCookie(initialResponse, Constants.AWSELB_COOKIE);
+        final Optional<String> thCsrfCookie = httpEntityUtils.getCookie(initialResponse, Constants.TH_CSRF_COOKIE);
+        final Optional<String> jSessionIdCookie = httpEntityUtils.getCookie(initialResponse, Constants.JSESSIONID_COOKIE);
 
         if (awselbCookie.isPresent() && thCsrfCookie.isPresent() && jSessionIdCookie.isPresent()) {
             /*
@@ -178,7 +177,7 @@ public class DzoneZLController {
                 loginResponse.close();
             }
 
-            final Optional<String> springSecurityCookie = getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
+            final Optional<String> springSecurityCookie = httpEntityUtils.getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
 
             if (springSecurityCookie.isPresent()) {
                 return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
@@ -572,34 +571,6 @@ public class DzoneZLController {
             return responseBody.indexOf(Constants.SUCCESS) != -1;
         } finally {
             posterResponse.close();
-        }
-    }
-
-    private Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
-        final Header[] headers = httpResponse.getHeaders("Set-Cookie");
-        for (final Header header : headers) {
-            final String[] cookies = header.getValue().split(",");
-            for (final String cookie : cookies) {
-                final String[] cookieDetails = cookie.split("=");
-                if (cookieDetails.length >= 2 && cookieName.equals(cookieDetails[0])) {
-                    /*
-                        We only want the value, not any other details like paths
-                     */
-                    return Optional.of(cookieDetails[1].split(";")[0]);
-                }
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private HttpResponse makeRequest(final HttpUriRequest request) throws IOException {
-        final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse response = httpclient.execute(request);
-        try {
-            return response;
-        } finally {
-            response.close();
         }
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -75,15 +76,15 @@ public class DZoneContentExtractor implements ContentExtractor {
                     final Optional<JsonObject> dataObject =
                             Optional.of(topLevelObject.getJsonObject("result"))
                             .map(n -> n.getJsonObject("data"));
-                    final Optional<String> htmlContent = dataObject.map(n -> n.getString("htmlContent"));
-                    final Optional<String> titleContent = dataObject.map(n -> n.getString("titleContent"));
+                    final Optional<JsonString> htmlContent = dataObject.map(n -> n.getJsonString("htmlContent"));
+                    final Optional<JsonString> titleContent = dataObject.map(n -> n.getJsonString("titleContent"));
 
                     if (htmlContent.isPresent() &&
-                            StringUtils.isNotBlank(htmlContent.get()) &&
+                            StringUtils.isNotBlank(htmlContent.get().getString()) &&
                             titleContent.isPresent() &&
-                            StringUtils.isNotBlank(titleContent.get())) {
+                            StringUtils.isNotBlank(titleContent.get().getString())) {
                         LOGGER.info("Successfully extracted content via DZone");
-                        return Optional.of(new ContentImport(htmlContent.get(), titleContent.get()));
+                        return Optional.of(new ContentImport(htmlContent.get().getString(), titleContent.get().getString()));
                     }
                 }
             } finally {
