@@ -457,14 +457,14 @@ public class DzoneZLController {
                 Constants.SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
                 Constants.SESSION_STARTED_COOKIE + "=true");
 
-
         getImageId.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
         getImageId.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
 
         try (final CloseableHttpResponse loginResponse = httpclient.execute(getImageId)) {
-            final String imageIdResponse = httpEntityUtils.responseToString(loginResponse.getEntity());
+            final HttpEntity responseEntity = loginResponse.getEntity();
+            final String imageIdResponse = httpEntityUtils.responseToString(responseEntity);
 
             final Matcher dataMatcher = Constants.DATA_RE.matcher(imageIdResponse);
             if (dataMatcher.find()) {

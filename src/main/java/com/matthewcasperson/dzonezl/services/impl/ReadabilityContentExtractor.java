@@ -41,8 +41,12 @@ public class ReadabilityContentExtractor implements ContentExtractor {
             Do the initial login to get any security cookies
          */
 
-            final HttpGet importGet = new HttpGet("https://www.readability.com/api/content/v1/parser?token=" +
-                    data.get(Constants.READABILITY_TOKEN_NAME) + "&url=" + url);
+            final String readabilityUrl = "https://www.readability.com/api/content/v1/parser?token=" +
+                    data.get(Constants.READABILITY_TOKEN_NAME) + "&url=" + url;
+
+            LOGGER.info("Querying Readability via " + readabilityUrl);
+
+            final HttpGet importGet = new HttpGet(readabilityUrl);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
 
