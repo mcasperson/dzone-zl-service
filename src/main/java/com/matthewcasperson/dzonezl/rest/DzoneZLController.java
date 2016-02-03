@@ -74,7 +74,7 @@ public class DzoneZLController {
      * How many times we'll retry the import process
      */
     private static final int IMPORT_RETRY_COUNT = 5;
-    private static final int SLEEP_BEFORE_RETRY = 1000;
+    private static final int SLEEP_BEFORE_RETRY = 500;
 
     /**
      * The width of the image we download from DZone
