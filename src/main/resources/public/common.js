@@ -46,6 +46,7 @@ function initTags() {
     topics.tagsinput({
       itemValue: 'title',
       itemText: 'title',
+      confirmKeys: [],
       typeaheadjs: {
         name: 'topic',
         displayKey: 'title',
@@ -56,6 +57,7 @@ function initTags() {
     imageTopics.tagsinput({
       itemValue: 'title',
       itemText: 'title',
+      confirmKeys: [],
       typeaheadjs: {
         name: 'topic',
         displayKey: 'title',
@@ -83,6 +85,7 @@ function initAuthors() {
     authors.tagsinput({
       itemValue: 'id',
       itemText: 'name',
+      confirmKeys: [],
       typeaheadjs: {
         name: 'author',
         displayKey: 'name',

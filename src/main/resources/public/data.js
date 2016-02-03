@@ -85,7 +85,7 @@ function getAllImages() {
 }
 
 function doImport() {
-var url = originalSource.val();
+    var url = originalSource.val();
 
     if (url.trim().length == 0) {
         alert("The url is invalid");
@@ -196,6 +196,21 @@ jQuery("body").on("click", ".authorEntry", function(event) {
     var authorEntry = jQuery(event.target);
     authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
 });
+
+jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', function(event) {
+    var authorName = event.target.textContent;
+
+    var authorsItems = authors.tagsinput('items');
+
+    var matchingAuthors = _.filter(authorsItems, function(author) {
+        return author.name === authorName;
+    });
+
+    if (matchingAuthors.length != 0) {
+        window.open('https://dzone.com/users/' + matchingAuthors[0].id);
+    }
+});
+
 
 /*
     Any new authors or topics that were defined for this post will be saved in the database
