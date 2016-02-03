@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * A content extractor that makes use of the Readability API
  */
-@Component
+@Component(value="readabilityContentExtractor")
 public class ReadabilityContentExtractor implements ContentExtractor {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ReadabilityContentExtractor.class);
 

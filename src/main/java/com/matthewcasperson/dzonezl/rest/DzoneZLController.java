@@ -192,6 +192,16 @@ public class DzoneZLController {
         return null;
     }
 
+    /**
+     *
+     * @param awselbCookie The AWS ELB cookie used to access DZone
+     * @param thCsrfCookie The CSRF cookie used to access DZone
+     * @param springSecurityCookie The Spring security cookie used to access DZone
+     * @param jSessionIdCookie  The DZone JSESSION ID cookie
+     * @param url The URL that we want to import
+     * @return
+     * @throws IOException
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/action/import", produces = MediaType.APPLICATION_JSON_VALUE)
     public ContentImport importPost(
@@ -221,6 +231,22 @@ public class DzoneZLController {
         );
     }
 
+    /**
+     * Posts an article to DZone, and returns the json returned by DZone
+     * @param awselbCookie The AWS ELB cookie used to access DZone
+     * @param thCsrfCookie The CSRF cookie used to access DZone
+     * @param springSecurityCookie The Spring security cookie used to access DZone
+     * @param jSessionIdCookie  The DZone JSESSION ID cookie
+     * @param title
+     * @param content
+     * @param url
+     * @param topics
+     * @param authors
+     * @param poster
+     * @param image
+     * @return
+     * @throws IOException
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/action/submit", produces = MediaType.APPLICATION_JSON_VALUE)
     public String submitPost(
@@ -342,6 +368,16 @@ public class DzoneZLController {
         return Constants.FAILED_RESPONSE;
     }
 
+    /**
+     * Uploads an image to dzone, and returns the image id
+     * @param awselbCookie The AWS ELB cookie used to access DZone
+     * @param thCsrfCookie The CSRF cookie used to access DZone
+     * @param springSecurityCookie The Spring security cookie used to access DZone
+     * @param jSessionIdCookie  The DZone JSESSION ID cookie
+     * @param file The image that we want to upload
+     * @return
+     * @throws IOException
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             value = "/action/uploadImage",

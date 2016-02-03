@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * A content extractor that makes use of the DZone API
  */
-@Component
+@Component(value="dZoneContentExtractor")
 public class DZoneContentExtractor implements ContentExtractor {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DZoneContentExtractor.class);
 
