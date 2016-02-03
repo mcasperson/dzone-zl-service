@@ -71,15 +71,19 @@ public class DZoneContentExtractor implements ContentExtractor {
                 try (final InputStream instream = response.getEntity().getContent()) {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
-                    final JsonObject resultObject = topLevelObject.getJsonObject("result");
-                    final JsonObject dataObject = resultObject.getJsonObject("data");
 
-                    final String htmlContent = dataObject.getString("htmlContent");
-                    final String titleContent = dataObject.getString("titleContent");
+                    final Optional<JsonObject> dataObject =
+                            Optional.of(topLevelObject.getJsonObject("result"))
+                            .map(n -> n.getJsonObject("data"));
+                    final Optional<String> htmlContent = dataObject.map(n -> n.getString("htmlContent"));
+                    final Optional<String> titleContent = dataObject.map(n -> n.getString("titleContent"));
 
-                    if (StringUtils.isNotBlank(htmlContent) && StringUtils.isNotBlank(titleContent)) {
+                    if (htmlContent.isPresent() &&
+                            StringUtils.isNotBlank(htmlContent.get()) &&
+                            titleContent.isPresent() &&
+                            StringUtils.isNotBlank(titleContent.get())) {
                         LOGGER.info("Successfully extracted content via DZone");
-                        return Optional.of(new ContentImport(htmlContent, titleContent));
+                        return Optional.of(new ContentImport(htmlContent.get(), titleContent.get()));
                     }
                 }
             } finally {
