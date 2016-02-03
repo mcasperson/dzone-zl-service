@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A service that exposes some common HTTP entity utility methods
  */
@@ -15,6 +17,7 @@ import java.io.InputStream;
 public class HttpEntityUtilsImpl implements HttpEntityUtils {
     @Override
     public String responseToString(final HttpEntity responseEntity) throws IOException {
+        checkNotNull(responseEntity);
 
         try (final InputStream instream = responseEntity.getContent()){
             final String responseText = IOUtils.toString(instream);

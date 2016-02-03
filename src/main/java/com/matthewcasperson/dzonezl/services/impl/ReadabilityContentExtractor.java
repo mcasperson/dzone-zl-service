@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A content extractor that makes use of the Readability API
  */
@@ -28,6 +31,10 @@ public class ReadabilityContentExtractor implements ContentExtractor {
 
     @Override
     public Optional<ContentImport> extractContent(final String url, final Map<String, String> data) {
+        checkArgument(StringUtils.isNotBlank(url));
+        checkNotNull(data);
+        checkArgument(data.containsKey(Constants.READABILITY_TOKEN_NAME));
+
         try {
         /*
             Do the initial login to get any security cookies

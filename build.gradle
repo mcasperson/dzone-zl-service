@@ -45,6 +45,7 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.guava:guava:19.0'
     compile 'javax.json:javax.json-api:1.0'
+    compile 'org.glassfish:javax.json:1.0.4'
 
 }
 

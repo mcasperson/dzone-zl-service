@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface ContentExtractor {
     /**
-     *
+     * Extracts the content from the given URL
      * @param url The URL to be imported
      * @param data General data used by the importing service
      * @return The imported content
