@@ -462,8 +462,8 @@ public class DzoneZLController {
         getImageId.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse loginResponse = httpclient.execute(getImageId);
-        try {
+
+        try (final CloseableHttpResponse loginResponse = httpclient.execute(getImageId)) {
             final String imageIdResponse = httpEntityUtils.responseToString(loginResponse.getEntity());
 
             final Matcher dataMatcher = Constants.DATA_RE.matcher(imageIdResponse);
@@ -472,8 +472,6 @@ public class DzoneZLController {
                 return Optional.of(dataId);
 
             }
-        } finally {
-            loginResponse.close();
         }
 
         return Optional.empty();

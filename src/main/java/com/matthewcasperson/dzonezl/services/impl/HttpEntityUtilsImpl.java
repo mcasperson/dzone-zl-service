@@ -2,6 +2,7 @@ package com.matthewcasperson.dzonezl.services.impl;
 
 import com.matthewcasperson.dzonezl.services.HttpEntityUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -34,6 +36,9 @@ public class HttpEntityUtilsImpl implements HttpEntityUtils {
 
     @Override
     public Optional<String> getCookie(final HttpResponse httpResponse, final String cookieName) {
+        checkNotNull(httpResponse);
+        checkArgument(StringUtils.isNotBlank(cookieName));
+
         final Header[] headers = httpResponse.getHeaders("Set-Cookie");
         for (final Header header : headers) {
             final String[] cookies = header.getValue().split(",");
@@ -53,6 +58,8 @@ public class HttpEntityUtilsImpl implements HttpEntityUtils {
 
     @Override
     public HttpResponse makeRequest(final HttpUriRequest request) throws IOException {
+        checkNotNull(request);
+
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse response = httpclient.execute(request);
         try {
