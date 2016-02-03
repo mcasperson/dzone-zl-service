@@ -55,8 +55,8 @@ public class ReadabilityContentExtractor implements ContentExtractor {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
 
-                    final Optional<JsonString> htmlContent = Optional.of(topLevelObject.getJsonString("content"));
-                    final Optional<JsonString> titleContent = Optional.of(topLevelObject.getJsonString("title"));
+                    final Optional<JsonString> htmlContent = Optional.ofNullable(topLevelObject.getJsonString("content"));
+                    final Optional<JsonString> titleContent = Optional.ofNullable(topLevelObject.getJsonString("title"));
 
                     if (htmlContent.isPresent() &&
                             StringUtils.isNotBlank(htmlContent.get().getString()) &&
