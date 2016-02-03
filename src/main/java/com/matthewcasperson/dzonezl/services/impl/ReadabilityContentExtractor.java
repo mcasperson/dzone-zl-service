@@ -65,6 +65,7 @@ public class ReadabilityContentExtractor implements ContentExtractor {
             LOGGER.error("Exception thrown", ex);
         }
 
+        LOGGER.info("Failed to extracted content via Readability");
         return Optional.empty();
     }
 }

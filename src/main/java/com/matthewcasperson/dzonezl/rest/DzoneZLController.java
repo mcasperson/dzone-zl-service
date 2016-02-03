@@ -50,6 +50,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by Matthew on 24/01/2016.
@@ -141,6 +142,9 @@ public class DzoneZLController {
     @RequestMapping(value = "/action/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public String login(@RequestParam final String username, @RequestParam final String password) throws IOException {
 
+        checkArgument(StringUtils.isNotBlank(username));
+        checkArgument(StringUtils.isNotBlank(password));
+
         /*
             Do the initial login to get any security cookies
          */
@@ -226,14 +230,14 @@ public class DzoneZLController {
         dzoneData.put(Constants.SPRING_SECUITY_COOKIE, springSecurityCookie);
 
         final Map<String, String> readabilityData = new HashMap<String, String>();
-        dzoneData.put(Constants.READABILITY_TOKEN_NAME, Constants.READABILITY_TOKEN);
+        readabilityData.put(Constants.READABILITY_TOKEN_NAME, Constants.READABILITY_TOKEN);
 
         /*
             Try the different importers one after the other
          */
         final Optional<ContentImport> dzoneContent = dZoneContentExtractor.extractContent(url, dzoneData);
         return dzoneContent.orElse(
-                dZoneContentExtractor.extractContent(url, readabilityData).orElse(
+                readabilityContentExtractor.extractContent(url, readabilityData).orElse(
                         new ContentImport()
                 )
         );
@@ -269,6 +273,16 @@ public class DzoneZLController {
             @RequestParam final String authors,
             @RequestParam final Integer poster,
             @RequestParam final Integer image) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkArgument(StringUtils.isNotBlank(url));
+        checkArgument(StringUtils.isNotBlank(topics));
+        checkArgument(StringUtils.isNotBlank(authors));
+        checkNotNull(poster);
+        checkNotNull(image);
 
         final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, image);
 
@@ -397,6 +411,12 @@ public class DzoneZLController {
             @RequestParam final String springSecurityCookie,
             @RequestParam final String jSessionIdCookie,
             @RequestParam("file") MultipartFile file) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkNotNull(file);
 
         /*
             1. Download the existing file

@@ -99,6 +99,7 @@ public class DZoneContentExtractor implements ContentExtractor {
             LOGGER.error("Exception thrown", ex);
         }
 
+        LOGGER.info("Failed to extracted content via DZone");
         return Optional.empty();
     }
 }
