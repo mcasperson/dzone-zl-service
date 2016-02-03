@@ -59,18 +59,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DzoneZLController {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DzoneZLController.class);
+
     /**
      * The width of the image we download from DZone
      */
     private static final int IMAGE_WIDTH = 600;
+
     @Autowired
     private HttpEntityUtils httpEntityUtils;
+
     @Autowired
     @Qualifier("dZoneContentExtractor")
     private ContentExtractor dZoneContentExtractor;
+
     @Autowired
     @Qualifier("readabilityContentExtractor")
     private ContentExtractor readabilityContentExtractor;
+
     @Autowired
     private EntityManagerFactory emf;
 
@@ -229,8 +234,7 @@ public class DzoneZLController {
         /*
             Try the different importers one after the other
          */
-        final Optional<ContentImport> dzoneContent = dZoneContentExtractor.extractContent(url, dzoneData);
-        return dzoneContent.orElse(
+        return dZoneContentExtractor.extractContent(url, dzoneData).orElse(
                 readabilityContentExtractor.extractContent(url, readabilityData).orElse(
                         new ContentImport()
                 )
