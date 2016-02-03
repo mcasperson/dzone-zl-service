@@ -44,6 +44,7 @@ dependencies {
     compile 'org.apache.httpcomponents:httpmime:4.5.1'
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.guava:guava:19.0'
+    compile 'javax.json:javax.json-api:1.0'
 
 }
 

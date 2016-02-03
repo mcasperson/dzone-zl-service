@@ -109,11 +109,10 @@ function doImport() {
             url: url
         }
     }).done(function(importedPost) {
-        if (importedPost.success &&
-            importedPost.result.data.htmlContent &&
-            importedPost.result.data.htmlContent.trim().length != 0) {
+        if (importedPost.content &&
+            importedPost.content.trim().length != 0) {
 
-            importSucceeded(url, importedPost.result.data.htmlContent, importedPost.result.data.title);
+            importSucceeded(url, importedPost.content, importedPost.title);
 
         } else {
             importFailed(url);

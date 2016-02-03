@@ -2,6 +2,10 @@ package com.matthewcasperson.dzonezl.rest;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.matthewcasperson.dzonezl.Constants;
+import com.matthewcasperson.dzonezl.entities.ContentImport;
+import com.matthewcasperson.dzonezl.services.ContentExtractor;
+import com.matthewcasperson.dzonezl.services.HttpEntityUtils;
 import com.yahoo.elide.Elide;
 import com.yahoo.elide.ElideResponse;
 import com.yahoo.elide.audit.Logger;
@@ -24,6 +28,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +42,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Matthew on 24/01/2016.
@@ -53,28 +57,17 @@ public class DzoneZLController {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DzoneZLController.class);
 
-    private static final String FAILED_RESPONSE = "{\"success\":false}";
-    private static final String COOKIE_HEADER = "Cookie";
-    private static final String ACCEPT_HEADER = "Accept";
+    @Autowired
+    private HttpEntityUtils httpEntityUtils;
 
-    private static final String SPRING_SECUITY_COOKIE = "SPRING_SECURITY_REMEMBER_ME_COOKIE";
-    private static final String AWSELB_COOKIE = "AWSELB";
-    private static final String TH_CSRF_COOKIE = "TH_CSRF";
-    private static final String JSESSIONID_COOKIE = "JSESSIONID";
-    private static final String SESSION_STARTED_COOKIE = "SESSION_STARTED";
-    private static final String X_TH_CSRF_HEADER = "X-TH-CSRF";
+    @Autowired
+    @Qualifier("dZoneContentExtractor")
+    private ContentExtractor dZoneContentExtractor;
 
-    private static final String SUCCESS = "\"success\":true";
-    private static final String EMPTY_IMPORT = "\"fullContent\":\"\"";
-    private static final Pattern ID_RE = Pattern.compile("\"id\":(?<id>\\d+)");
-    private static final Pattern ID_QUOTE_RE = Pattern.compile("\"id\":\"(?<id>\\d+)\"");
-    private static final Pattern DATA_RE = Pattern.compile("\"data\":\"(?<data>.*?)\"");
+    @Autowired
+    @Qualifier("readabilityContentExtractor")
+    private ContentExtractor readabilityContentExtractor;
 
-    /**
-     * How many times we'll retry the import process
-     */
-    private static final int IMPORT_RETRY_COUNT = 5;
-    private static final int SLEEP_BEFORE_RETRY = 500;
 
     /**
      * The width of the image we download from DZone
@@ -151,9 +144,9 @@ public class DzoneZLController {
          */
         final HttpGet initialGet = new HttpGet("https://dzone.com");
         final HttpResponse initialResponse = makeRequest(initialGet);
-        final Optional<String> awselbCookie = getCookie(initialResponse, AWSELB_COOKIE);
-        final Optional<String> thCsrfCookie = getCookie(initialResponse, TH_CSRF_COOKIE);
-        final Optional<String> jSessionIdCookie = getCookie(initialResponse, JSESSIONID_COOKIE);
+        final Optional<String> awselbCookie = getCookie(initialResponse, Constants.AWSELB_COOKIE);
+        final Optional<String> thCsrfCookie = getCookie(initialResponse, Constants.TH_CSRF_COOKIE);
+        final Optional<String> jSessionIdCookie = getCookie(initialResponse, Constants.JSESSIONID_COOKIE);
 
         if (awselbCookie.isPresent() && thCsrfCookie.isPresent() && jSessionIdCookie.isPresent()) {
             /*
@@ -162,36 +155,36 @@ public class DzoneZLController {
             final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
 
             final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
-            httppost.setHeader(COOKIE_HEADER,
-                AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
-                TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
-                JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
-                SESSION_STARTED_COOKIE + "=true");
+            httppost.setHeader(Constants.COOKIE_HEADER,
+                Constants.AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
+                Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
+                Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
+                Constants.SESSION_STARTED_COOKIE + "=true");
 
             final StringEntity requestEntity = new StringEntity(loginJson);
             requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
             httppost.setEntity(requestEntity);
 
-            httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie.get());
-            httppost.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+            httppost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie.get());
+            httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
             final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
             try {
-                final String responseBody = responseToString(loginResponse.getEntity());
+                final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
 
                 LOGGER.info(responseBody);
             } finally {
                 loginResponse.close();
             }
 
-            final Optional<String> springSecurityCookie = getCookie(loginResponse, SPRING_SECUITY_COOKIE);
+            final Optional<String> springSecurityCookie = getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
 
             if (springSecurityCookie.isPresent()) {
-                return "{\"" + AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
-                       "\"" + TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
-                        "\"" + JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
-                        "\"" + SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
+                return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
+                       "\"" + Constants.TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
+                        "\"" + Constants.JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
+                        "\"" + Constants.SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
 
             }
         }
@@ -201,69 +194,31 @@ public class DzoneZLController {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/action/import", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String importPost(
+    public ContentImport importPost(
         @RequestParam final String awselbCookie,
         @RequestParam final String thCsrfCookie,
         @RequestParam final String springSecurityCookie,
         @RequestParam final String jSessionIdCookie,
         @RequestParam final String url) throws IOException {
 
+        final Map<String, String> dzoneData = new HashMap<String, String>();
+        dzoneData.put(Constants.AWSELB_COOKIE, awselbCookie);
+        dzoneData.put(Constants.TH_CSRF_COOKIE, thCsrfCookie);
+        dzoneData.put(Constants.JSESSIONID_COOKIE, jSessionIdCookie);
+        dzoneData.put(Constants.SPRING_SECUITY_COOKIE, springSecurityCookie);
+
+        final Map<String, String> readabilityData = new HashMap<String, String>();
+        dzoneData.put(Constants.READABILITY_TOKEN_NAME, Constants.READABILITY_TOKEN);
+
         /*
-            Do the initial login to get any security cookies
+            Try the different importers one after the other
          */
-        String responseBody = null;
-        int sleep = 0;
-        for (int count = 0; count < IMPORT_RETRY_COUNT; ++count) {
-            final HttpPost importPost = new HttpPost("https://dzone.com/services/internal/action/links-getData");
-
-            final String importJson = "{\"url\":\"" + url + "\",\"parse\":true}";
-
-            final StringEntity requestEntity = new StringEntity(importJson);
-            requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            importPost.setEntity(requestEntity);
-
-            importPost.setHeader(COOKIE_HEADER,
-                    AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                            TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                            SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                            JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                            SESSION_STARTED_COOKIE + "=true");
-
-            importPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-
-            final CloseableHttpClient httpclient = HttpClients.createDefault();
-            final CloseableHttpResponse response = httpclient.execute(importPost);
-            try {
-                responseBody = responseToString(response.getEntity());
-
-                LOGGER.info(responseBody);
-
-                /*
-                    Return if there was a success, or if we are done retrying
-                 */
-                if (responseBody.indexOf(SUCCESS) != -1 && responseBody.indexOf(EMPTY_IMPORT) == -1) {
-                    LOGGER.info("DZone article import was a success!");
-                    break;
-                } else if (count >= IMPORT_RETRY_COUNT - 1) {
-                    LOGGER.info("DZone article import was a failure!");
-                    break;
-                }
-
-                /*
-                    Wait before retrying
-                 */
-                try {
-                    sleep += SLEEP_BEFORE_RETRY;
-                    Thread.sleep(sleep);
-                } catch (final InterruptedException ex) {
-                    LOGGER.error("Sleep Interrupted", ex);
-                }
-            } finally {
-                response.close();
-            }
-        }
-
-        return responseBody;
+        final Optional<ContentImport> dzoneContent = dZoneContentExtractor.extractContent(url, dzoneData);
+        return dzoneContent.orElse(
+                dZoneContentExtractor.extractContent(url, readabilityData).orElse(
+                        new ContentImport()
+                )
+        );
     }
 
     @CrossOrigin(origins = "*")
@@ -316,27 +271,27 @@ public class DzoneZLController {
                             "\"visibility\":\"draft\"}";
 
             final HttpPut httppost = new HttpPut("https://dzone.com/services/internal/ctype/article");
-            httppost.setHeader(COOKIE_HEADER,
-                    AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                            TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                            SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                            JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                            SESSION_STARTED_COOKIE + "=true");
+            httppost.setHeader(Constants.COOKIE_HEADER,
+                    Constants.AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                    Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                    Constants.SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                    Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                    Constants.SESSION_STARTED_COOKIE + "=true");
 
             final StringEntity requestEntity = new StringEntity(submitBody);
             requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
             httppost.setEntity(requestEntity);
 
-            httppost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-            httppost.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+            httppost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
+            httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
             final CloseableHttpResponse response = httpclient.execute(httppost);
             try {
-                final String responseBody = responseToString(response.getEntity());
-                final Matcher idMatcher = ID_QUOTE_RE.matcher(responseBody);
+                final String responseBody = httpEntityUtils.responseToString(response.getEntity());
+                final Matcher idMatcher = Constants.ID_QUOTE_RE.matcher(responseBody);
 
-                if (responseBody.indexOf(SUCCESS) != -1) {
+                if (responseBody.indexOf(Constants.SUCCESS) != -1) {
 
                     if (idMatcher.find()) {
                         try {
@@ -365,7 +320,7 @@ public class DzoneZLController {
                                 We didn't find the expected article id
                              */
                             LOGGER.error("Exception associating user to article", ex);
-                            return FAILED_RESPONSE;
+                            return Constants.FAILED_RESPONSE;
                         }
                     }
 
@@ -384,7 +339,7 @@ public class DzoneZLController {
             LOGGER.error("Failed to upload image");
         }
 
-        return FAILED_RESPONSE;
+        return Constants.FAILED_RESPONSE;
     }
 
     @CrossOrigin(origins = "*")
@@ -431,23 +386,23 @@ public class DzoneZLController {
                                                         final String springSecurityCookie,
                                                         final String jSessionIdCookie) throws IOException {
         final HttpGet getImageId = new HttpGet("https://dzone.com/services/internal/data/uploads-authorize?image=true&type=node");
-        getImageId.setHeader(COOKIE_HEADER,
-                AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                SESSION_STARTED_COOKIE + "=true");
+        getImageId.setHeader(Constants.COOKIE_HEADER,
+                Constants.AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                Constants.SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                Constants.SESSION_STARTED_COOKIE + "=true");
 
 
-        getImageId.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-        getImageId.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+        getImageId.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
+        getImageId.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse loginResponse = httpclient.execute(getImageId);
         try {
-            final String imageIdResponse = responseToString(loginResponse.getEntity());
+            final String imageIdResponse = httpEntityUtils.responseToString(loginResponse.getEntity());
 
-            final Matcher dataMatcher = DATA_RE.matcher(imageIdResponse);
+            final Matcher dataMatcher = Constants.DATA_RE.matcher(imageIdResponse);
             if (dataMatcher.find()) {
                 final String dataId = dataMatcher.group("data");
                 return Optional.of(dataId);
@@ -477,20 +432,20 @@ public class DzoneZLController {
 
         uploadPost.setEntity(fileEntity);
 
-        uploadPost.setHeader(COOKIE_HEADER,
-                AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                SESSION_STARTED_COOKIE + "=true");
+        uploadPost.setHeader(Constants.COOKIE_HEADER,
+                Constants.AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                Constants.SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                Constants.SESSION_STARTED_COOKIE + "=true");
 
-        uploadPost.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
+        uploadPost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse response = httpclient.execute(uploadPost);
         try {
-            final String responseBody = responseToString(response.getEntity());
-            final Matcher idMatcher = ID_RE.matcher(responseBody);
+            final String responseBody = httpEntityUtils.responseToString(response.getEntity());
+            final Matcher idMatcher = Constants.ID_RE.matcher(responseBody);
             if (idMatcher.find()) {
                 return Optional.of(idMatcher.group("id"));
             }
@@ -557,28 +512,28 @@ public class DzoneZLController {
                 "{\"user\": " + user + ", \"type\": \"op\"}";
 
         final HttpPost posterAssignment = new HttpPost("https://dzone.com/services/internal/node/" + articleId + "/authors-addAuthor");
-        posterAssignment.setHeader(COOKIE_HEADER,
-                AWSELB_COOKIE + "=" + awselbCookie + "; " +
-                TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
-                SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
-                JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
-                SESSION_STARTED_COOKIE + "=true");
+        posterAssignment.setHeader(Constants.COOKIE_HEADER,
+                Constants.AWSELB_COOKIE + "=" + awselbCookie + "; " +
+                Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie + "; " +
+                Constants.SPRING_SECUITY_COOKIE + "=" + springSecurityCookie + "; " +
+                Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie + "; " +
+                Constants.SESSION_STARTED_COOKIE + "=true");
 
         final StringEntity posterEntity = new StringEntity(posterBody);
         posterEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
         posterAssignment.setEntity(posterEntity);
 
-        posterAssignment.addHeader(X_TH_CSRF_HEADER, thCsrfCookie);
-        posterAssignment.addHeader(ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+        posterAssignment.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie);
+        posterAssignment.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         final CloseableHttpResponse posterResponse = httpclient.execute(posterAssignment);
         try {
-            final String responseBody = responseToString(posterResponse.getEntity());
+            final String responseBody = httpEntityUtils.responseToString(posterResponse.getEntity());
 
             LOGGER.info("Image Upload Response Body: " + responseBody);
 
-            return responseBody.indexOf(SUCCESS) != -1;
+            return responseBody.indexOf(Constants.SUCCESS) != -1;
         } finally {
             posterResponse.close();
         }
@@ -609,16 +564,6 @@ public class DzoneZLController {
             return response;
         } finally {
             response.close();
-        }
-    }
-
-    private String responseToString(final HttpEntity responseEntity) throws IOException {
-        final InputStream instream = responseEntity.getContent();
-        try {
-            final String responseText = IOUtils.toString(instream);
-            return responseText;
-        } finally {
-            instream.close();
         }
     }
 }
