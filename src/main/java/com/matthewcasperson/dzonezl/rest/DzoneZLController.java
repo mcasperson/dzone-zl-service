@@ -421,7 +421,7 @@ public class DzoneZLController {
             value = "/action/uploadImage",
             method=RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    private String uploadImageToDzone(
+    public String uploadImageToDzone(
             @RequestParam final String awselbCookie,
             @RequestParam final String thCsrfCookie,
             @RequestParam final String springSecurityCookie,
