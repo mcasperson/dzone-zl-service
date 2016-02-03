@@ -237,13 +237,13 @@ public class DzoneZLController {
      * @param thCsrfCookie The CSRF cookie used to access DZone
      * @param springSecurityCookie The Spring security cookie used to access DZone
      * @param jSessionIdCookie  The DZone JSESSION ID cookie
-     * @param title
-     * @param content
-     * @param url
-     * @param topics
-     * @param authors
-     * @param poster
-     * @param image
+     * @param title The artile title
+     * @param content The article content
+     * @param url The originalo article url
+     * @param topics The topics associated with the article
+     * @param authors The authors of the article
+     * @param poster The DZone user submitting the article
+     * @param image The image id associated with the article
      * @return
      * @throws IOException
      */

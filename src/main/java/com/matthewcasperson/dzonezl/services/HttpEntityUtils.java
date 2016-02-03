@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public interface HttpEntityUtils {
     /**
-     *
+     * Converts an entity to a string
      * @param responseEntity The entity to be converted to a string
      * @return The string representation of the entity
      * @throws IOException
