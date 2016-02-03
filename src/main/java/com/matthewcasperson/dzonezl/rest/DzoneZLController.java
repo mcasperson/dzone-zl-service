@@ -284,7 +284,13 @@ public class DzoneZLController {
         checkNotNull(poster);
         checkNotNull(image);
 
-        final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, image);
+        final Optional<String> newImageId = uploadImage(
+                awselbCookie,
+                thCsrfCookie,
+                springSecurityCookie,
+                jSessionIdCookie,
+                image,
+                httpEntityUtils);
 
         if (newImageId.isPresent()) {
 
@@ -348,7 +354,15 @@ public class DzoneZLController {
                             /*
                                 Associate the poster with the article
                              */
-                            if (!addPosterToArticle(articleId, poster, false, awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie)) {
+                            if (!addPosterToArticle(
+                                    articleId,
+                                    poster,
+                                    false,
+                                    awselbCookie,
+                                    thCsrfCookie,
+                                    springSecurityCookie,
+                                    jSessionIdCookie,
+                                    httpEntityUtils)) {
                                 throw new Exception("Failed to associated poster with article");
                             }
 
@@ -358,7 +372,15 @@ public class DzoneZLController {
                             final String[] authorsCollection = authors.split(",");
                             for (final String author : authorsCollection) {
                                 final Integer authorId = Integer.parseInt(author);
-                                if (!addPosterToArticle(articleId, authorId, true, awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie)) {
+                                if (!addPosterToArticle(
+                                        articleId,
+                                        authorId,
+                                        true,
+                                        awselbCookie,
+                                        thCsrfCookie,
+                                        springSecurityCookie,
+                                        jSessionIdCookie,
+                                        httpEntityUtils)) {
                                     throw new Exception("Failed to associated author with article");
                                 }
                             }
@@ -429,13 +451,25 @@ public class DzoneZLController {
         /*
             2. Get a tracking code
          */
-        final Optional<String> trackingId = getImageUploadTrackingCode(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie);
+        final Optional<String> trackingId = getImageUploadTrackingCode(
+                awselbCookie,
+                thCsrfCookie,
+                springSecurityCookie,
+                jSessionIdCookie,
+                httpEntityUtils);
 
         /*
             3. Upload the file, and get the new image id
          */
         if (trackingId.isPresent()) {
-            final Optional<String> newImageId = uploadImage(awselbCookie, thCsrfCookie, springSecurityCookie, jSessionIdCookie, trackingId.get(), imageFile);
+            final Optional<String> newImageId = uploadImage(
+                    awselbCookie,
+                    thCsrfCookie,
+                    springSecurityCookie,
+                    jSessionIdCookie,
+                    trackingId.get(),
+                    imageFile,
+                    httpEntityUtils);
 
             if (newImageId.isPresent()) {
                 return newImageId.get();
@@ -448,7 +482,15 @@ public class DzoneZLController {
     private Optional<String> getImageUploadTrackingCode(final String awselbCookie,
                                                         final String thCsrfCookie,
                                                         final String springSecurityCookie,
-                                                        final String jSessionIdCookie) throws IOException {
+                                                        final String jSessionIdCookie,
+                                                        final HttpEntityUtils httpEntityUtils) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkNotNull(httpEntityUtils);
+
         final HttpGet getImageId = new HttpGet("https://dzone.com/services/internal/data/uploads-authorize?image=true&type=node");
         getImageId.setHeader(Constants.COOKIE_HEADER,
                 Constants.AWSELB_COOKIE + "=" + awselbCookie + "; " +
@@ -482,7 +524,17 @@ public class DzoneZLController {
                                          final String springSecurityCookie,
                                          final String jSessionIdCookie,
                                          final String tackingId,
-                                         final File imageFile) throws IOException {
+                                         final File imageFile,
+                                         final HttpEntityUtils httpEntityUtils) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkArgument(StringUtils.isNotBlank(tackingId));
+        checkNotNull(imageFile);
+        checkNotNull(httpEntityUtils);
+
         final HttpPost uploadPost = new HttpPost("https://dzone.com/uploadFile.json?trackingId=" + tackingId);
 
         final FileBody fileBody = new FileBody(imageFile);
@@ -532,7 +584,15 @@ public class DzoneZLController {
                              final String thCsrfCookie,
                              final String springSecurityCookie,
                              final String jSessionIdCookie,
-                             final Integer imageId) throws IOException {
+                             final Integer imageId,
+                             final HttpEntityUtils httpEntityUtils) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkNotNull(imageId);
+        checkNotNull(httpEntityUtils);
 
         /*
             1. Download the existing file
@@ -549,7 +609,8 @@ public class DzoneZLController {
                 awselbCookie,
                 thCsrfCookie,
                 springSecurityCookie,
-                jSessionIdCookie);
+                jSessionIdCookie,
+                httpEntityUtils);
 
         /*
             3. Upload the file, and get the new image id
@@ -561,7 +622,8 @@ public class DzoneZLController {
                     springSecurityCookie,
                     jSessionIdCookie,
                     trackingId.get(),
-                    imageFile);
+                    imageFile,
+                    httpEntityUtils);
 
             return newImageId;
         }
@@ -575,7 +637,16 @@ public class DzoneZLController {
                                         final String awselbCookie,
                                         final String thCsrfCookie,
                                         final String springSecurityCookie,
-                                        final String jSessionIdCookie) throws IOException {
+                                        final String jSessionIdCookie,
+                                       final HttpEntityUtils httpEntityUtils) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkNotNull(user);
+        checkNotNull(articleId);
+        checkNotNull(httpEntityUtils);
 
         final String posterBody = author ?
                 "{\"user\": " + user + ", \"type\": \"author\"}" :
