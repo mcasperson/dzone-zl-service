@@ -9,3 +9,4 @@ Ideas
 * Automatically add publication date to top of article.
 * Make authors and domains many to many.
 * Add the ability to remove images, tags and authors from the main import screen.
+* Prevent page close while tags and authors are being added
