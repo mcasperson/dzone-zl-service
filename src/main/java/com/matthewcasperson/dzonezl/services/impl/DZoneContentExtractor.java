@@ -67,8 +67,8 @@ public class DZoneContentExtractor implements ContentExtractor {
             importPost.addHeader(Constants.X_TH_CSRF_HEADER, data.get(Constants.TH_CSRF_COOKIE));
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
-            final CloseableHttpResponse response = httpclient.execute(importPost);
-            try {
+
+            try (final CloseableHttpResponse response = httpclient.execute(importPost)){
                 try (final InputStream instream = response.getEntity().getContent()) {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
@@ -92,10 +92,8 @@ public class DZoneContentExtractor implements ContentExtractor {
                         return Optional.of(new ContentImport(htmlContent.get().getString(), titleContent.get().getString()));
                     }
                 }
-            } finally {
-                response.close();
             }
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             LOGGER.error("Exception thrown", ex);
         }
 

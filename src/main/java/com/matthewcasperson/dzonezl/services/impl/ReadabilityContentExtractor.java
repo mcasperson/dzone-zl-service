@@ -40,12 +40,12 @@ public class ReadabilityContentExtractor implements ContentExtractor {
             Do the initial login to get any security cookies
          */
 
-            final HttpGet importGet = new HttpGet("https://www.readability.com/api/content/v1/parser&token=" +
+            final HttpGet importGet = new HttpGet("https://www.readability.com/api/content/v1/parser?token=" +
                     data.get(Constants.READABILITY_TOKEN_NAME) + "&url=" + url);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
-            final CloseableHttpResponse response = httpclient.execute(importGet);
-            try {
+
+            try (final CloseableHttpResponse response = httpclient.execute(importGet)) {
                 try (final InputStream instream = response.getEntity().getContent()) {
                     final JsonReader jsonReader = Json.createReader(instream);
                     final JsonObject topLevelObject = jsonReader.readObject();
@@ -58,10 +58,8 @@ public class ReadabilityContentExtractor implements ContentExtractor {
                         return Optional.of(new ContentImport(htmlContent, titleContent));
                     }
                 }
-            } finally {
-                response.close();
             }
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             LOGGER.error("Exception thrown", ex);
         }
 
