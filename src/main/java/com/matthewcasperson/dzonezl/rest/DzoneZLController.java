@@ -65,6 +65,7 @@ public class DzoneZLController {
     private static final String X_TH_CSRF_HEADER = "X-TH-CSRF";
 
     private static final String SUCCESS = "\"success\":true";
+    private static final String EMPTY_IMPORT = "\"fullContent\":\"\"";
     private static final Pattern ID_RE = Pattern.compile("\"id\":(?<id>\\d+)");
     private static final Pattern ID_QUOTE_RE = Pattern.compile("\"id\":\"(?<id>\\d+)\"");
     private static final Pattern DATA_RE = Pattern.compile("\"data\":\"(?<data>.*?)\"");
@@ -74,6 +75,11 @@ public class DzoneZLController {
      */
     private static final int IMPORT_RETRY_COUNT = 5;
     private static final int SLEEP_BEFORE_RETRY = 1000;
+
+    /**
+     * The width of the image we download from DZone
+     */
+    private static final int IMAGE_WIDTH = 600;
 
     @Autowired
     private EntityManagerFactory emf;
@@ -235,7 +241,7 @@ public class DzoneZLController {
                 /*
                     Return if there was a success, or if we are done retrying
                  */
-                if (responseBody.indexOf(SUCCESS) != -1) {
+                if (responseBody.indexOf(SUCCESS) != -1 && responseBody.indexOf(EMPTY_IMPORT) == -1) {
                     LOGGER.info("DZone article import was a success!");
                     break;
                 } else if (count >= IMPORT_RETRY_COUNT - 1) {
@@ -518,7 +524,7 @@ public class DzoneZLController {
          */
         final File imageFile = File.createTempFile("dzoneTempImage", ".img");
         IOUtils.copy(
-                new URL("https://dz2cdn1.dzone.com/thumbnail?fid=" + imageId + "&w=600").openStream(),
+                new URL("https://dz2cdn1.dzone.com/thumbnail?fid=" + imageId + "&w=" + IMAGE_WIDTH).openStream(),
                 new FileOutputStream(imageFile));
 
         /*
