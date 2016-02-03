@@ -15,6 +15,7 @@ import com.yahoo.elide.core.SecurityMode;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
@@ -47,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Created by Matthew on 24/01/2016.
@@ -209,6 +212,12 @@ public class DzoneZLController {
         @RequestParam final String springSecurityCookie,
         @RequestParam final String jSessionIdCookie,
         @RequestParam final String url) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(awselbCookie));
+        checkArgument(StringUtils.isNotBlank(thCsrfCookie));
+        checkArgument(StringUtils.isNotBlank(springSecurityCookie));
+        checkArgument(StringUtils.isNotBlank(jSessionIdCookie));
+        checkArgument(StringUtils.isNotBlank(url));
 
         final Map<String, String> dzoneData = new HashMap<String, String>();
         dzoneData.put(Constants.AWSELB_COOKIE, awselbCookie);
