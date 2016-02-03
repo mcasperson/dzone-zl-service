@@ -53,30 +53,24 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created by Matthew on 24/01/2016.
+ * The rest interface to DZone and other services
  */
 @RestController
 public class DzoneZLController {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DzoneZLController.class);
-
-    @Autowired
-    private HttpEntityUtils httpEntityUtils;
-
-    @Autowired
-    @Qualifier("dZoneContentExtractor")
-    private ContentExtractor dZoneContentExtractor;
-
-    @Autowired
-    @Qualifier("readabilityContentExtractor")
-    private ContentExtractor readabilityContentExtractor;
-
-
     /**
      * The width of the image we download from DZone
      */
     private static final int IMAGE_WIDTH = 600;
-
+    @Autowired
+    private HttpEntityUtils httpEntityUtils;
+    @Autowired
+    @Qualifier("dZoneContentExtractor")
+    private ContentExtractor dZoneContentExtractor;
+    @Autowired
+    @Qualifier("readabilityContentExtractor")
+    private ContentExtractor readabilityContentExtractor;
     @Autowired
     private EntityManagerFactory emf;
 
