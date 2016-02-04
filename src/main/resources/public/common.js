@@ -200,23 +200,23 @@ function addAuthorsToDomain(authorsSplit, newMvbDomainId, callback) {
                     if (existingUser.data.length == 0) {
 
                         var author =
-                                {
-                                  data: {
-                                    type: "author",
-                                    attributes: {
-                                      name: name,
-                                      username: username
-                                    },
-                                    relationships: {
-                                        mvbdomain: {
-                                            data: {
-                                                type: "mvbDomain",
-                                                id: newMvbDomainId
-                                            }
+                            {
+                              data: {
+                                type: "author",
+                                attributes: {
+                                  name: name,
+                                  username: username
+                                },
+                                relationships: {
+                                    mvbdomain: {
+                                        data: {
+                                            type: "mvbDomain",
+                                            id: newMvbDomainId
                                         }
                                     }
-                                  }
-                                };
+                                }
+                              }
+                            };
 
                         jQuery.ajax({
                                 url: dataPrefix + '/author',
@@ -257,14 +257,14 @@ function addTopicsToDomain(topicSplit, newMvbDomainId) {
                 function(existingTags) {
                     if (existingTags.data.length == 0) {
                         var tag =
-                                {
-                                  data: {
-                                    type: "tag",
-                                    attributes: {
-                                      name: name
-                                    }
-                                  }
-                                };
+                            {
+                              data: {
+                                type: "tag",
+                                attributes: {
+                                  name: name
+                                }
+                              }
+                            };
 
                         jQuery.ajax({
                                 url: dataPrefix + '/tag',
@@ -277,13 +277,10 @@ function addTopicsToDomain(topicSplit, newMvbDomainId) {
                                 dataType : 'json'
                             }).done(function(newTag) {
                                 console.log(JSON.stringify(newTag));
-                                addTopicToDomain(newMvbDomainId, newTag.data.id);
-                                topicCallback();
+                                addTopicToDomain(newMvbDomainId, newTag.data.id, topicCallback);
                             });
                     } else {
-                        addTopicToDomain(newMvbDomainId, existingTags.data[0].id, function() {
-                            topicCallback();
-                        });
+                        addTopicToDomain(newMvbDomainId, existingTags.data[0].id, topicCallback);
                     }
                 }
             );

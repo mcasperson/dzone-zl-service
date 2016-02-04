@@ -243,14 +243,19 @@ function saveNewAuthorsAndTags() {
         processDomain(domainUri, function(domainId) {
             async.parallel([
                 function(callback){
-                    addAuthorsToDomain(selectedAuthors, domainId, callback);
+                    addAuthorsToDomain(selectedAuthors, domainId, function() {
+                        callback(null, null);
+                    });
+
                 },
                 function(callback){
-                    addTopicsToDomain(selectedTopics, domainId, callback);
+                    addTopicsToDomain(selectedTopics, domainId, function() {
+                        callback(null, null);
+                    });
                 }
             ],
             // optional callback
-            function(err, results){
+            function(err, results) {
                 window.onbeforeunload = null;
                 spinner.hide();
             });
