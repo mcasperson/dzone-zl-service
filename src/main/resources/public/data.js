@@ -241,7 +241,7 @@ function saveNewAuthorsAndTags() {
         var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            async.parallel([
+            sync.parallel([
                 function(callback){
                     addAuthorsToDomain(selectedAuthors, domainId, function() {
                         callback(null, null);
