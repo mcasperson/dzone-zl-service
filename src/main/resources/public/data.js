@@ -256,7 +256,7 @@ function getPosters() {
 
     jQuery.get(dataPrefix + "/poster", function(posters) {
         _.each(posters.data, function(image) {
-            posters.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posters.name + "' data-userid='" + posters.username + "'>" + posters.name + "</a></li>"));
+            posterList.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posters.name + "' data-userid='" + posters.username + "'>" + posters.name + "</a></li>"));
             if (savedPoster === posters.username)  {
                 poster.tagsinput('add', {name: posters.name, id: posters.username});
             }
