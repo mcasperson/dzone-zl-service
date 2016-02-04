@@ -87,7 +87,7 @@ public class DzoneZLController {
     @RequestMapping(
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE,
-            value={"/data/{entity}", "/data/{entity}/{id}/relationship/{entity2}", "/data/{entity}/{id}/{child}", "/data/{entity}/{id}"})
+            value={"/data/{entity}", "/data/{entity}/{id}/relationships/{entity2}", "/data/{entity}/{id}/{child}", "/data/{entity}/{id}"})
     @Transactional
     public String jsonApiGet(@RequestParam final Map<String, String> allRequestParams, final HttpServletRequest request) {
         final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
