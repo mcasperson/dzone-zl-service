@@ -24,6 +24,8 @@ var title = jQuery("#title");
 var submitButtons = jQuery("#submit, #submitTop");
 var restartButtons = jQuery("#restart, #restartTop");
 var poster = jQuery("#poster");
+var posters = jQuery("#posters");
+var posterList = jQuery("#posterList");
 
 var cookies = null;
 
@@ -83,6 +85,17 @@ function initAuthors() {
     authorNames.initialize();
 
     authors.tagsinput({
+      itemValue: 'id',
+      itemText: 'name',
+      confirmKeys: [],
+      typeaheadjs: {
+        name: 'author',
+        displayKey: 'name',
+        source: authorNames.ttAdapter()
+      }
+    });
+
+    poster.tagsinput({
       itemValue: 'id',
       itemText: 'name',
       confirmKeys: [],

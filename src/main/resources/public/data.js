@@ -5,6 +5,7 @@
 */
 initTags();
 initAuthors();
+getPosters();
 getAllImages();
 populateImportUrl();
 quickLoad();
@@ -196,6 +197,14 @@ jQuery("body").on("click", ".authorEntry", function(event) {
     authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
 });
 
+jQuery("body").on("click", ".posterEntry", function(event) {
+    var posterEntry = jQuery(event.target);
+    poster.tagsinput('removeAll');
+    poster.tagsinput('add', {name: posterEntry.data('username'), id: posterEntry.data("userid")});
+
+    localStorage.setItem('poster', posterEntry.data("userid"));
+});
+
 jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', function(event) {
     var authorName = event.target.textContent;
 
@@ -239,13 +248,31 @@ function queryDomain(domain, success) {
     );
 }
 
+function getPosters() {
+    posters.html("");
+
+    var savedPoster = localStorage.getItem('poster');
+
+    jQuery.get(dataPrefix + "/poster", function(posters) {
+
+    _.each(posters.data, function(image) {
+        posters.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posters.name + "' data-userid='" + posters.username + "'>" + posters.name + "</a></li>"));
+        if (savedPoster === posters.username)  {
+            poster.tagsinput('add', {name: posters.name, id: posters.username});
+        }
+    });
+}
+
 function getAuthors(domainInfo) {
     authorsList.html("");
     var count = 0;
     _.each(domainInfo.included, function(included) {
         if (included.type == "author") {
             ++count;
-            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-username='" + included.attributes.name + "' data-userid='" + included.attributes.username + "'>" + included.attributes.name + "</a></li>"));
+            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-username='" + included.attributes.name +
+            "' data-userid='" + included.attributes.username + "'>" +
+            included.attributes.name + "
+            </a></li>"));
         }
     });
 

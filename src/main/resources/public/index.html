@@ -113,7 +113,18 @@
                     <div class="form-group">
                         <label class="col-md-1 control-label" for="topics">Poster</label>
                         <div class="col-md-11">
-                            <input disabled="disabled" id="poster" name="poster" type="search" class="form-control input-md" value="343648">
+                            <div class="input-group" id="postersInputParent">
+                                <input disabled="disabled" id="poster" name="poster" type="search" class="form-control input-md" data-role="tagsinput">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled" id="posterList">
+                                        Posters
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" id="posters">
+
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
