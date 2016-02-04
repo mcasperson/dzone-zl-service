@@ -123,7 +123,7 @@ public class DzoneZLController {
         final Logger logger = new Slf4jLogger();
         final Elide elide = new Elide(logger, dataStore);
 
-        final ElideResponse response = elide.post(restOfTheUrl.replaceAll("^/data/", ""),body, new Object(), SecurityMode.BYPASS_SECURITY);
+        final ElideResponse response = elide.post(restOfTheUrl.replaceAll("^/data/", ""),body, new Object(), SecurityMode.SECURITY_INACTIVE);
 
         return response.getBody();
     }
