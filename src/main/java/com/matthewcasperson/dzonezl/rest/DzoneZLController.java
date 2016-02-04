@@ -77,6 +77,10 @@ public class DzoneZLController {
     private ContentExtractor readabilityContentExtractor;
 
     @Autowired
+    @Qualifier("boilerpipeContentExtractor")
+    private ContentExtractor boilerpipeContentExtractor;
+
+    @Autowired
     private EntityManagerFactory emf;
 
     private MultivaluedMap<String, String> fromMap(final Map<String, String> input) {
@@ -236,7 +240,9 @@ public class DzoneZLController {
          */
         return dZoneContentExtractor.extractContent(url, dzoneData).orElse(
                 readabilityContentExtractor.extractContent(url, readabilityData).orElse(
-                        new ContentImport()
+                        boilerpipeContentExtractor.extractContent(url, null).orElse(
+                            new ContentImport()
+                        )
                 )
         );
     }
