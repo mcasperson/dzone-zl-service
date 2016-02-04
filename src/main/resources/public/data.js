@@ -258,7 +258,7 @@ function getPosters() {
         _.each(postersEntities.data, function(posterEntity) {
             posters.append(jQuery(
                 "<li><a href='#' class='posterEntry' data-username='" + posterEntity.attributes.name + "' data-userid='" + posterEntity.attributes.username + "'>" +
-                posterEntity.name +
+                posterEntity.attributes.name +
                 "</a></li>"
             ));
             if (savedPoster === posters.username)  {

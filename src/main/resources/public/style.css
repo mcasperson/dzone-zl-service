@@ -109,3 +109,7 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
 #authorsInputParent > .bootstrap-tagsinput > .tag > span {
     text-decoration: none;
 }
+
+.tagButton {
+    height: 32px;
+}
