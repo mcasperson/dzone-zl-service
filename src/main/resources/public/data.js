@@ -261,7 +261,7 @@ function getPosters() {
                 posterEntity.attributes.name +
                 "</a></li>"
             ));
-            if (savedPoster === posters.username)  {
+            if (savedPoster === posterEntity.attributes.username)  {
                 poster.tagsinput('add', {name: posterEntity.attributes.name, id: posterEntity.attributes.username});
             }
         });
