@@ -186,74 +186,72 @@ function processDomain(domainUri, processDomain) {
     );
 }
 
-/*
-    TODO: use async.js and fix the callback to this function
-*/
 function addAuthorsToDomain(authorsSplit, newMvbDomainId, callback) {
-    _.each(authorsSplit, function(author) {
+    async.eachSeries(
+        authorsSplit,
+        function(author, authorCallback) {
+            var name = author.name;
+            var username = author.id;
 
-        var name = author.name;
-        var username = author.id;
+            jQuery.get(
+                dataPrefix + "/author?filter[author.username]=" + username,
+                function(existingUser) {
+                    if (existingUser.data.length == 0) {
 
-        jQuery.get(
-            dataPrefix + "/author?filter[author.username]=" + username,
-            function(existingUser) {
-
-                if (existingUser.data.length == 0) {
-
-                    var author =
-                            {
-                              data: {
-                                type: "author",
-                                attributes: {
-                                  name: name,
-                                  username: username
-                                },
-                                relationships: {
-                                    mvbdomain: {
-                                        data: {
-                                            type: "mvbDomain",
-                                            id: newMvbDomainId
+                        var author =
+                                {
+                                  data: {
+                                    type: "author",
+                                    attributes: {
+                                      name: name,
+                                      username: username
+                                    },
+                                    relationships: {
+                                        mvbdomain: {
+                                            data: {
+                                                type: "mvbDomain",
+                                                id: newMvbDomainId
+                                            }
                                         }
                                     }
-                                }
-                              }
-                            };
+                                  }
+                                };
 
-                    jQuery.ajax({
-                            url: dataPrefix + '/author',
-                            method: 'POST',
-                            xhrFields: {
-                                withCredentials: true
-                            },
-                            data: JSON.stringify(author),
-                            contentType: "application/json",
-                            dataType : 'json'
-                        }).done(function(newAuthor) {
-                            console.log("Create a new author for " + username);
-                            console.log(JSON.stringify(newAuthor));
-                            if (callback) {
-                                callback();
-                            }
-                        });
-                } else {
-                    console.log("Author " + username + " already exists, so will not create a new one");
-                    if (callback) {
-                        callback();
+                        jQuery.ajax({
+                                url: dataPrefix + '/author',
+                                method: 'POST',
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                data: JSON.stringify(author),
+                                contentType: "application/json",
+                                dataType : 'json'
+                            }).done(function(newAuthor) {
+                                console.log("Create a new author for " + username);
+                                console.log(JSON.stringify(newAuthor));
+                                authorCallback();
+                            });
+                    } else {
+                        console.log("Author " + username + " already exists, so will not create a new one");
+                        authorCallback();
                     }
                 }
+            )
+        },
+        function(err){
+            if (callback) {
+                callback();
             }
-        )
-    });
+        }
+    );
+
 }
 
-/*
-    TODO: use async.js and add a callback to this function
-*/
 function addTopicsToDomain(topicSplit, newMvbDomainId) {
-    _.each(topicSplit, function(name) {
-
-        jQuery.get(
+    async.eachSeries(
+        topicSplit,
+        function(topic, topicCallback) {
+            jQuery.get(
                 dataPrefix + "/tag?filter[tag.name]=" + name,
                 function(existingTags) {
                     if (existingTags.data.length == 0) {
@@ -279,17 +277,25 @@ function addTopicsToDomain(topicSplit, newMvbDomainId) {
                             }).done(function(newTag) {
                                 console.log(JSON.stringify(newTag));
                                 addTopicToDomain(newMvbDomainId, newTag.data.id);
+                                topicCallback();
                             });
                     } else {
-                        addTopicToDomain(newMvbDomainId, existingTags.data[0].id);
+                        addTopicToDomain(newMvbDomainId, existingTags.data[0].id, function() {
+                            topicCallback();
+                        });
                     }
                 }
-        );
-
-    });
+            );
+        },
+        function(err){
+            if (callback) {
+                callback();
+            }
+        }
+    );
 }
 
-function addTopicToDomain(newMvbDomainId, newTagId) {
+function addTopicToDomain(newMvbDomainId, newTagId, callback) {
 
     var tagToMVBDomain =
         {
@@ -323,5 +329,8 @@ function addTopicToDomain(newMvbDomainId, newTagId) {
             dataType : 'json'
         }).done(function(newTagToMVBDomain) {
             console.log(JSON.stringify(newTagToMVBDomain));
+            if (callback) {
+                callback();
+            }
         });
 }
