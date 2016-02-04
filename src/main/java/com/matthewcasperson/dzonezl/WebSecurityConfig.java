@@ -13,7 +13,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .rememberMe().rememberMeParameter("rememberme")
+                .rememberMe().rememberMeParameter("rememberme").key("dzst")
                 .and()
                 .headers().cacheControl().disable()
                 .and()
