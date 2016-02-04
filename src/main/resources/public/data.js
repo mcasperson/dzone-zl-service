@@ -154,6 +154,7 @@ submitButtons.click(function(){
 
     edit.froalaEditor('edit.off');
     suggestedAuthorsList.attr("disabled", "disabled");
+    posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
@@ -324,6 +325,7 @@ function importSucceeded(url, content, articleTitle) {
         getImages(domainInfo);
 
         suggestedAuthorsList.removeAttr("disabled");
+        posterList.removeAttr("disabled");
         title.removeAttr("disabled");
         topics.removeAttr("disabled");
         submitButtons.removeAttr("disabled");
@@ -357,6 +359,7 @@ function submitFailed() {
 
     edit.froalaEditor('edit.on');
     suggestedAuthorsList.removeAttr("disabled");
+    posterList.removeAttr("disabled");
     title.removeAttr("disabled");
     topics.removeAttr("disabled");
     submitButtons.removeAttr("disabled");
@@ -372,6 +375,7 @@ function submitSucceeded(submittedPost) {
     edit.froalaEditor('edit.off');
 
     suggestedAuthorsList.attr("disabled", "disabled");
+    posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
