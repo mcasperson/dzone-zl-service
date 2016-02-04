@@ -114,3 +114,7 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
     height: 32px;
     width: 140px;
 }
+
+.inputButton {
+    width: 140px;
+}
