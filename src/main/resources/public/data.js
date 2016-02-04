@@ -270,10 +270,12 @@ function getAuthors(domainInfo) {
     _.each(domainInfo.included, function(included) {
         if (included.type == "author") {
             ++count;
-            authorsList.append(jQuery("<li><a href='#' class='authorEntry' data-username='" + included.attributes.name +
-            "' data-userid='" + included.attributes.username + "'>" +
-            included.attributes.name + "
-            </a></li>"));
+            authorsList.append(jQuery(
+                "<li><a href='#' class='authorEntry' data-username='" + included.attributes.name +
+                "' data-userid='" + included.attributes.username + "'>" +
+                included.attributes.name +
+                "</a></li>"
+            ));
         }
     });
 

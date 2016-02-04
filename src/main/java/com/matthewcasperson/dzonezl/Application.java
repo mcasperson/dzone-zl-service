@@ -30,7 +30,7 @@ public class Application {
     public FilterRegistrationBean tomcatExpiresFilter() {
         final FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(expiresFilter());
-        registration.addUrlPatterns("/*");
+        registration.addUrlPatterns("/libraries/*");
         registration.addInitParameter("ExpiresByType image", "access plus 1 days");
         registration.addInitParameter("ExpiresByType text/css", "access plus 1 days");
         registration.addInitParameter("ExpiresByType text/css", "access plus 1 days");
