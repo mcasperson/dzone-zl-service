@@ -13,6 +13,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .rememberMe().key("dzst")
+                .and()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/libraries/**").permitAll()
