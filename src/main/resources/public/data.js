@@ -304,7 +304,7 @@ function importSucceeded(url, content, articleTitle) {
         authors.removeAttr("disabled");
         poster.removeAttr("disabled");
 
-        edit.froalaEditor('html.set', content);
+        edit.froalaEditor('html.set', setImagesToBreakText(content));
         title.val(articleTitle);
 
         edit.froalaEditor('edit.on');
@@ -360,6 +360,13 @@ function submitSucceeded(submittedPost) {
 
     window.open("https://dzone.com/articles/" + submittedPost.result.article.plug + "?preview=true");
     window.open("https://dzone.com/content/" + submittedPost.result.article.id + "/edit.html");
+}
+
+/**
+ * Inline images have the class fr-dii. Line vreak images have the class fr-dib
+ */
+function setImagesToBreakText(content) {
+    return content.replace(/(<img\w+class=".*?) (fr-dii)"/g, "$1 fr-dib)");
 }
 
 
