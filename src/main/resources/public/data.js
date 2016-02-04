@@ -304,7 +304,11 @@ function importSucceeded(url, content, articleTitle) {
         authors.removeAttr("disabled");
         poster.removeAttr("disabled");
 
-        edit.froalaEditor('html.set', setImagesToBreakText(content));
+        edit.froalaEditor('html.set', content);
+        /*
+            Once the editor has made it's own modifications, reset the images
+        */
+        edit.froalaEditor('html.set', setImagesToBreakText( edit.froalaEditor('html.get')));
         title.val(articleTitle);
 
         edit.froalaEditor('edit.on');
