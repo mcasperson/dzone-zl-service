@@ -186,7 +186,7 @@ submitButtons.click(function(){
             if (importedPost.success) {
                 submitSucceeded(importedPost);
             } else {
-                submitFailed();
+                submitFailed(importedPost);
             }
         }).error(function(){
             submitFailed();
@@ -384,8 +384,19 @@ function importFailed(url) {
     }
 }
 
-function submitFailed() {
-    alert("Submission of the post failed");
+function submitFailed(data) {
+    /*
+        Attempt to provide some meaningful feedback
+    */
+    if (data && data.errors) {
+        if (data.errors.topics) {
+           alert(data.errors.topics);
+        } else {
+            alert(JSON.stringify(data.errors));
+        }
+    } else {
+        alert("Submission of the post failed");
+    }
 
     edit.froalaEditor('edit.on');
     suggestedAuthorsList.removeAttr("disabled");
