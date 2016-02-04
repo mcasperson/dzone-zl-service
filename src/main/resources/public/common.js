@@ -26,6 +26,7 @@ var restartButtons = jQuery("#restart, #restartTop");
 var poster = jQuery("#poster");
 var posters = jQuery("#posters");
 var posterList = jQuery("#posterList");
+var spinner = jQuery("#spinner");
 
 var cookies = null;
 

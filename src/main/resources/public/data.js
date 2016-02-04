@@ -225,6 +225,11 @@ jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', functio
     Any new authors or topics that were defined for this post will be saved in the database
 */
 function saveNewAuthorsAndTags() {
+        window.onbeforeunload = function() {
+            "Some background processes are still running. Please wait for them to finish before closing the window");
+        };
+        spinner.show();
+
         var domainUri = URI(originalSource.val());
         /*
             We need a copy of this object, because the authors field will be cleared,
@@ -236,8 +241,19 @@ function saveNewAuthorsAndTags() {
         var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            addAuthorsToDomain(selectedAuthors, domainId);
-            addTopicsToDomain(selectedTopics, domainId);
+            async.parallel([
+                function(callback){
+                    addAuthorsToDomain(selectedAuthors, domainId, callback);
+                },
+                function(callback){
+                    addTopicsToDomain(selectedTopics, domainId, callback);
+                }
+            ],
+            // optional callback
+            function(err, results){
+                window.onbeforeunload = null;
+                spinner.hide();
+            });
         });
 }
 
