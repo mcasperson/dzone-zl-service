@@ -254,9 +254,9 @@ function getPosters() {
 
     var savedPoster = localStorage.getItem('poster');
 
-    jQuery.get(dataPrefix + "/poster", function(posters) {
-        _.each(posters.data, function(image) {
-            posterList.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posters.name + "' data-userid='" + posters.username + "'>" + posters.name + "</a></li>"));
+    jQuery.get(dataPrefix + "/poster", function(postersEntities) {
+        _.each(postersEntities.data, function(posterEntity) {
+            posters.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posterEntity.name + "' data-userid='" + posterEntity.username + "'>" + posterEntity.name + "</a></li>"));
             if (savedPoster === posters.username)  {
                 poster.tagsinput('add', {name: posters.name, id: posters.username});
             }
