@@ -15,6 +15,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .rememberMe().key("dzst")
                 .and()
+                .headers().cacheControl().disable()
+                .and()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/libraries/**").permitAll()
