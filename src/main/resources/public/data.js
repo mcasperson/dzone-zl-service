@@ -256,9 +256,13 @@ function getPosters() {
 
     jQuery.get(dataPrefix + "/poster", function(postersEntities) {
         _.each(postersEntities.data, function(posterEntity) {
-            posters.append(jQuery("<li><a href='#' class='posterEntry' data-username='" + posterEntity.name + "' data-userid='" + posterEntity.username + "'>" + posterEntity.name + "</a></li>"));
+            posters.append(jQuery(
+                "<li><a href='#' class='posterEntry' data-username='" + posterEntity.attributes.name + "' data-userid='" + posterEntity.attributes.username + "'>" +
+                posterEntity.name +
+                "</a></li>"
+            ));
             if (savedPoster === posters.username)  {
-                poster.tagsinput('add', {name: posters.name, id: posters.username});
+                poster.tagsinput('add', {name: posterEntity.attributes.name, id: posterEntity.attributes.username});
             }
         });
     });
@@ -271,8 +275,7 @@ function getAuthors(domainInfo) {
         if (included.type == "author") {
             ++count;
             authorsList.append(jQuery(
-                "<li><a href='#' class='authorEntry' data-username='" + included.attributes.name +
-                "' data-userid='" + included.attributes.username + "'>" +
+                "<li><a href='#' class='authorEntry' data-username='" + included.attributes.name + "' data-userid='" + included.attributes.username + "'>" +
                 included.attributes.name +
                 "</a></li>"
             ));
