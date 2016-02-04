@@ -226,7 +226,7 @@ jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', functio
 */
 function saveNewAuthorsAndTags() {
         window.onbeforeunload = function() {
-            "Some background processes are still running. Please wait for them to finish before closing the window");
+            return "Some background processes are still running. Please wait for them to finish before closing the window";
         };
         spinner.show();
 
