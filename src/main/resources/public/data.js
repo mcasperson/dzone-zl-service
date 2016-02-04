@@ -261,7 +261,7 @@ function getPosters() {
                 poster.tagsinput('add', {name: posters.name, id: posters.username});
             }
         });
-    }
+    });
 }
 
 function getAuthors(domainInfo) {
