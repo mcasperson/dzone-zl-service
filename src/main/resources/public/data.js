@@ -153,7 +153,7 @@ topics.on('itemAdded', function(event) {
     var domainUri = URI(originalSource.val());
     var selectedTopics = topics.val().split(",");
 
-    processDomain(domainUri, function(domainId) {
+    queryDomain(domainUri, function(domainId) {
           addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
              getTags(domainId);
@@ -176,7 +176,7 @@ authors.on('itemAdded', function(event) {
     */
     var selectedAuthors = JSON.parse(JSON.stringify(authors.tagsinput('items')));
 
-    processDomain(domainUri, function(domainId) {
+    queryDomain(domainUri, function(domainId) {
          addAuthorsToDomain(selectedAuthors, domainId, function() {
              removeBackgroundProcessing();
              getAuthors(domainId);
