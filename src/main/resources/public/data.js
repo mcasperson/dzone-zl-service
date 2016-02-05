@@ -141,15 +141,29 @@ submitButtons.click(function(){
     var author = authors.val();
     var imageId = jQuery('.image:checked').val();
     var posterContent = poster.val();
+    var waitDays = daysBeforePublishing.val();
+    var email = emailWhenPublishing.val();
 
     if (!content || content.trim().length == 0 ||
         !titleContent || titleContent.trim().length == 0 ||
         !topicsContent || topicsContent.trim().length == 0 ||
         !author || author.trim().length == 0 ||
         !posterContent || posterContent.trim().length == 0 ||
-        !imageId  || imageId.trim().length == 0) {
-        window.alert("Invalid content, title, author, image or topics");
+        !imageId  || imageId.trim().length == 0 ||
+        isNaN(parseInt(waitDays))) {
+        window.alert("Invalid content, title, author, image, topics or days to wait before publishing");
         return;
+    }
+
+    /*
+        Add some instructions at the top of the content
+    */
+    if (waitDays) {
+        content = content + "<p>Do not publish until " + moment().add(waitDays, "d").format("Do MMMM YYYY") + "</p>";
+    }
+
+    if (email) {
+        content = content + "<p>Email <a href='mailto:" + email + "'>" + email + " when publishing</p>";
     }
 
     edit.froalaEditor('edit.off');
@@ -161,8 +175,10 @@ submitButtons.click(function(){
     restartButtons.attr("disabled", "disabled");
     authors.attr("disabled", "disabled");
     poster.attr("disabled", "disabled");
+    emailWhenPublishing.attr("disabled", "disabled");
+    daysBeforePublishing.attr("disabled", "disabled");
 
-    jQuery.ajax({
+    /*jQuery.ajax({
             url: actionPrefix + "/submit",
             method: "POST",
             xhrFields: {
@@ -190,7 +206,9 @@ submitButtons.click(function(){
             }
         }).error(function(){
             submitFailed();
-        });
+        });*/
+
+        submitSucceeded();
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
@@ -241,7 +259,7 @@ function saveNewAuthorsAndTags() {
         var selectedTopics = topics.val().split(",");
 
         processDomain(domainUri, function(domainId) {
-            sync.parallel([
+           async.parallel([
                 function(callback){
                     addAuthorsToDomain(selectedAuthors, domainId, function() {
                         callback(null, null);
@@ -250,6 +268,11 @@ function saveNewAuthorsAndTags() {
                 },
                 function(callback){
                     addTopicsToDomain(selectedTopics, domainId, function() {
+                        callback(null, null);
+                    });
+                },
+                function(callback) {
+                    addWaitAndEmailToDomain(domainId, parseInt(daysBeforePublishing.val()), emailWhenPublishing.val(), function() {
                         callback(null, null);
                     });
                 }
@@ -354,6 +377,13 @@ function importSucceeded(url, content, articleTitle) {
         getTags(domainInfo);
         getImages(domainInfo);
 
+        if (domainInfo && domainInfo.data) {
+            daysBeforePublishing.val(domainInfo.data[0].attributes.daysBeforePublishing);
+            emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
+        }
+
+        emailWhenPublishing.removeAttr("disabled");
+        daysBeforePublishing.removeAttr("disabled");
         suggestedAuthorsList.removeAttr("disabled");
         posterList.removeAttr("disabled");
         title.removeAttr("disabled");
@@ -407,6 +437,8 @@ function submitFailed(data) {
     restartButtons.removeAttr("disabled");
     authors.removeAttr("disabled");
     poster.removeAttr("disabled");
+    emailWhenPublishing.removeAttr("disabled");
+    daysBeforePublishing.removeAttr("disabled");
 }
 
 function submitSucceeded(submittedPost) {
@@ -427,6 +459,9 @@ function submitSucceeded(submittedPost) {
     authors.attr("disabled", "disabled");
     topics.attr("disabled", "disabled");
 
+    emailWhenPublishing.attr("disabled", "disabled");
+    daysBeforePublishing.attr("disabled", "disabled");
+
     topics.tagsinput('removeAll');
     authors.tagsinput('removeAll');
 
@@ -434,8 +469,10 @@ function submitSucceeded(submittedPost) {
     imagesElement.html("");
     getAllImages();
 
-    window.open("https://dzone.com/articles/" + submittedPost.result.article.plug + "?preview=true");
-    window.open("https://dzone.com/content/" + submittedPost.result.article.id + "/edit.html");
+    if (submittedPost) {
+        window.open("https://dzone.com/articles/" + submittedPost.result.article.plug + "?preview=true");
+        window.open("https://dzone.com/content/" + submittedPost.result.article.id + "/edit.html");
+    }
 }
 
 /**

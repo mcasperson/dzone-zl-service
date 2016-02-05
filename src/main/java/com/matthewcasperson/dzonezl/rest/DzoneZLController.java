@@ -127,7 +127,38 @@ public class DzoneZLController {
         final Logger logger = new Slf4jLogger();
         final Elide elide = new Elide(logger, dataStore);
 
-        final ElideResponse response = elide.post(restOfTheUrl.replaceAll("^/data/", ""),body, new Object(), SecurityMode.SECURITY_INACTIVE);
+        final ElideResponse response = elide.post(
+                restOfTheUrl.replaceAll("^/data/", ""),
+                body,
+                new Object(),
+                SecurityMode.SECURITY_INACTIVE);
+
+        return response.getBody();
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            method = RequestMethod.PATCH,
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            value={"/data/{entity}/{entityid}"})
+    @Transactional
+    public String jsonApiPatch(@RequestBody final String body, final HttpServletRequest request) {
+        final String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+
+        final SessionFactory sessionFactory = emf.unwrap(SessionFactory.class);
+
+        /* Takes a hibernate session factory */
+        final DataStore dataStore = new HibernateStore(sessionFactory);
+        final Logger logger = new Slf4jLogger();
+        final Elide elide = new Elide(logger, dataStore);
+
+        final ElideResponse response = elide.patch(
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_JSON_VALUE,
+                restOfTheUrl.replaceAll("^/data/", ""),
+                body,
+                new Object(),
+                SecurityMode.SECURITY_INACTIVE);
 
         return response.getBody();
     }

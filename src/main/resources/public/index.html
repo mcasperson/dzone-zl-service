@@ -58,6 +58,7 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/async/1.5.2/async.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 
         <script src="libraries/URI.js"></script>
     </head>
@@ -71,8 +72,8 @@
                     <legend>DZone Zone Leader Syndication Tool | <a href="domainimport.html">OPML IMPORT</a> | <img src="spinner.gif" style="display:none" id="spinner"/></legend>
 
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="bookmarklet">Bookmarklet</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="bookmarklet">Bookmarklet</label>
+                        <div class="col-md-10">
                             <a name="bookmarklet" href="javascript:(function(){window.open('https://boiling-waters-63283.herokuapp.com/index.html?importUrl=' + window.location.href)})();">DZone Import</a>
                         </div>
                     </div>
@@ -80,15 +81,15 @@
 
 
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="username">DZone Username</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="username">DZone Username</label>
+                        <div class="col-md-10">
                             <input id="username" name="username" type="text" class="form-control input-md">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="password">DZone Password</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="password">DZone Password</label>
+                        <div class="col-md-10">
                             <div class="input-group">
                                 <input id="password" name="password" type="password" class="form-control input-md">
                                 <span class="input-group-btn">
@@ -101,8 +102,8 @@
 
                     <!-- Text input-->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="originalSource">Original Source</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="originalSource">Original Source</label>
+                        <div class="col-md-10">
                             <div class="input-group">
                                 <input disabled="disabled" id="originalSource" name="originalSource" type="text" class="form-control input-md">
                                 <span class="input-group-btn">
@@ -114,8 +115,8 @@
 
                     <!-- Search input-->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="topics">Poster</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="topics">Poster</label>
+                        <div class="col-md-10">
                             <div class="input-group" id="postersInputParent">
                                 <input disabled="disabled" id="poster" name="poster" type="search" class="form-control input-md" data-role="tagsinput">
                                 <div class="input-group-btn">
@@ -133,8 +134,8 @@
 
                     <!-- Button Drop Down -->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="authors">Authors</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="authors">Authors</label>
+                        <div class="col-md-10">
                             <div class="input-group" id="authorsInputParent">
                                 <input disabled="disabled" id="authors" name="authors" class="form-control" type="text" data-role="tagsinput">
                                 <div class="input-group-btn">
@@ -152,8 +153,8 @@
 
                     <!-- Search input-->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="topics">Topics</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="topics">Topics</label>
+                        <div class="col-md-10">
                             <div class="input-group">
                                 <input disabled="disabled" id="topics" name="topics" type="search" class="form-control input-md topics" data-role="tagsinput">
                                 <span class="input-group-btn">
@@ -165,9 +166,21 @@
 
                     <!-- Text input-->
                     <div class="form-group">
-                        <label class="col-md-1 control-label" for="title">Title</label>
-                        <div class="col-md-11">
+                        <label class="col-md-2 control-label" for="title">Title</label>
+                        <div class="col-md-10">
                             <input disabled="disabled" id="title" name="title" type="text" class="form-control input-md">
+                        </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="daysBeforePublishing">Days before publishing</label>
+                        <div class="col-md-4">
+                            <input disabled="disabled" id="daysBeforePublishing" name="daysBeforePublishing" type="text" class="form-control input-md">
+                        </div>
+                        <label class="col-md-2 control-label" for="emailWhenPublishing">Email when publishing</label>
+                        <div class="col-md-4">
+                            <input disabled="disabled" id="emailWhenPublishing" name="emailWhenPublishing" type="text" class="form-control input-md">
                         </div>
                     </div>
 
@@ -209,16 +222,16 @@
                         <form class="form-horizontal">
                             <fieldset>
                                 <div class="form-group">
-                                    <label class="col-md-1 control-label" for="file">Image File</label>
-                                    <div class="col-md-11">
+                                    <label class="col-md-2 control-label" for="file">Image File</label>
+                                    <div class="col-md-10">
                                         <input id="file" type="file" name="file">
                                     </div>
                                 </div>
 
                                 <!-- Text input-->
                                 <div class="form-group">
-                                    <label class="col-md-1 control-label" for="imagetopics">Topics</label>
-                                    <div class="col-md-11">
+                                    <label class="col-md-2 control-label" for="imagetopics">Topics</label>
+                                    <div class="col-md-10">
                                         <input id="imagetopics" name="imagetopics" type="text" class="form-control input-md topics">
                                     </div>
                                 </div>

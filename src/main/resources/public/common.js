@@ -27,6 +27,8 @@ var poster = jQuery("#poster");
 var posters = jQuery("#posters");
 var posterList = jQuery("#posterList");
 var spinner = jQuery("#spinner");
+var daysBeforePublishing = jQuery("#daysBeforePublishing");
+var emailWhenPublishing = jQuery("#emailWhenPublishing");
 
 var cookies = null;
 
@@ -231,6 +233,8 @@ function addAuthorsToDomain(authorsSplit, newMvbDomainId, callback) {
                                 console.log("Create a new author for " + username);
                                 console.log(JSON.stringify(newAuthor));
                                 authorCallback();
+                            }).error(function() {
+                                authorCallback();
                             });
                     } else {
                         console.log("Author " + username + " already exists, so will not create a new one");
@@ -248,7 +252,7 @@ function addAuthorsToDomain(authorsSplit, newMvbDomainId, callback) {
 
 }
 
-function addTopicsToDomain(topicSplit, newMvbDomainId) {
+function addTopicsToDomain(topicSplit, newMvbDomainId, callback) {
     async.eachSeries(
         topicSplit,
         function(topic, topicCallback) {
@@ -278,6 +282,8 @@ function addTopicsToDomain(topicSplit, newMvbDomainId) {
                             }).done(function(newTag) {
                                 console.log(JSON.stringify(newTag));
                                 addTopicToDomain(newMvbDomainId, newTag.data.id, topicCallback);
+                            }).error(function() {
+                                topicCallback();
                             });
                     } else {
                         addTopicToDomain(newMvbDomainId, existingTags.data[0].id, topicCallback);
@@ -327,6 +333,45 @@ function addTopicToDomain(newMvbDomainId, newTagId, callback) {
             dataType : 'json'
         }).done(function(newTagToMVBDomain) {
             console.log(JSON.stringify(newTagToMVBDomain));
+            if (callback) {
+                callback();
+            }
+        }).error(function() {
+              if (callback) {
+                  callback();
+              }
+          });
+}
+
+function addWaitAndEmailToDomain(newMvbDomainId, daysBeforePublishing, emailWhenPublishing, callback) {
+    var mvbDomain =
+        {
+            data: {
+                id: newMvbDomainId,
+                type: "mvbDomain",
+                attributes: {
+                    daysBeforePublishing: daysBeforePublishing,
+                    emailWhenPublishing: emailWhenPublishing || ""
+                }
+            }
+        };
+
+    jQuery.ajax({
+            url: dataPrefix + '/mvbDomain/' + newMvbDomainId,
+            method: 'PATCH',
+            xhrFields: {
+                withCredentials: true
+            },
+            data: JSON.stringify(mvbDomain),
+            contentType: "application/json",
+            dataType : 'json'
+        }).done(function(updatedMvbDomain) {
+            console.log(JSON.stringify(updatedMvbDomain));
+            if (callback) {
+                callback();
+            }
+        }).error(function() {
+            console.log("Failed to update MVBDomain entity");
             if (callback) {
                 callback();
             }

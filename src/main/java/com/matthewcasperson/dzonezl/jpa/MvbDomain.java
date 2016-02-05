@@ -1,6 +1,7 @@
 package com.matthewcasperson.dzonezl.jpa;
 
 import com.yahoo.elide.annotation.SharePermission;
+import com.yahoo.elide.annotation.UpdatePermission;
 import com.yahoo.elide.security.Role;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.List;
  * 
  */
 @SharePermission(any={Role.ALL.class })
+@UpdatePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="MvbDomain.findAll", query="SELECT m FROM MvbDomain m")
 @Table(name="MVBDomain")
@@ -22,6 +24,8 @@ public class MvbDomain implements Serializable {
 	private String description;
 	private String domain;
 	private String name;
+	private Integer daysBeforePublishing;
+	private String emailWhenPublishing;
 	private List<Author> authors;
 	private List<TagToMVBDomain> tagToMvbdomains;
 
@@ -64,6 +68,22 @@ public class MvbDomain implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getDaysBeforePublishing() {
+		return this.daysBeforePublishing;
+	}
+
+	public void setDaysBeforePublishing(Integer daysBeforePublishing) {
+		this.daysBeforePublishing = daysBeforePublishing;
+	}
+
+	public String getEmailWhenPublishing() {
+		return this.emailWhenPublishing;
+	}
+
+	public void setEmailWhenPublishing(String emailWhenPublishing) {
+		this.emailWhenPublishing = emailWhenPublishing;
 	}
 
 

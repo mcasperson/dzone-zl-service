@@ -1,6 +1,7 @@
 package com.matthewcasperson.dzonezl.jpa;
 
 import com.yahoo.elide.annotation.SharePermission;
+import com.yahoo.elide.annotation.UpdatePermission;
 import com.yahoo.elide.security.Role;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.List;
  * 
  */
 @SharePermission(any={Role.ALL.class })
+@UpdatePermission(any={Role.ALL.class })
 @Entity
 @NamedQuery(name="Image.findAll", query="SELECT i FROM Image i")
 public class Image implements Serializable {
