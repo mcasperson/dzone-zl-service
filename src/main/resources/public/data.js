@@ -153,7 +153,7 @@ topics.on('itemAdded', function(event) {
     var domainUri = URI(originalSource.val());
     var selectedTopics = topics.val().split(",");
 
-    queryDomain(domainUri, function(domainId) {
+    processDomain(domainUri, function(domainId) {
           addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
              getTags(domainId);
