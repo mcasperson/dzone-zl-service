@@ -159,11 +159,11 @@ submitButtons.click(function(){
         Add some instructions at the top of the content
     */
     if (waitDays) {
-        content = "<p>Do not publish until " + moment().add(waitDays, "d").format("Do MMMM YYYY") + "</p>" + content;
+        content = "<h1>Do not publish until " + moment().add(waitDays, "d").format("Do MMMM YYYY") + "</h1>" + content;
     }
 
     if (email) {
-        content = "<p>Email <a href='mailto:" + email + "'>" + email + " when publishing</p>"  + content;
+        content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
     }
 
     edit.froalaEditor('edit.off');
