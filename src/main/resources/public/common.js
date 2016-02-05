@@ -257,7 +257,7 @@ function addTopicsToDomain(topicSplit, newMvbDomainId, callback) {
         topicSplit,
         function(topic, topicCallback) {
             jQuery.get(
-                dataPrefix + "/tag?filter[tag.name]=" + topic.name,
+                dataPrefix + "/tag?filter[tag.name]=" + topic,
                 function(existingTags) {
                     if (existingTags.data.length == 0) {
                         var tag =
@@ -265,7 +265,7 @@ function addTopicsToDomain(topicSplit, newMvbDomainId, callback) {
                               data: {
                                 type: "tag",
                                 attributes: {
-                                  name: topic.name
+                                  name: topic
                                 }
                               }
                             };
