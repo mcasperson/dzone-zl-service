@@ -373,53 +373,58 @@ function getPosters() {
 
 function getAuthors(domainInfo) {
     authorsList.html("");
-    var count = 0;
-    _.each(domainInfo.included, function(included) {
-        if (included.type == "author") {
-            ++count;
-            authorsList.append(jQuery(
-                "<li><a href='#' class='authorEntry' data-username='" + included.attributes.name + "' data-userid='" + included.attributes.username + "'>" +
-                included.attributes.name +
-                "</a></li>"
-            ));
-        }
-    });
+    if (domainInfo && domainInfo.included) {
+        var count = 0;
+        _.each(domainInfo.included, function(included) {
+            if (included.type == "author") {
+                ++count;
+                authorsList.append(jQuery(
+                    "<li><a href='#' class='authorEntry' data-username='" + included.attributes.name + "' data-userid='" + included.attributes.username + "'>" +
+                    included.attributes.name +
+                    "</a></li>"
+                ));
+            }
+        });
 
-    /*
-        Where there is only 1 author, add it automatically
-    */
-    if (count == 1) {
-        var authorEntry = jQuery(".authorEntry");
-        authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
+        /*
+            Where there is only 1 author, add it automatically
+        */
+        if (count == 1) {
+            var authorEntry = jQuery(".authorEntry");
+            authors.tagsinput('add', {name: authorEntry.data('username'), id: authorEntry.data("userid")});
+        }
     }
 }
 
 function getTags(domainInfo) {
     topics.val("");
-    _.each(domainInfo.included, function(included) {
-        if (included.type == "tag") {
-            topics.tagsinput('add', {title: included.attributes.name});
-        }
-    });
+        if (domainInfo && domainInfo.included) {
+        _.each(domainInfo.included, function(included) {
+            if (included.type == "tag") {
+                topics.tagsinput('add', {title: included.attributes.name});
+            }
+        });
+    }
 }
 
 function getImages(domainInfo) {
-    var count = 0;
-    _.each(domainInfo.included, function(included) {
-        if (included.type == "image") {
-            ++count;
-            var image = jQuery("#imageId" + included.attributes.dzoneId);
-            /*
-                Select the image
-            */
-            image.prop("checked", true);
-            /*
-                Move it to the start of the list
-            */
-            image.parent().remove();
-            imagesElement.prepend(image.parent());
-        }
-    });
+    if (domainInfo && domainInfo.included) {
+        _.each(domainInfo.included, function(included) {
+            if (included.type == "image") {
+
+                var image = jQuery("#imageId" + included.attributes.dzoneId);
+                /*
+                    Select the image
+                */
+                image.prop("checked", true);
+                /*
+                    Move it to the start of the list
+                */
+                image.parent().remove();
+                imagesElement.prepend(image.parent());
+            }
+        });
+    }
 }
 
 function importSucceeded(url, content, articleTitle) {
