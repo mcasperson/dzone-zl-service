@@ -156,7 +156,7 @@ topics.on('itemAdded', function(event) {
     processDomain(domainUri, function(domainId) {
           addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
-             queryDomain(domainUrl, function(mvdDomain) {
+             queryDomain(domainUri, function(mvdDomain) {
                 getTags(mvdDomain);
              });
          });
@@ -181,7 +181,7 @@ authors.on('itemAdded', function(event) {
     processDomain(domainUri, function(domainId) {
          addAuthorsToDomain(selectedAuthors, domainId, function() {
              removeBackgroundProcessing();
-             queryDomain(domainUrl, function(mvdDomain) {
+             queryDomain(domainUri, function(mvdDomain) {
                  getAuthors(mvdDomain);
               });
          });
