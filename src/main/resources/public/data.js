@@ -178,7 +178,7 @@ submitButtons.click(function(){
     emailWhenPublishing.attr("disabled", "disabled");
     daysBeforePublishing.attr("disabled", "disabled");
 
-    /*jQuery.ajax({
+    jQuery.ajax({
             url: actionPrefix + "/submit",
             method: "POST",
             xhrFields: {
@@ -206,9 +206,7 @@ submitButtons.click(function(){
             }
         }).error(function(){
             submitFailed();
-        });*/
-
-        submitSucceeded();
+        });
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
