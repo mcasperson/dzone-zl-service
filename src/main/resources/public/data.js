@@ -156,6 +156,7 @@ topics.on('itemAdded', function(event) {
     processDomain(domainUri, function(domainId) {
           addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
+             getTags(domainId);
          });
     });
 });
@@ -178,6 +179,7 @@ authors.on('itemAdded', function(event) {
     processDomain(domainUri, function(domainId) {
          addAuthorsToDomain(selectedAuthors, domainId, function() {
              removeBackgroundProcessing();
+             getAuthors(domainId);
          });
     });
 });
@@ -186,6 +188,8 @@ authors.on('itemAdded', function(event) {
     Add the user to the posters table when the tag is added
 */
 poster.on('itemAdded', function(event) {
+  addBackgroundProcessing();
+
   var tag = event.item;
 
   var posterEntity =
@@ -210,10 +214,13 @@ poster.on('itemAdded', function(event) {
       dataType : 'json'
   }).done(function(newPoster) {
       console.log("Create a new poster " + newPoster);
+      removeBackgroundProcessing();
+      getPosters();
   }).error(function() {
     /*
         This is expected, as we can't save the same poster twice
     */
+    removeBackgroundProcessing();
   });
 });
 
@@ -517,7 +524,6 @@ function submitFailed(data) {
 }
 
 function submitSucceeded(submittedPost) {
-
 
     edit.froalaEditor('html.set', "<p/>");
     edit.froalaEditor('edit.off');
