@@ -150,7 +150,7 @@ submitButtons.click(function(){
         !author || author.trim().length == 0 ||
         !posterContent || posterContent.trim().length == 0 ||
         !imageId  || imageId.trim().length == 0 ||
-        isNaN(parseInt(waitDays))) {
+        (waitDays.trim.length !== 0 && isNaN(parseInt(waitDays)))) {
         window.alert("Invalid content, title, author, image, topics or days to wait before publishing");
         return;
     }
