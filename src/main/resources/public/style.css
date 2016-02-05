@@ -100,14 +100,10 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
     background-color: rgb(0, 153, 211);
 }
 
-#authorsInputParent > .bootstrap-tagsinput > .tag {
+#authorsInputParent > .bootstrap-tagsinput > .tag,  #postersInputParent > .bootstrap-tagsinput > .tag {
     text-decoration: underline;
     cursor: pointer;
     cursor: hand;
-}
-
-#authorsInputParent > .bootstrap-tagsinput > .tag > span {
-    text-decoration: none;
 }
 
 .tagButton {

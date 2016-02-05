@@ -222,19 +222,23 @@ jQuery("body").on("click", ".posterEntry", function(event) {
     localStorage.setItem('poster', posterEntry.data("userid"));
 });
 
-jQuery("#authorsInputParent > .bootstrap-tagsinput").on('click', '.tag', function(event) {
-    var authorName = event.target.textContent;
+jQuery("#authorsInputParent > .bootstrap-tagsinput, #postersInputParent  > .bootstrap-tagsinput").on(
+    'click',
+    '.tag',
+    function(event) {
+        var authorName = event.target.textContent;
 
-    var authorsItems = authors.tagsinput('items');
+        var authorsItems = authors.tagsinput('items');
 
-    var matchingAuthors = _.filter(authorsItems, function(author) {
-        return author.name === authorName;
-    });
+        var matchingAuthors = _.filter(authorsItems, function(author) {
+            return author.name === authorName;
+        });
 
-    if (matchingAuthors.length != 0) {
-        window.open('https://dzone.com/users/' + matchingAuthors[0].id + "/");
+        if (matchingAuthors.length != 0) {
+            window.open('https://dzone.com/users/' + matchingAuthors[0].id + "/");
+        }
     }
-});
+);
 
 
 /*
