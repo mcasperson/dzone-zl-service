@@ -153,10 +153,12 @@ topics.on('itemAdded', function(event) {
     var domainUri = URI(originalSource.val());
     var selectedTopics = topics.val().split(",");
 
-    queryDomain(domainUri, function(newMvbDomain) {
-          addTopicsToDomain(selectedTopics, newMvbDomain.data[0].id, function() {
+    processDomain(domainUri, function(domainId) {
+          addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
-             getTags(newMvbDomain);
+             queryDomain(domainUrl, function(mvdDomain) {
+                getTags(mvdDomain);
+             });
          });
     });
 });
@@ -176,10 +178,12 @@ authors.on('itemAdded', function(event) {
     */
     var selectedAuthors = JSON.parse(JSON.stringify(authors.tagsinput('items')));
 
-    queryDomain(domainUri, function(newMvbDomain) {
-         addAuthorsToDomain(selectedAuthors, newMvbDomain.data[0].id, function() {
+    processDomain(domainUri, function(domainId) {
+         addAuthorsToDomain(selectedAuthors, domainId, function() {
              removeBackgroundProcessing();
-             getAuthors(newMvbDomain);
+             queryDomain(domainUrl, function(mvdDomain) {
+                 getAuthors(mvdDomain);
+              });
          });
     });
 });
