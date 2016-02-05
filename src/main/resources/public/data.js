@@ -1,4 +1,5 @@
 
+var processingCount = 0;
 
 /*
     Perform some tasks at startup
@@ -122,6 +123,64 @@ function doImport() {
         importFailed(url);
     });
 }
+
+function addBackgroundProcessing() {
+     ++processingCount;
+     if (processingCount == 1) {
+        window.onbeforeunload = function() {
+            return "Some background processes are still running. Please wait for them to finish before closing the window";
+        };
+        spinner.show();
+    }
+}
+
+function removeBackgroundProcessing() {
+    --processingCount;
+    processingCount = processingCount < 0 ? 0 : processingCount;
+
+    if (processingCount === 0) {
+        window.onbeforeunload = null;
+        spinner.hide();
+    }
+}
+
+/*
+    Add the topic to the database when it is added
+*/
+topics.on('itemAdded', function(event) {
+    addBackgroundProcessing();
+
+    var domainUri = URI(originalSource.val());
+    var selectedTopics = topics.val().split(",");
+
+    processDomain(domainUri, function(domainId) {
+          addTopicsToDomain(selectedTopics, domainId, function() {
+             removeBackgroundProcessing();
+         });
+    });
+});
+
+/*
+    Add the author to the database when it is added
+*/
+authors.on('itemAdded', function(event) {
+    addBackgroundProcessing();
+
+    var domainUri = URI(originalSource.val());
+    /*
+        We need a copy of this object, because the authors field will be cleared,
+        which in turn clears the tags that are referenced by authors.tagsinput('items').
+
+        This is hacky, but does the job
+    */
+    var selectedAuthors = JSON.parse(JSON.stringify(authors.tagsinput('items')));
+
+    processDomain(domainUri, function(domainId) {
+         addAuthorsToDomain(selectedAuthors, domainId, function() {
+             removeBackgroundProcessing();
+         });
+    });
+});
 
 /*
     Add the user to the posters table when the tag is added
@@ -293,53 +352,6 @@ jQuery("#authorsInputParent > .bootstrap-tagsinput").on(
     }
 );
 
-
-/*
-    Any new authors or topics that were defined for this post will be saved in the database
-*/
-function saveNewAuthorsAndTags() {
-        window.onbeforeunload = function() {
-            return "Some background processes are still running. Please wait for them to finish before closing the window";
-        };
-        spinner.show();
-
-        var domainUri = URI(originalSource.val());
-        /*
-            We need a copy of this object, because the authors field will be cleared,
-            which in turn clears the tags that are referenced by authors.tagsinput('items').
-
-            This is hacky, but does the job
-        */
-        var selectedAuthors = JSON.parse(JSON.stringify(authors.tagsinput('items')));
-        var selectedTopics = topics.val().split(",");
-
-        processDomain(domainUri, function(domainId) {
-           async.parallel([
-                function(callback){
-                    addAuthorsToDomain(selectedAuthors, domainId, function() {
-                        callback(null, null);
-                    });
-
-                },
-                function(callback){
-                    addTopicsToDomain(selectedTopics, domainId, function() {
-                        callback(null, null);
-                    });
-                },
-                function(callback) {
-                    addWaitAndEmailToDomain(domainId, parseInt(daysBeforePublishing.val()), emailWhenPublishing.val(), function() {
-                        callback(null, null);
-                    });
-                }
-            ],
-            // optional callback
-            function(err, results) {
-                window.onbeforeunload = null;
-                spinner.hide();
-            });
-        });
-}
-
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();
     jQuery.get(
@@ -505,7 +517,7 @@ function submitFailed(data) {
 }
 
 function submitSucceeded(submittedPost) {
-    saveNewAuthorsAndTags();
+
 
     edit.froalaEditor('html.set', "<p/>");
     edit.froalaEditor('edit.off');
