@@ -156,9 +156,6 @@ topics.on('itemAdded', function(event) {
     processDomain(domainUri, function(domainId) {
           addTopicsToDomain(selectedTopics, domainId, function() {
              removeBackgroundProcessing();
-             queryDomain(domainUri, function(mvdDomain) {
-                getTags(mvdDomain);
-             });
          });
     });
 });
