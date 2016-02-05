@@ -123,6 +123,41 @@ function doImport() {
     });
 }
 
+/*
+    Add the user to the posters table when the tag is added
+*/
+poster.on('itemAdded', function(event) {
+  var tag = event.item;
+
+  var posterEntity =
+      {
+        data: {
+          type: "poster",
+          attributes: {
+            username: tag.id,
+            name: tag.name
+          }
+        }
+      };
+
+  jQuery.ajax({
+      url: dataPrefix + '/poster',
+      method: 'POST',
+      xhrFields: {
+          withCredentials: true
+      },
+      data: JSON.stringify(posterEntity),
+      contentType: "application/json",
+      dataType : 'json'
+  }).done(function(newPoster) {
+      console.log("Create a new poster " + newPoster);
+  }).error(function() {
+    /*
+        This is expected, as we can't save the same poster twice
+    */
+  });
+});
+
 loginButton.click(function() {
     login();
 });
@@ -397,7 +432,10 @@ function importSucceeded(url, content, articleTitle) {
         getTags(domainInfo);
         getImages(domainInfo);
 
-        if (domainInfo && domainInfo.data) {
+        /*
+            We can't do this with an empty domain
+        */
+        if (domainInfo && domainInfo.data && domainInfo.data.length !== 0) {
             daysBeforePublishing.val(domainInfo.data[0].attributes.daysBeforePublishing);
             emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
         }
