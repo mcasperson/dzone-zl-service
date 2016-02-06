@@ -561,7 +561,7 @@ function submitSucceeded(submittedPost) {
  * Inline images have the class fr-dii. Line break images have the class fr-dib
  */
 function setImagesToBreakText(content) {
-    return content.replace(/(<img\s+class=".*?)(fr-dii)"/g, "$1fr-dib\"");
+    return content.replace(/(<img(?:.*?)class=".*?)(fr-dii)"/g, "$1fr-dib\"");
 }
 
 
