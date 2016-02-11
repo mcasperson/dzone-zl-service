@@ -13,6 +13,7 @@ import com.yahoo.elide.audit.Slf4jLogger;
 import com.yahoo.elide.core.DataStore;
 import com.yahoo.elide.core.SecurityMode;
 import com.yahoo.elide.datastores.hibernate5.HibernateStore;
+import net.htmlparser.jericho.Source;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -161,6 +162,18 @@ public class DzoneZLController {
                 SecurityMode.SECURITY_INACTIVE);
 
         return response.getBody();
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            method = RequestMethod.POST,
+            produces = MediaType.TEXT_PLAIN_VALUE,
+            value={"/action/htmlToText"})
+    public String htmlToText(@RequestBody final String body, final HttpServletRequest request) {
+        final Source source = new Source(body);
+        source.fullSequentialParse();
+        final String text = source.getTextExtractor().setIncludeAttributes(true).toString();
+        return text;
     }
 
     /**

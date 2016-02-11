@@ -210,6 +210,37 @@
 
         </div><!-- /container -->
 
+        <!-- Style error modal -->
+        <div id="styleGuideViolationsModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Style guide violations found!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <p>
+                                The following style guide violations were found in the article.
+                            </p>
+                            <p>
+                                You can cancel the submission of the article and fix up these errors, or you can
+                                ignore the errors and submit the article as is.
+                            </p>
+                        </div>
+                        <div id="styleGuideViolations">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelSubmit" type="button" class="btn btn-default" data-dismiss="modal">Cancel Submit and Fix Errors</button>
+                        <button id="ignoreErrors" type="button" class="btn btn-primary" data-dismiss="modal">Ignore Errors and Submit</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Image upload modal -->
         <div id="myModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->
@@ -247,6 +278,7 @@
             </div>
         </div>
 
+        <script src="styleCodeValidator.js"></script>
         <script src="common.js"></script>
         <script src="data.js"></script>
         <script src="image.js"></script>

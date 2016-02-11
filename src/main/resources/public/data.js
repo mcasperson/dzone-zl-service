@@ -236,79 +236,7 @@ restartButtons.click(function(){
 });
 
 submitButtons.click(function(){
-
-    var content = edit.froalaEditor('html.get');
-    var titleContent = title.val();
-    var topicsContent = topics.val();
-    var author = authors.val();
-    var imageId = jQuery('.image:checked').val();
-    var posterContent = poster.val();
-    var waitDays = daysBeforePublishing.val();
-    var email = emailWhenPublishing.val();
-
-    if (!content || content.trim().length == 0 ||
-        !titleContent || titleContent.trim().length == 0 ||
-        !topicsContent || topicsContent.trim().length == 0 ||
-        !author || author.trim().length == 0 ||
-        !posterContent || posterContent.trim().length == 0 ||
-        !imageId  || imageId.trim().length == 0 ||
-        (waitDays.trim.length !== 0 && isNaN(parseInt(waitDays)))) {
-        window.alert("Invalid content, title, author, image, topics or days to wait before publishing");
-        return;
-    }
-
-    /*
-        Add some instructions at the top of the content
-    */
-    if (waitDays) {
-        content = "<h1>Do not publish until " + moment().add(waitDays, "d").format("Do MMMM YYYY") + "</h1>" + content;
-    }
-
-    if (email) {
-        content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
-    }
-
-    edit.froalaEditor('edit.off');
-    suggestedAuthorsList.attr("disabled", "disabled");
-    posterList.attr("disabled", "disabled");
-    title.attr("disabled", "disabled");
-    topics.attr("disabled", "disabled");
-    submitButtons.attr("disabled", "disabled");
-    restartButtons.attr("disabled", "disabled");
-    authors.attr("disabled", "disabled");
-    poster.attr("disabled", "disabled");
-    emailWhenPublishing.attr("disabled", "disabled");
-    daysBeforePublishing.attr("disabled", "disabled");
-
-    jQuery.ajax({
-            url: actionPrefix + "/submit",
-            method: "POST",
-            xhrFields: {
-                withCredentials: true
-            },
-            data: {
-                awselbCookie: cookies.AWSELB,
-                thCsrfCookie: cookies.TH_CSRF,
-                springSecurityCookie: cookies.SPRING_SECURITY_REMEMBER_ME_COOKIE,
-                jSessionIdCookie: cookies.JSESSIONID,
-                url: originalSource.val(),
-                content: content,
-                title: titleContent,
-                topics: topicsContent,
-                authors: author,
-                image: imageId,
-                poster: posterContent
-
-            }
-        }).done(function(importedPost) {
-            if (importedPost.success) {
-                submitSucceeded(importedPost);
-            } else {
-                submitFailed(importedPost);
-            }
-        }).error(function(){
-            submitFailed();
-        });
+    validateContent();
 });
 
 jQuery("body").on("click", ".authorEntry", function(event) {
@@ -359,6 +287,118 @@ jQuery("#authorsInputParent > .bootstrap-tagsinput").on(
         }
     }
 );
+
+ignoreErrors.click(function() {
+    submitArticle();
+});
+
+function submitArticle() {
+    var content = edit.froalaEditor('html.get');
+    var titleContent = title.val();
+    var topicsContent = topics.val();
+    var author = authors.val();
+    var imageId = jQuery('.image:checked').val();
+    var posterContent = poster.val();
+    var waitDays = daysBeforePublishing.val();
+    var email = emailWhenPublishing.val();
+
+    if (!content || content.trim().length == 0 ||
+        !titleContent || titleContent.trim().length == 0 ||
+        !topicsContent || topicsContent.trim().length == 0 ||
+        !author || author.trim().length == 0 ||
+        !posterContent || posterContent.trim().length == 0 ||
+        !imageId  || imageId.trim().length == 0 ||
+        (waitDays.trim.length !== 0 && isNaN(parseInt(waitDays)))) {
+        window.alert("Invalid content, title, author, image, topics or days to wait before publishing");
+        return;
+    }
+
+    /*
+     Add some instructions at the top of the content
+     */
+    if (waitDays) {
+        content = "<h1>Do not publish until " + moment().add(waitDays, "d").format("Do MMMM YYYY") + "</h1>" + content;
+    }
+
+    if (email) {
+        content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
+    }
+
+    edit.froalaEditor('edit.off');
+    suggestedAuthorsList.attr("disabled", "disabled");
+    posterList.attr("disabled", "disabled");
+    title.attr("disabled", "disabled");
+    topics.attr("disabled", "disabled");
+    submitButtons.attr("disabled", "disabled");
+    restartButtons.attr("disabled", "disabled");
+    authors.attr("disabled", "disabled");
+    poster.attr("disabled", "disabled");
+    emailWhenPublishing.attr("disabled", "disabled");
+    daysBeforePublishing.attr("disabled", "disabled");
+
+    jQuery.ajax({
+        url: actionPrefix + "/submit",
+        method: "POST",
+        xhrFields: {
+            withCredentials: true
+        },
+        data: {
+            awselbCookie: cookies.AWSELB,
+            thCsrfCookie: cookies.TH_CSRF,
+            springSecurityCookie: cookies.SPRING_SECURITY_REMEMBER_ME_COOKIE,
+            jSessionIdCookie: cookies.JSESSIONID,
+            url: originalSource.val(),
+            content: content,
+            title: titleContent,
+            topics: topicsContent,
+            authors: author,
+            image: imageId,
+            poster: posterContent
+
+        }
+    }).done(function(importedPost) {
+        if (importedPost.success) {
+            submitSucceeded(importedPost);
+        } else {
+            submitFailed(importedPost);
+        }
+    }).error(function(){
+        submitFailed();
+    });
+}
+
+function validateContent() {
+    var contentHtml = edit.froalaEditor('html.get');
+
+    $.ajax({
+        type: "POST",
+        url: "/action/htmlToText",
+        data: contentHtml,
+        dataType: "text",
+        contentType: "text/plain",
+        success: function(text) {
+            var newRules = rules;
+            newRules.unshift(function(callback) {
+                callback(null, text, "");
+            });
+
+            async.waterfall(
+                newRules,
+                function(err, text, error) {
+                    if (error !== "") {
+                        styleGuideViolations.html(error.replace(/\n/g, "<br/>"));
+                        styleGuideViolationsModal.modal();
+                    } else {
+                        submitArticle();
+                    }
+                }
+            );
+        },
+        error: function() {
+            submitArticle();
+        }
+    });
+}
 
 function queryDomain(domain, success) {
     var hostname = URI(domain).hostname();

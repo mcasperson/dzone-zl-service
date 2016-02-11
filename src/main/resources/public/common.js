@@ -29,6 +29,11 @@ var posterList = jQuery("#posterList");
 var spinner = jQuery("#spinner");
 var daysBeforePublishing = jQuery("#daysBeforePublishing");
 var emailWhenPublishing = jQuery("#emailWhenPublishing");
+var styleGuideViolations = jQuery("#styleGuideViolations");
+var cancelSubmit = jQuery("#cancelSubmit");
+var ignoreErrors = jQuery("#ignoreErrors");
+var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal")
+
 
 var cookies = null;
 
