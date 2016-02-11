@@ -377,7 +377,7 @@ function validateContent() {
         dataType: "text",
         contentType: "text/plain",
         success: function(text) {
-            var newRules = rules;
+            var newRules = rules.slice( 0 );
             newRules.unshift(function(callback) {
                 callback(null, text, "");
             });
