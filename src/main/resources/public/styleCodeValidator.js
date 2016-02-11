@@ -1,7 +1,6 @@
 var rules = [
     paasRule,
     iaasRule,
-    htmlRule,
     cssRule,
     bigdataRule,
     jQueryRule,
@@ -26,14 +25,6 @@ function paasRule(text, error, callback) {
 function iaasRule(text, error, callback) {
     if (/infrastructure\W+as\W+a\W+service/i.exec(text)) {
         callback(null, text, error + "\nUse 'IaaS' not 'infrastructure-as-a-service'");
-    } else {
-        callback(null, text, error);
-    }
-}
-
-function htmlRule(text, error, callback) {
-    if (/html\b(?!:)/i.exec(text)) {
-        callback(null, text, error + "\nUse 'HTML5' not 'HTML'");
     } else {
         callback(null, text, error);
     }
