@@ -32,7 +32,7 @@ function iaasRule(text, error, callback) {
 }
 
 function htmlRule(text, error, callback) {
-    if (/html\b/i.exec(text)) {
+    if (/html\b(?!:)/i.exec(text)) {
         callback(null, text, error + "\nUse 'HTML5' not 'HTML'");
     } else {
         callback(null, text, error);
