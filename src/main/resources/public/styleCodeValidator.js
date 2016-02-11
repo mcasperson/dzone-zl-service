@@ -147,7 +147,7 @@ function jbossRule(text, error, callback) {
 }
 
 function redhatRule2(text, error, callback) {
-    if (/redhat\.js/i.exec(text)) {
+    if (/redhat/i.exec(text)) {
         callback(null, text, error + "\nUse 'Red Hat' not 'RedHat'");
     } else {
         callback(null, text, error);
