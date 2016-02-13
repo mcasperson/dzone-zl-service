@@ -488,6 +488,15 @@ function getImages(domainInfo) {
 }
 
 function importSucceeded(url, content, articleTitle) {
+    /*
+        Get the title case version of the title
+     */
+    jQuery.get('http://brettterpstra.com/titlecase/?title=' + articleTitle, function(fixedTitle) {
+        title.val(fixedTitle);
+    }).fail(function() {
+        title.val(articleTitle);
+    });
+
     queryDomain(url, function(domainInfo) {
         if (domainInfo.data.length == 0) {
             alert("There was no matching information in the database for this domain");
@@ -521,7 +530,6 @@ function importSucceeded(url, content, articleTitle) {
             Once the editor has made it's own modifications, reset the images
         */
         edit.froalaEditor('html.set', setImagesToBreakText( edit.froalaEditor('html.get')));
-        title.val(articleTitle);
 
         edit.froalaEditor('edit.on');
     });
