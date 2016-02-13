@@ -487,15 +487,55 @@ function getImages(domainInfo) {
     }
 }
 
+function titleCaps(title) {
+    var small = "(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v[.]?|via|vs[.]?)";
+    var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]*)";
+    var parts = [], split = /[:.;?!] |(?: |^)["Ò]/g, index = 0;
+    title = lower(title);
+    while (true) {
+        var m = split.exec(title);
+        parts.push( title.substring(index, m ? m.index : title.length)
+            .replace(/\b([A-Za-z][a-z.'Õ]*)\b/g, function(all){
+                return /[A-Za-z]\.[A-Za-z]/.test(all) ? all : upper(all);
+            })
+            .replace(RegExp("\\b" + small + "\\b", "ig"), lower)
+            .replace(RegExp("^" + punct + small + "\\b", "ig"), function(all, punct, word){
+                return punct + upper(word);
+            })
+            .replace(RegExp("\\b" + small + punct + "$", "ig"), upper));
+
+        index = split.lastIndex;
+
+        if ( m ) parts.push( m[0] );
+        else break;
+    }
+
+    return parts.join("").replace(/ V(s?)\. /ig, " v$1. ")
+        .replace(/(['Õ])S\b/ig, "$1s")
+        .replace(/\b(AT&T|Q&A)\b/ig, function(all){
+            return all.toUpperCase();
+        });
+}
+
+function lower(word){
+    return word.toLowerCase();
+}
+
+function upper(word){
+    return word.substr(0,1).toUpperCase() + word.substr(1);
+}
+
 function importSucceeded(url, content, articleTitle) {
+
+    title.val(titleCaps(articleTitle));
+
+    edit.froalaEditor('html.set', content);
     /*
-        Get the title case version of the title
+     Once the editor has made it's own modifications, reset the images
      */
-    jQuery.get('http://brettterpstra.com/titlecase/?title=' + articleTitle, function(fixedTitle) {
-        title.val(fixedTitle);
-    }).fail(function() {
-        title.val(articleTitle);
-    });
+    edit.froalaEditor('html.set', setImagesToBreakText( edit.froalaEditor('html.get')));
+
+    edit.froalaEditor('edit.on');
 
     queryDomain(url, function(domainInfo) {
         if (domainInfo.data.length == 0) {
@@ -524,14 +564,6 @@ function importSucceeded(url, content, articleTitle) {
         restartButtons.removeAttr("disabled");
         authors.removeAttr("disabled");
         poster.removeAttr("disabled");
-
-        edit.froalaEditor('html.set', content);
-        /*
-            Once the editor has made it's own modifications, reset the images
-        */
-        edit.froalaEditor('html.set', setImagesToBreakText( edit.froalaEditor('html.get')));
-
-        edit.froalaEditor('edit.on');
     });
 }
 
