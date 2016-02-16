@@ -32,7 +32,8 @@ var emailWhenPublishing = jQuery("#emailWhenPublishing");
 var styleGuideViolations = jQuery("#styleGuideViolations");
 var cancelSubmit = jQuery("#cancelSubmit");
 var ignoreErrors = jQuery("#ignoreErrors");
-var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal")
+var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal");
+var citeAuthor = jQuery("#citeAuthor");
 
 
 var cookies = null;

@@ -301,6 +301,7 @@ function submitArticle() {
     var posterContent = poster.val();
     var waitDays = daysBeforePublishing.val();
     var email = emailWhenPublishing.val();
+    var citeAuthorContent = citeAuthor.val();
 
     if (!content || content.trim().length == 0 ||
         !titleContent || titleContent.trim().length == 0 ||
@@ -322,6 +323,10 @@ function submitArticle() {
 
     if (email) {
         content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
+    }
+
+    if (citeAuthorContent) {
+        content += "<p>Original article by " + citeAuthorContent + "</p>";
     }
 
     edit.froalaEditor('edit.off');
@@ -551,6 +556,7 @@ function importSucceeded(url, content, articleTitle) {
         */
         if (domainInfo && domainInfo.data && domainInfo.data.length !== 0) {
             daysBeforePublishing.val(domainInfo.data[0].attributes.daysBeforePublishing);
+            emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
             emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
         }
 
