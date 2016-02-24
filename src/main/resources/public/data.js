@@ -252,6 +252,22 @@ jQuery("body").on("click", ".posterEntry", function(event) {
     localStorage.setItem('poster', posterEntry.data("userid"));
 });
 
+jQuery("#topicsInputParent > .bootstrap-tagsinput").on(
+    'click',
+    '.tag',
+    function(event) {
+        var topicName = event.target.textContent;
+
+        var topicItems = topics.tagsinput('items');
+
+        _.each(topicItems, function(topic) {
+            if (topic.name === topicName) {
+                topics.tagsinput('remove', topic);
+            }
+        });
+    }
+);
+
 jQuery("#postersInputParent  > .bootstrap-tagsinput").on(
     'click',
     '.tag',
