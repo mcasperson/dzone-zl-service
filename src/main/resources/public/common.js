@@ -1,7 +1,7 @@
 var imageWidth = 250;
 var randomImages = 250;
 var randomImageStartIndex = 900000;
-var randomImageRange = 100000;
+var randomImageRange = 300000;
 var dataPrefix = "/data";
 var actionPrefix = "/action";
 

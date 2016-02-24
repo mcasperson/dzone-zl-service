@@ -261,7 +261,7 @@ jQuery("#topicsInputParent > .bootstrap-tagsinput").on(
         var topicItems = topics.tagsinput('items');
 
         _.each(topicItems, function(topic) {
-            if (topic.title === topicName) {
+            if (topic && topic.title === topicName) {
                 topics.tagsinput('remove', topic);
             }
         });
