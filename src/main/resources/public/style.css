@@ -102,7 +102,10 @@ label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
 
 #authorsInputParent > .bootstrap-tagsinput > .tag,  #postersInputParent > .bootstrap-tagsinput > .tag {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: hand;
+}
+
+#topicsInputParent > .bootstrap-tagsinput > .tag, {
     cursor: hand;
 }
 
