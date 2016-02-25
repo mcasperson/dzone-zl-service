@@ -356,6 +356,7 @@ function submitArticle() {
     poster.attr("disabled", "disabled");
     emailWhenPublishing.attr("disabled", "disabled");
     daysBeforePublishing.attr("disabled", "disabled");
+    citeAuthor.attr("disabled", "disabled");
 
     jQuery.ajax({
         url: actionPrefix + "/submit",
@@ -586,6 +587,7 @@ function importSucceeded(url, content, articleTitle) {
         restartButtons.removeAttr("disabled");
         authors.removeAttr("disabled");
         poster.removeAttr("disabled");
+        citeAuthor.removeAttr("disabled");
     });
 }
 
