@@ -674,6 +674,8 @@ public class DzoneZLController {
                     imageFile,
                     httpEntityUtils);
 
+            LOGGER.info("Image ID: " + newImageId);
+
             return newImageId;
         }
 
