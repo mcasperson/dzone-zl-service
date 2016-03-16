@@ -62,9 +62,10 @@ public class DzoneZLController {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DzoneZLController.class);
 
     /**
-     * The width of the image we download from DZone
+     * The width of the image we download from DZone. This is just some ridiculous
+     * number to get the maximum image size.
      */
-    private static final int IMAGE_WIDTH = 600;
+    private static final int IMAGE_WIDTH = 1000000000;
 
     @Autowired
     private HttpEntityUtils httpEntityUtils;
