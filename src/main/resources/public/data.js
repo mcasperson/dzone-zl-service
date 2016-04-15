@@ -514,9 +514,9 @@ function getTags(domainInfo, url) {
     /*
         Use a machine learning API to extract the keywords
      */
-    jQuery.get(actionPrefix + "/getKeywords?url=" + encodeURIComponent(url), function(topics) {
+    jQuery.get(actionPrefix + "/getKeywords?url=" + encodeURIComponent(url), function(dzoneTopics) {
 
-        _.each(topics, function(topic) {
+        _.each(dzoneTopics, function(topic) {
             topics.tagsinput('add', {title: topic});
         });
 
