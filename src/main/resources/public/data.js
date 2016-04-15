@@ -634,6 +634,7 @@ function importSucceeded(url, content, articleTitle) {
         suggestedAuthorsList.removeAttr("disabled");
         posterList.removeAttr("disabled");
         title.removeAttr("disabled");
+        tldr.removeAttr("disabled");
         topics.removeAttr("disabled");
         submitButtons.removeAttr("disabled");
         restartButtons.removeAttr("disabled");
