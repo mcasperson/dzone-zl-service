@@ -311,6 +311,7 @@ ignoreErrors.click(function() {
 function submitArticle() {
     var content = edit.froalaEditor('html.get');
     var titleContent = title.val();
+    var tldrContent = tldr.val();
     var topicsContent = topics.val();
     var author = authors.val();
     var imageId = jQuery('.image:checked').val();
@@ -319,14 +320,41 @@ function submitArticle() {
     var email = emailWhenPublishing.val();
     var citeAuthorContent = citeAuthor.val();
 
-    if (!content || content.trim().length == 0 ||
-        !titleContent || titleContent.trim().length == 0 ||
-        !topicsContent || topicsContent.trim().length == 0 ||
-        !author || author.trim().length == 0 ||
-        !posterContent || posterContent.trim().length == 0 ||
-        !imageId  || imageId.trim().length == 0 ||
-        (waitDays.trim.length !== 0 && isNaN(parseInt(waitDays)))) {
-        window.alert("Invalid content, title, author, image, topics or days to wait before publishing");
+    if (!content || content.trim().length == 0) {
+        window.alert("Invalid content");
+        return;
+    } else if (!titleContent || titleContent.trim().length == 0) {
+        window.alert("Invalid title");
+        return;
+    }
+
+    if (!tldrContent || tldrContent.trim().length == 0) {
+        window.alert("Invalid tldr");
+        return;
+    }
+
+    if(!topicsContent || topicsContent.trim().length == 0) {
+        window.alert("Invalid topics");
+        return;
+    }
+
+    if(!author || author.trim().length == 0) {
+        window.alert("Invalid author");
+        return;
+    }
+
+    if (!posterContent || posterContent.trim().length == 0) {
+        window.alert("Invalid poster");
+        return;
+    }
+
+    if (!imageId || imageId.trim().length == 0) {
+        window.alert("No image was selected.");
+        return;
+    }
+
+    if (waitDays.trim.length !== 0 && isNaN(parseInt(waitDays))) {
+        window.alert("Invalid days to wait before publishing");
         return;
     }
 
@@ -349,6 +377,7 @@ function submitArticle() {
     suggestedAuthorsList.attr("disabled", "disabled");
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
+    tldr.attr("disabled", "disabled");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
@@ -375,7 +404,8 @@ function submitArticle() {
             topics: topicsContent,
             authors: author,
             image: imageId,
-            poster: posterContent
+            poster: posterContent,
+            tldr: tldrContent
 
         }
     }).done(function(importedPost) {
@@ -619,6 +649,7 @@ function submitFailed(data) {
     suggestedAuthorsList.removeAttr("disabled");
     posterList.removeAttr("disabled");
     title.removeAttr("disabled");
+    tldr.removeAttr("disabled");
     topics.removeAttr("disabled");
     submitButtons.removeAttr("disabled");
     restartButtons.removeAttr("disabled");
@@ -636,6 +667,7 @@ function submitSucceeded(submittedPost) {
     suggestedAuthorsList.attr("disabled", "disabled");
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
+    tldr.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
     poster.attr("disabled", "disabled");

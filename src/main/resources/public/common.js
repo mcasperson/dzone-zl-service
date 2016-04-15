@@ -34,6 +34,7 @@ var cancelSubmit = jQuery("#cancelSubmit");
 var ignoreErrors = jQuery("#ignoreErrors");
 var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal");
 var citeAuthor = jQuery("#citeAuthor");
+var tldr = jQuery("#tldr");
 
 
 var cookies = null;

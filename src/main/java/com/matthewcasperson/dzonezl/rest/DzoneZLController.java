@@ -316,6 +316,7 @@ public class DzoneZLController {
             @RequestParam final String springSecurityCookie,
             @RequestParam final String jSessionIdCookie,
             @RequestParam final String title,
+            @RequestParam final String tldr,
             @RequestParam final String content,
             @RequestParam final String url,
             @RequestParam final String topics,
@@ -330,6 +331,7 @@ public class DzoneZLController {
         checkArgument(StringUtils.isNotBlank(url));
         checkArgument(StringUtils.isNotBlank(topics));
         checkArgument(StringUtils.isNotBlank(authors));
+        checkArgument(StringUtils.isNotBlank(tldr));
         checkNotNull(poster);
         checkNotNull(image);
 
@@ -369,7 +371,7 @@ public class DzoneZLController {
                             "\"notes\":\"\"," +
                             "\"editorsPick\":false," +
                             "\"metaDescription\":\"\"," +
-                            "\"tldr\":\"\"," +
+                            "\"tldr\":\"" + StringEscapeUtils.escapeJson(tldr) + "\"," +
                             "\"originalSource\":\"" + StringEscapeUtils.escapeJson(url) + "\"," +
                             "\"visibility\":\"draft\"}";
 
