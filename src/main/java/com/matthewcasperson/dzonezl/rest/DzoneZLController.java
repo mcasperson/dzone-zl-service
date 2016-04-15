@@ -596,7 +596,7 @@ public class DzoneZLController {
 
                 for (int index = 0; index < jsonData.length(); ++index) {
                     final String dzoneTopic = jsonData.getJSONObject(index).getString("title");
-                    if (topic.equals(dzoneTopic)) {
+                    if (topic.equalsIgnoreCase(dzoneTopic)) {
                         LOGGER.info("Matched keyword " + topic);
                         return true;
                     }
