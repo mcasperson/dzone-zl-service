@@ -508,9 +508,31 @@ function getAuthors(domainInfo) {
     }
 }
 
-function getTags(domainInfo) {
+function getTags(domainInfo, url) {
     topics.val("");
-        if (domainInfo && domainInfo.included) {
+
+    /*
+        Use a machine learning API to extract the keywords
+     */
+    jQuery.get(actionPrefix + "/getKeywords?url=" + encodeURIComponent(url), function(topics) {
+
+        _.each(topics, function(topic) {
+            topics.tagsinput('add', {title: topic});
+        });
+
+
+    }).error(
+        /*
+            Fall back to loading them from the database
+         */
+        function() {
+            getTagsFromDB(domainInfo)
+        }
+    )
+}
+
+function getTagsFromDB(domainInfo) {
+    if (domainInfo && domainInfo.included) {
         _.each(domainInfo.included, function(included) {
             if (included.type == "tag") {
                 topics.tagsinput('add', {title: included.attributes.name});
@@ -595,7 +617,7 @@ function importSucceeded(url, content, articleTitle) {
         }
 
         getAuthors(domainInfo);
-        getTags(domainInfo);
+        getTags(domainInfo, url);
         getImages(domainInfo);
 
         /*
