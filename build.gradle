@@ -50,6 +50,7 @@ dependencies {
     compile 'xerces:xercesImpl:2.11.0'
     compile 'net.sourceforge.nekohtml:nekohtml:1.9.22'
     compile 'net.htmlparser.jericho:jericho-html:3.4'
+    compile 'org.json:json:20160212'
 
 
 }

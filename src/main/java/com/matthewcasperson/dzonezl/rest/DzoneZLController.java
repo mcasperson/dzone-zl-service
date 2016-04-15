@@ -27,6 +27,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,11 +46,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -66,6 +67,17 @@ public class DzoneZLController {
      * number to get the maximum image size.
      */
     private static final int IMAGE_WIDTH = 1000000000;
+
+    private static final String DZONE_TOPIC_SEARCH = "https://dzone.com/services/internal/data/topics-search?term=";
+
+    /**
+     * The alchemy api keyword extraction service
+     */
+    private static final String ALCHEMY_KEYWORD_ENDPOINT = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords";
+
+    private static final String ALCHEMY_API_KEY = "7fad6119690b6b44f6f58cc2ce86ec842d7d1647";
+
+    private static final int MAX_KEYWORDS = 10;
 
     @Autowired
     private HttpEntityUtils httpEntityUtils;
@@ -528,6 +540,112 @@ public class DzoneZLController {
         }
 
         return "";
+    }
+
+    /**
+     * Uploads an image to dzone, and returns the image id
+     * @param url The URL to parse for keywords
+     * @return
+     * @throws IOException
+     */
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            value = "/action/getKeywords",
+            method=RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<String> extractKeywords(
+            @RequestParam final String url) throws IOException {
+
+        checkArgument(StringUtils.isNotBlank(url));
+
+        final List<String> keywords = getAlchemyKeywords(url);
+        final Set<String> topics = filterAgainstDZoneTopics(keywords);
+
+        return topics;
+
+    }
+
+    private List<String> decomposeKeyword(final String keyword) {
+        final List<String> decomposedKeywords = new ArrayList<String>();
+        decomposedKeywords.add(keyword);
+        if (keyword.indexOf(" ") != -1) {
+            decomposedKeywords.addAll(Arrays.asList(keyword.split(" ")));
+        }
+        return decomposedKeywords;
+    }
+
+    private boolean isDzoneTopic(final String topic) {
+        try {
+            LOGGER.info("Attempting to match keyword " + topic);
+
+        /*
+            Build up the url to get the keywords
+         */
+            final String keywordUrl = DZONE_TOPIC_SEARCH + URLEncoder.encode(topic);
+
+            final HttpGet keywordExtraction = new HttpGet(keywordUrl);
+
+            final CloseableHttpClient httpclient = HttpClients.createDefault();
+
+            try (final CloseableHttpResponse loginResponse = httpclient.execute(keywordExtraction)) {
+                final HttpEntity responseEntity = loginResponse.getEntity();
+                final String responseJson = httpEntityUtils.responseToString(responseEntity);
+                final JSONObject jsonObject = new JSONObject(responseJson);
+                final JSONObject jsonResult = jsonObject.getJSONObject("result");
+                final JSONArray jsonData = jsonResult.getJSONArray("data");
+
+                for (int index = 0; index < jsonData.length(); ++index) {
+                    final String dzoneTopic = jsonData.getJSONObject(index).getString("title");
+                    if (topic.equals(dzoneTopic)) {
+                        LOGGER.info("Matched keyword " + topic);
+                        return true;
+                    }
+                }
+            }
+        } catch (final IOException ex) {
+            /*
+                Do nothing and return false
+             */
+        }
+
+        return false;
+    }
+
+    private Set<String> filterAgainstDZoneTopics(final List<String> keywords) throws IOException {
+        return keywords.parallelStream()
+                .flatMap(e -> decomposeKeyword(e).stream())
+                .filter(e -> isDzoneTopic(e))
+                .collect(Collectors.toSet());
+    }
+
+    private List<String> getAlchemyKeywords(final String url) throws IOException {
+        final List<String> keywords = new ArrayList<String>();
+
+        /*
+            Build up the url to get the keywords
+         */
+        final String keywordUrl = ALCHEMY_KEYWORD_ENDPOINT + "?" +
+                "url=" + URLEncoder.encode(url) +
+                "&apikey=" + ALCHEMY_API_KEY +
+                "&outputMode=json" +
+                "&maxRetrieve=" + MAX_KEYWORDS;
+
+        final HttpGet keywordExtraction = new HttpGet(keywordUrl);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        try (final CloseableHttpResponse loginResponse = httpclient.execute(keywordExtraction)) {
+            final HttpEntity responseEntity = loginResponse.getEntity();
+            final String responseJson = httpEntityUtils.responseToString(responseEntity);
+            final JSONObject jsonObject = new JSONObject(responseJson);
+            final JSONArray jsonKeywords = jsonObject.getJSONArray("keywords");
+
+            for (int index = 0; index < jsonKeywords.length(); ++index) {
+                keywords.add(jsonKeywords.getJSONObject(index).getString("text"));
+            }
+        }
+
+        return keywords;
     }
 
     private Optional<String> getImageUploadTrackingCode(final String awselbCookie,
