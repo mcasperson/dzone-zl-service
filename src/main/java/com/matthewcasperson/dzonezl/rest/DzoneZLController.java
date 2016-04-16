@@ -574,13 +574,18 @@ public class DzoneZLController {
         return decomposedKeywords;
     }
 
+    /**
+     *
+     * @param topic The topic to be checked against the DZone database
+     * @return true if the topic is in the DZone database, and false otherwise
+     */
     private boolean isDzoneTopic(final String topic) {
         try {
             LOGGER.info("Attempting to match keyword " + topic);
 
-        /*
-            Build up the url to get the keywords
-         */
+            /*
+                Build up the url to get the keywords
+             */
             final String keywordUrl = DZONE_TOPIC_SEARCH + URLEncoder.encode(topic);
 
             final HttpGet keywordExtraction = new HttpGet(keywordUrl);
@@ -611,6 +616,12 @@ public class DzoneZLController {
         return false;
     }
 
+    /**
+     *
+     * @param keywords A list of keywords, usually found in an article
+     * @return The set of keywords that are also DZone topics
+     * @throws IOException
+     */
     private Set<String> filterAgainstDZoneTopics(final List<String> keywords) throws IOException {
         return keywords.parallelStream()
                 .flatMap(e -> decomposeKeyword(e).stream())
@@ -618,6 +629,12 @@ public class DzoneZLController {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     *
+     * @param url The article URL
+     * @return The list of keywords that Alchemy API found in the article
+     * @throws IOException
+     */
     private List<String> getAlchemyKeywords(final String url) throws IOException {
         final List<String> keywords = new ArrayList<String>();
 
