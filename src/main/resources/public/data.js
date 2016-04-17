@@ -733,7 +733,7 @@ function openImageSearch() {
         return;
     }
 	
-	var topicsSplit = topicsContent.splt(",");
+	var topicsSplit = topicsContent.split(",");
 	var topicsSearch = "";
 	for (var i = 0; i < Math.min(topicsSplit.length, 10); ++i) {
 		if (topicsSearch != "") {
