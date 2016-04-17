@@ -723,4 +723,18 @@ function setImagesToBreakText(content) {
     return content.replace(/(<img(?:.*?)class=".*?)(fr-dii)"/g, "$1fr-dib\"");
 }
 
+/**
+ * Open up pixabay using the current tags as a search criteria
+ */
+function openImageSearch() {
+    var topicsContent = topics.val();
+    if (!topicsContent.trim()) {
+        alert("No topics selected!");
+        return;
+    }
+
+    var topicSearch = topicsContent.replace(/\w+/g, " or ");
+    window.open("https://pixabay.com/en/photos/?image_type=&cat=&min_width=&min_height=&q=" + encodeURIComponent(topicSearch));
+}
+
 
