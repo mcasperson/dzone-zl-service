@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.matthewcasperson.dzonezl.Constants;
 import com.matthewcasperson.dzonezl.entities.ContentImport;
 import com.matthewcasperson.dzonezl.services.ContentExtractor;
+import com.matthewcasperson.dzonezl.services.HtmlSanitiser;
 import com.matthewcasperson.dzonezl.services.HttpEntityUtils;
 import com.yahoo.elide.Elide;
 import com.yahoo.elide.ElideResponse;
@@ -93,6 +94,9 @@ public class DzoneZLController {
     @Autowired
     @Qualifier("boilerpipeContentExtractor")
     private ContentExtractor boilerpipeContentExtractor;
+
+    @Autowired
+    private HtmlSanitiser htmlSanitiser;
 
     @Autowired
     private EntityManagerFactory emf;
@@ -295,13 +299,17 @@ public class DzoneZLController {
         /*
             Try the different importers one after the other
          */
-        return dZoneContentExtractor.extractContent(url, dzoneData).orElse(
+        final ContentImport extractArticle = dZoneContentExtractor.extractContent(url, dzoneData).orElse(
                 readabilityContentExtractor.extractContent(url, readabilityData).orElse(
                         boilerpipeContentExtractor.extractContent(url, null).orElse(
                             new ContentImport()
                         )
                 )
         );
+
+        extractArticle.setContent(htmlSanitiser.sanitiseHtml(extractArticle.getContent()));
+
+        return extractArticle;
     }
 
     /**

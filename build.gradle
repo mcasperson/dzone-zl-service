@@ -51,12 +51,13 @@ dependencies {
     compile 'net.sourceforge.nekohtml:nekohtml:1.9.22'
     compile 'net.htmlparser.jericho:jericho-html:3.4'
     compile 'org.json:json:20160212'
+    compile 'org.jsoup:jsoup:1.8.3'
 
 
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '2.12'
 }
 
 task stage {
