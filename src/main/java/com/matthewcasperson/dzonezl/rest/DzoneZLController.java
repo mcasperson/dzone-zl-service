@@ -105,6 +105,12 @@ public class DzoneZLController {
         return new MultivaluedHashMap<String, String>(input);
     }
 
+    /**
+     * Expose the database entities via Elide as a JSON API GET operation
+     * @param allRequestParams
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.GET,
@@ -129,6 +135,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     *  Expose the database entities via Elide as a JSON API POST operation
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.POST,
@@ -154,6 +166,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     *  Expose the database entities via Elide as a JSON API PATCH operation
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.PATCH,
@@ -181,6 +199,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     * Converts HTML to plain text
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.POST,
@@ -551,7 +575,8 @@ public class DzoneZLController {
     }
 
     /**
-     * Uploads an image to dzone, and returns the image id
+     * Extracts the keywords in an article using the Alchemy API, and then matches these
+     * to Dzone topics.
      * @param url The URL to parse for keywords
      * @return
      * @throws IOException
@@ -573,6 +598,13 @@ public class DzoneZLController {
 
     }
 
+    /**
+     * Break down a keyword that might be compund (like "REST API") into
+     * a collection that include the original key word and any individual
+     * words.
+     * @param keyword The original possibly compound keyword
+     * @return
+     */
     private List<String> decomposeKeyword(final String keyword) {
         final List<String> decomposedKeywords = new ArrayList<String>();
         decomposedKeywords.add(keyword);
