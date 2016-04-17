@@ -145,9 +145,10 @@ function removeBackgroundProcessing() {
 }
 
 /*
-    Add the topic to the database when it is added
+    Add the topic to the database when it is added.
+    NOTE - this is disabled now that we use Alchemy to load new topics every time
 */
-topics.on('itemAdded', function(event) {
+/*topics.on('itemAdded', function(event) {
     addBackgroundProcessing();
 
     var domainUri = URI(originalSource.val());
@@ -158,7 +159,7 @@ topics.on('itemAdded', function(event) {
              removeBackgroundProcessing();
          });
     });
-});
+});*/
 
 /*
     Add the author to the database when it is added
@@ -716,6 +717,7 @@ function submitSucceeded(submittedPost) {
     }
 }
 
+/**
 /**
  * Inline images have the class fr-dii. Line break images have the class fr-dib
  */
