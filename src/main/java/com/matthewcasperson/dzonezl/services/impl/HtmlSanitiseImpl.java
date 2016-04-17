@@ -57,7 +57,7 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
     private void stripParentDivs(final Document doc) {
         while(true) {
             final Element div = doc.child(0);
-            if (div != null && div.tagName().equals("div")) {
+            if (div != null && div.tagName().equalsIgnoreCase("div")) {
                 for (final Node child : div.childNodes()) {
                     if (child instanceof TextNode) {
                         return;
