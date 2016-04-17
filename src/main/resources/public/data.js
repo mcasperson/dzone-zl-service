@@ -733,7 +733,7 @@ function openImageSearch() {
         return;
     }
 
-    var topicSearch = topicsContent.replace(/\w+/g, " or ");
+    var topicSearch = topicsContent.replace(/,/g, " or ");
     window.open("https://pixabay.com/en/photos/?image_type=&cat=&min_width=&min_height=&q=" + encodeURIComponent(topicSearch));
 }
 
