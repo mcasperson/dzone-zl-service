@@ -3,7 +3,6 @@ package com.matthewcasperson.dzonezl.services.impl;
 import com.matthewcasperson.dzonezl.services.HtmlSanitiser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.DocumentType;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,14 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
             final String srcDecoded = URLDecoder.decode(src);
             if (srcDecoded.contains(" ")) {
                 final String[] split = srcDecoded.split(" ");
-                image.attr("src",split[split.length - 1]);
+
+                for (int index = split.length - 1; index >= 0; --index) {
+                    final String splitSrc = split[index];
+                    if (index == 0  || !splitSrc.matches("\\d+w")) {
+                        image.attr("src",splitSrc);
+                        break;
+                    }
+                }
             }
         }
     }
