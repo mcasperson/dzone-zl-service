@@ -735,7 +735,11 @@ function openImageSearch() {
 	
 	var topicsSplit = topicsContent.split(",");
 	var topicsSearch = "";
-	for (var i = 0; i < Math.min(topicsSplit.length, 10); ++i) {
+	
+	/*
+		Pixabay only searches on 9 phrases
+	*/
+	for (var i = 0; i < Math.min(topicsSplit.length, 9); ++i) {
 		if (topicsSearch != "") {
 			topicsSearch += " or ";
 		}
