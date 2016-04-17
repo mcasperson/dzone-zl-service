@@ -1,6 +1,7 @@
 package com.matthewcasperson.dzonezl.services.impl;
 
 import com.matthewcasperson.dzonezl.services.HtmlSanitiser;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -56,15 +57,20 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
      */
     private void stripParentDivs(final Document doc) {
         while(true) {
-            final Element div = doc.child(0);
-            if (div != null && div.tagName().equalsIgnoreCase("div")) {
-                for (final Node child : div.childNodes()) {
-                    if (child instanceof TextNode) {
-                        return;
+            final Elements html = doc.getElementsByTag("body");
+            if (html.size() == 1) {
+                final Element div = html.get(0).child(0);
+                if (div != null && div.tagName().equalsIgnoreCase("div")) {
+                    for (final Node child : div.childNodes()) {
+                        if (child instanceof TextNode && StringUtils.isNotBlank(child.toString())) {
+                            return;
+                        }
                     }
-                }
 
-                div.unwrap();
+                    div.unwrap();
+                } else {
+                    return;
+                }
             } else {
                 return;
             }
