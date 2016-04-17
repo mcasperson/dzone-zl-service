@@ -34,7 +34,8 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
             final String src = image.attr("src");
             final String srcDecoded = URLDecoder.decode(src);
             if (srcDecoded.contains(" ")) {
-                image.attr("src", srcDecoded.split(" ")[0]);
+                final String[] split = srcDecoded.split(" ");
+                image.attr("src",split[split.length - 1]);
             }
         }
     }
