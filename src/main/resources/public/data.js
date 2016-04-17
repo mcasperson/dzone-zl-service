@@ -732,9 +732,17 @@ function openImageSearch() {
         alert("No topics selected!");
         return;
     }
+	
+	var topicsSplit = topicsContent.splt(",");
+	var topicsSearch = "";
+	for (var i = 0; i < Math.min(topicsSplit.length, 10); ++i) {
+		if (topicsSearch != "") {
+			topicsSearch += " or ";
+		}
+		topicsSearch += topicsSplit[i];
+	}
 
-    var topicSearch = topicsContent.replace(/,/g, " or ");
-    window.open("https://pixabay.com/en/photos/?image_type=&cat=&min_width=&min_height=&q=" + encodeURIComponent(topicSearch));
+    window.open("https://pixabay.com/en/photos/?image_type=&cat=&min_width=&min_height=&q=" + encodeURIComponent(topicsSearch));
 }
 
 
