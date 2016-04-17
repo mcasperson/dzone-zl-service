@@ -729,6 +729,12 @@ function setImagesToBreakText(content) {
  * Open up pixabay using the current tags as a search criteria
  */
 function openImageSearch() {
+
+    /*
+        Pixabay only searches on about 9 phrases
+     */
+    var maxSearchTerms = 5;
+
     var topicsContent = topics.val();
     if (!topicsContent.trim()) {
         alert("No topics selected!");
@@ -737,11 +743,8 @@ function openImageSearch() {
 	
 	var topicsSplit = topicsContent.split(",");
 	var topicsSearch = "";
-	
-	/*
-		Pixabay only searches on 9 phrases
-	*/
-	for (var i = 0; i < Math.min(topicsSplit.length, 9); ++i) {
+
+	for (var i = 0; i < Math.min(topicsSplit.length, maxSearchTerms); ++i) {
 		if (topicsSearch != "") {
 			topicsSearch += " or ";
 		}
