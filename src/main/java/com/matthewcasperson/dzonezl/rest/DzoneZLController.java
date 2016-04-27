@@ -617,7 +617,7 @@ public class DzoneZLController {
             value = "/action/classifyContent",
             method=RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String classifyContent(final String content) throws IOException {
+    public String classifyContent(@RequestBody final String content) throws IOException {
 
         final String encoding = Base64.getEncoder().encodeToString((WATSON_USERNAME + ":" + WATSON_PASSWORD).getBytes());
 
