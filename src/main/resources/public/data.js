@@ -643,6 +643,8 @@ function importSucceeded(url, content, articleTitle) {
         poster.removeAttr("disabled");
         citeAuthor.removeAttr("disabled");
     });
+
+    classifyContent(content);
 }
 
 function importFailed(url) {

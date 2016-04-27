@@ -19,12 +19,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
@@ -46,6 +51,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -77,6 +83,14 @@ public class DzoneZLController {
     private static final String ALCHEMY_KEYWORD_ENDPOINT = "http://gateway-a.watsonplatform.net/calls/url/URLGetRankedKeywords";
 
     private static final String ALCHEMY_API_KEY = "7fad6119690b6b44f6f58cc2ce86ec842d7d1647";
+
+    private static final String WATSON_USERNAME = "f677db8b-0179-40dc-9c14-6ed1f9cc5e02";
+
+    private static final String WATSON_PASSWORD = "6K0Qe7mmulGZ";
+
+    private static final String WATSON_CLASSIFIER_ID = "3a84dfx64-nlc-861";
+
+    private static final String CLASSIFIER_URL = "https://watson-api-explorer.mybluemix.net/natural-language-classifier/api/v1/classifiers/" + WATSON_CLASSIFIER_ID + "/classify";
 
     private static final int MAX_KEYWORDS = 10;
 
@@ -596,6 +610,35 @@ public class DzoneZLController {
 
         return topics;
 
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            value = "/action/classifyContent",
+            method=RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public String classifyContent(final String content) throws IOException {
+
+        final String encoding = Base64.getEncoder().encodeToString((WATSON_USERNAME + ":" + WATSON_PASSWORD).getBytes());
+
+        final HttpPost httppost = new HttpPost(CLASSIFIER_URL);
+        httppost.setHeader("Authorization", "Basic " + encoding);
+
+        final StringEntity requestEntity = new StringEntity("{\"text\":\"" + StringEscapeUtils.escapeJson(content) + "\"}");
+        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httppost.setEntity(requestEntity);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
+        try {
+            final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
+
+            LOGGER.info(responseBody);
+
+            return responseBody;
+        } finally {
+            loginResponse.close();
+        }
     }
 
     /**

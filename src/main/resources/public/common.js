@@ -384,3 +384,18 @@ function addWaitAndEmailToDomain(newMvbDomainId, daysBeforePublishing, emailWhen
             }
         });
 }
+
+function classifyContent(content) {
+    jQuery.ajax({
+        method: "POST",
+        url: actionPrefix + "/action/classifyContent",
+        xhrFields: {
+            withCredentials: true
+        },
+        data: content.substring(0, 900)
+    }).done(function(classification) {
+        console.log("Classified content as " + classification)
+    }).error(function() {
+        console.log("Failed to classify content")
+    });
+}
