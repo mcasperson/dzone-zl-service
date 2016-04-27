@@ -35,6 +35,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,6 +92,8 @@ public class DzoneZLController {
     private static final String WATSON_CLASSIFIER_ID = "3a84dfx64-nlc-861";
 
     private static final String CLASSIFIER_URL = "https://watson-api-explorer.mybluemix.net/natural-language-classifier/api/v1/classifiers/" + WATSON_CLASSIFIER_ID + "/classify";
+
+    private static final int MAX_CLASSIFIER_SOURCE_LENGTH = 900;
 
     private static final int MAX_KEYWORDS = 10;
 
@@ -618,13 +621,17 @@ public class DzoneZLController {
             method=RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String classifyContent(@RequestBody final String content) throws IOException {
+        checkArgument(StringUtils.isNotBlank(content));
+
+        final String fixedContent = StringUtils.left(Jsoup.parse(content).text(), MAX_CLASSIFIER_SOURCE_LENGTH)
+                .replaceAll("\n", " ");
 
         final String encoding = Base64.getEncoder().encodeToString((WATSON_USERNAME + ":" + WATSON_PASSWORD).getBytes());
 
         final HttpPost httppost = new HttpPost(CLASSIFIER_URL);
         httppost.setHeader("Authorization", "Basic " + encoding);
 
-        final StringEntity requestEntity = new StringEntity("{\"text\":\"" + StringEscapeUtils.escapeJson(content) + "\"}");
+        final StringEntity requestEntity = new StringEntity("{\"text\":\"" + StringEscapeUtils.escapeJson(fixedContent) + "\"}");
         requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
         httppost.setEntity(requestEntity);
 

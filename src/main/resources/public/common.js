@@ -393,7 +393,7 @@ function classifyContent(content) {
         xhrFields: {
             withCredentials: true
         },
-        data: jQuery(content).text().substring(0, 900).replace(/\n/g, " ")
+        data: content
     }).done(function(classification) {
         console.log("Classified content as " + classification.top_class);
         zone.val(classification.top_class);
