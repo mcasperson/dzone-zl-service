@@ -35,6 +35,7 @@ var ignoreErrors = jQuery("#ignoreErrors");
 var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal");
 var citeAuthor = jQuery("#citeAuthor");
 var tldr = jQuery("#tldr");
+var zone = jQuery("#zone");
 
 
 var cookies = null;
@@ -394,7 +395,8 @@ function classifyContent(content) {
         },
         data: content.substring(0, 900)
     }).done(function(classification) {
-        console.log("Classified content as " + classification.top_class)
+        console.log("Classified content as " + classification.top_class);
+        zone.val(classification.top_class);
     }).error(function() {
         console.log("Failed to classify content")
     });

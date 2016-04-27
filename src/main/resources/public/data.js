@@ -379,6 +379,7 @@ function submitArticle() {
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
+    zone.attr("disabled", "disabled");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
@@ -636,6 +637,7 @@ function importSucceeded(url, content, articleTitle) {
         posterList.removeAttr("disabled");
         title.removeAttr("disabled");
         tldr.removeAttr("disabled");
+        //zone.removeAttr("disabled");
         topics.removeAttr("disabled");
         submitButtons.removeAttr("disabled");
         restartButtons.removeAttr("disabled");
@@ -676,6 +678,7 @@ function submitFailed(data) {
     posterList.removeAttr("disabled");
     title.removeAttr("disabled");
     tldr.removeAttr("disabled");
+    //zone.removeAttr("disabled");
     topics.removeAttr("disabled");
     submitButtons.removeAttr("disabled");
     restartButtons.removeAttr("disabled");
@@ -694,6 +697,7 @@ function submitSucceeded(submittedPost) {
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
+    zone.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
     poster.attr("disabled", "disabled");
