@@ -393,6 +393,7 @@ function classifyContent(content) {
         xhrFields: {
             withCredentials: true
         },
+        contentType: "text/plain",
         data: content
     }).done(function(classification) {
         console.log("Classified content as " + classification.top_class);
