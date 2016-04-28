@@ -646,7 +646,7 @@ function importSucceeded(url, content, articleTitle) {
         citeAuthor.removeAttr("disabled");
     });
 
-    classifyContent(content);
+    classifyContent(articleTitle + " " + content);
 }
 
 function importFailed(url) {
