@@ -19,17 +19,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
@@ -52,7 +50,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -89,7 +86,7 @@ public class DzoneZLController {
 
     private static final String WATSON_PASSWORD = "6K0Qe7mmulGZ";
 
-    private static final String WATSON_CLASSIFIER_ID = "3a84dfx64-nlc-861";
+    private static final String WATSON_CLASSIFIER_ID = "3a84dfx64-nlc-1569";
 
     private static final String CLASSIFIER_URL = "https://watson-api-explorer.mybluemix.net/natural-language-classifier/api/v1/classifiers/" + WATSON_CLASSIFIER_ID + "/classify";
 

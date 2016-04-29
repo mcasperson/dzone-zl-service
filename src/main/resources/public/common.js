@@ -414,7 +414,7 @@ function classifyContent(content) {
         /*
             Display the confidence level
          */
-        suggestedZone.html(classification.top_class + " [" + matchingClass.confidence + "]");
+        suggestedZone.html(classification.top_class + " [Confidence (closer to 1 is better): " + matchingClass.confidence + "]");
     }).error(function() {
         console.log("Failed to classify content")
     });
