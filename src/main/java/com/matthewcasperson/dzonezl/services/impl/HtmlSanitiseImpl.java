@@ -23,7 +23,19 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
         final Document doc = Jsoup.parse(input);
         fixUpImages(doc);
         stripParentDivs(doc);
+        removeLeadingWhitespace(doc);
         return doc.toString();
+    }
+
+    /**
+     * Remove all leading elements with no text content.
+     * @param doc
+     */
+    private void removeLeadingWhitespace(final Document doc) {
+        while (doc.getAllElements().size() != 0 &&
+                doc.getAllElements().get(0).text().trim().isEmpty()) {
+            doc.getAllElements().get(0).remove();
+        }
     }
 
     /**
