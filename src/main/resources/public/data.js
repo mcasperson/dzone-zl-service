@@ -385,6 +385,7 @@ function submitArticle() {
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
     zone.attr("disabled", "disabled");
+    zone.val("");
     suggestedZone.html("");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
@@ -704,6 +705,7 @@ function submitSucceeded(submittedPost) {
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
     zone.attr("disabled", "disabled");
+    zone.val("");
     suggestedZone.html("");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
