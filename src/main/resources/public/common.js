@@ -398,12 +398,22 @@ function classifyContent(content) {
         data: content
     }).done(function(classification) {
         console.log("Classified content as " + classification.top_class);
+
+        /*
+            Select the matching zone
+         */
         zone.val(classification.top_class);
 
-        var matchingClass = _.filter(classification.classes, function(item) {
+        /*
+            Find the matching top class in the list of classes
+         */
+        var matchingClass = _.find(classification.classes, function(item) {
             return item.class_name == classification.top_class;
         });
 
+        /*
+            Display the confidence level
+         */
         suggestedZone.html(classification.top_class + " [" + matchingClass.confidence + "]");
     }).error(function() {
         console.log("Failed to classify content")
