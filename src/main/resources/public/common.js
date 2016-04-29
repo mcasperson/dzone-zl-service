@@ -36,6 +36,7 @@ var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal");
 var citeAuthor = jQuery("#citeAuthor");
 var tldr = jQuery("#tldr");
 var zone = jQuery("#zone");
+var suggestedZone = jQuery("#suggestedZone");
 
 
 var cookies = null;
@@ -398,6 +399,7 @@ function classifyContent(content) {
     }).done(function(classification) {
         console.log("Classified content as " + classification.top_class);
         zone.val(classification.top_class);
+        suggestedZone.html(classification.top_class + " [" + classification.confidence + "]");
     }).error(function() {
         console.log("Failed to classify content")
     });

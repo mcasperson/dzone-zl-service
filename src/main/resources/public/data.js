@@ -320,6 +320,7 @@ function submitArticle() {
     var waitDays = daysBeforePublishing.val();
     var email = emailWhenPublishing.val();
     var citeAuthorContent = citeAuthor.val();
+    var zoneContent = zone.val();
 
     if (!content || content.trim().length == 0) {
         window.alert("Invalid content");
@@ -370,6 +371,10 @@ function submitArticle() {
         content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
     }
 
+    if (zoneContent) {
+        content = "<h1>Suggested zone: " + zoneContent + "</h1>"  + content;
+    }
+
     if (citeAuthorContent) {
         content += "<p>Original article by " + citeAuthorContent + "</p>";
     }
@@ -380,6 +385,7 @@ function submitArticle() {
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
     zone.attr("disabled", "disabled");
+    suggestedZone.html("");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
@@ -637,7 +643,7 @@ function importSucceeded(url, content, articleTitle) {
         posterList.removeAttr("disabled");
         title.removeAttr("disabled");
         tldr.removeAttr("disabled");
-        //zone.removeAttr("disabled");
+        zone.removeAttr("disabled");
         topics.removeAttr("disabled");
         submitButtons.removeAttr("disabled");
         restartButtons.removeAttr("disabled");
@@ -678,7 +684,7 @@ function submitFailed(data) {
     posterList.removeAttr("disabled");
     title.removeAttr("disabled");
     tldr.removeAttr("disabled");
-    //zone.removeAttr("disabled");
+    zone.removeAttr("disabled");
     topics.removeAttr("disabled");
     submitButtons.removeAttr("disabled");
     restartButtons.removeAttr("disabled");
@@ -698,6 +704,7 @@ function submitSucceeded(submittedPost) {
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
     zone.attr("disabled", "disabled");
+    suggestedZone.html("");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
     poster.attr("disabled", "disabled");
