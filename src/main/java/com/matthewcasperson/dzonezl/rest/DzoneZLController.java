@@ -110,6 +110,10 @@ public class DzoneZLController {
     private ContentExtractor boilerpipeContentExtractor;
 
     @Autowired
+    @Qualifier("mozillaReadabilityContentExtractor")
+    private ContentExtractor mozillaReadabilityContentExtractor;
+
+    @Autowired
     private HtmlSanitiser htmlSanitiser;
 
     @Autowired
@@ -338,11 +342,13 @@ public class DzoneZLController {
             Try the different importers one after the other
          */
         final ContentImport extractArticle = dZoneContentExtractor.extractContent(url, dzoneData).orElse(
-                readabilityContentExtractor.extractContent(url, readabilityData).orElse(
-                        boilerpipeContentExtractor.extractContent(url, null).orElse(
-                            new ContentImport()
-                        )
+            readabilityContentExtractor.extractContent(url, readabilityData).orElse(
+                mozillaReadabilityContentExtractor.extractContent(url, null).orElse(
+                    boilerpipeContentExtractor.extractContent(url, null).orElse(
+                        new ContentImport()
+                    )
                 )
+            )
         );
 
         extractArticle.setContent(htmlSanitiser.sanitiseHtml(extractArticle.getContent()));
