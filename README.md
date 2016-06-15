@@ -1,5 +1,5 @@
 ```
-cd C:\Users\Matthew\IdeaProjects\dzone-zl-service
+cd ~/IdeaProjects/dzone-zl-service
 git commit -am "Uploading to Heroku"; git push heroku master; heroku logs --tail
 ```
 

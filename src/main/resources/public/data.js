@@ -320,6 +320,7 @@ function submitArticle() {
     var waitDays = daysBeforePublishing.val();
     var email = emailWhenPublishing.val();
     var citeAuthorContent = citeAuthor.val();
+    var zoneContent = zone.val();
 
     if (!content || content.trim().length == 0) {
         window.alert("Invalid content");
@@ -370,6 +371,10 @@ function submitArticle() {
         content = "<h1>Email <a href='mailto:" + email + "'>" + email + " when publishing</h1>"  + content;
     }
 
+    if (zoneContent) {
+        content = "<h1>Suggested zone: " + zoneContent + "</h1>"  + content;
+    }
+
     if (citeAuthorContent) {
         content += "<p>Original article by " + citeAuthorContent + "</p>";
     }
@@ -379,6 +384,9 @@ function submitArticle() {
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
+    zone.attr("disabled", "disabled");
+    zone.val("");
+    suggestedZone.html("");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
@@ -636,6 +644,7 @@ function importSucceeded(url, content, articleTitle) {
         posterList.removeAttr("disabled");
         title.removeAttr("disabled");
         tldr.removeAttr("disabled");
+        zone.removeAttr("disabled");
         topics.removeAttr("disabled");
         submitButtons.removeAttr("disabled");
         restartButtons.removeAttr("disabled");
@@ -643,6 +652,8 @@ function importSucceeded(url, content, articleTitle) {
         poster.removeAttr("disabled");
         citeAuthor.removeAttr("disabled");
     });
+
+    classifyContent(articleTitle + " " + content);
 }
 
 function importFailed(url) {
@@ -674,6 +685,7 @@ function submitFailed(data) {
     posterList.removeAttr("disabled");
     title.removeAttr("disabled");
     tldr.removeAttr("disabled");
+    zone.removeAttr("disabled");
     topics.removeAttr("disabled");
     submitButtons.removeAttr("disabled");
     restartButtons.removeAttr("disabled");
@@ -692,6 +704,9 @@ function submitSucceeded(submittedPost) {
     posterList.attr("disabled", "disabled");
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
+    zone.attr("disabled", "disabled");
+    zone.val("");
+    suggestedZone.html("");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
     poster.attr("disabled", "disabled");
@@ -729,6 +744,12 @@ function setImagesToBreakText(content) {
  * Open up pixabay using the current tags as a search criteria
  */
 function openImageSearch() {
+
+    /*
+        Pixabay only searches on about 9 phrases
+     */
+    var maxSearchTerms = 5;
+
     var topicsContent = topics.val();
     if (!topicsContent.trim()) {
         alert("No topics selected!");
@@ -737,15 +758,21 @@ function openImageSearch() {
 	
 	var topicsSplit = topicsContent.split(",");
 	var topicsSearch = "";
-	
-	/*
-		Pixabay only searches on 9 phrases
-	*/
-	for (var i = 0; i < Math.min(topicsSplit.length, 9); ++i) {
+
+	for (var i = 0; i < Math.min(topicsSplit.length, maxSearchTerms); ++i) {
 		if (topicsSearch != "") {
 			topicsSearch += " or ";
 		}
-		topicsSearch += topicsSplit[i];
+
+        var myTopicSplit = topicsSplit[i];
+
+        if (myTopicSplit.indexOf(" ") !== -1) {
+            topicsSearch += "\"" + topicsSplit[i] + "\"";
+        } else {
+            topicsSearch += topicsSplit[i];
+        }
+
+
 	}
 
     window.open("https://pixabay.com/en/photos/?image_type=&cat=&min_width=&min_height=&q=" + encodeURIComponent(topicsSearch));

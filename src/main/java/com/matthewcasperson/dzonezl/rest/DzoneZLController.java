@@ -20,7 +20,10 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -30,6 +33,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.hibernate.SessionFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -78,6 +82,16 @@ public class DzoneZLController {
 
     private static final String ALCHEMY_API_KEY = "7fad6119690b6b44f6f58cc2ce86ec842d7d1647";
 
+    private static final String WATSON_USERNAME = "f677db8b-0179-40dc-9c14-6ed1f9cc5e02";
+
+    private static final String WATSON_PASSWORD = "6K0Qe7mmulGZ";
+
+    private static final String WATSON_CLASSIFIER_ID = "3a84dfx64-nlc-1569";
+
+    private static final String CLASSIFIER_URL = "https://watson-api-explorer.mybluemix.net/natural-language-classifier/api/v1/classifiers/" + WATSON_CLASSIFIER_ID + "/classify";
+
+    private static final int MAX_CLASSIFIER_SOURCE_LENGTH = 900;
+
     private static final int MAX_KEYWORDS = 10;
 
     @Autowired
@@ -96,6 +110,10 @@ public class DzoneZLController {
     private ContentExtractor boilerpipeContentExtractor;
 
     @Autowired
+    @Qualifier("mozillaReadabilityContentExtractor")
+    private ContentExtractor mozillaReadabilityContentExtractor;
+
+    @Autowired
     private HtmlSanitiser htmlSanitiser;
 
     @Autowired
@@ -105,6 +123,12 @@ public class DzoneZLController {
         return new MultivaluedHashMap<String, String>(input);
     }
 
+    /**
+     * Expose the database entities via Elide as a JSON API GET operation
+     * @param allRequestParams
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.GET,
@@ -129,6 +153,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     *  Expose the database entities via Elide as a JSON API POST operation
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.POST,
@@ -154,6 +184,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     *  Expose the database entities via Elide as a JSON API PATCH operation
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.PATCH,
@@ -181,6 +217,12 @@ public class DzoneZLController {
         return response.getBody();
     }
 
+    /**
+     * Converts HTML to plain text
+     * @param body
+     * @param request
+     * @return
+     */
     @CrossOrigin(origins = "*")
     @RequestMapping(
             method = RequestMethod.POST,
@@ -300,11 +342,13 @@ public class DzoneZLController {
             Try the different importers one after the other
          */
         final ContentImport extractArticle = dZoneContentExtractor.extractContent(url, dzoneData).orElse(
-                readabilityContentExtractor.extractContent(url, readabilityData).orElse(
-                        boilerpipeContentExtractor.extractContent(url, null).orElse(
-                            new ContentImport()
-                        )
+            readabilityContentExtractor.extractContent(url, readabilityData).orElse(
+                mozillaReadabilityContentExtractor.extractContent(url, null).orElse(
+                    boilerpipeContentExtractor.extractContent(url, null).orElse(
+                        new ContentImport()
+                    )
                 )
+            )
         );
 
         extractArticle.setContent(htmlSanitiser.sanitiseHtml(extractArticle.getContent()));
@@ -551,7 +595,8 @@ public class DzoneZLController {
     }
 
     /**
-     * Uploads an image to dzone, and returns the image id
+     * Extracts the keywords in an article using the Alchemy API, and then matches these
+     * to Dzone topics.
      * @param url The URL to parse for keywords
      * @return
      * @throws IOException
@@ -573,6 +618,46 @@ public class DzoneZLController {
 
     }
 
+    @CrossOrigin(origins = "*")
+    @RequestMapping(
+            value = "/action/classifyContent",
+            method=RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public String classifyContent(@RequestBody final String content) throws IOException {
+        checkArgument(StringUtils.isNotBlank(content));
+
+        final String fixedContent = StringUtils.left(Jsoup.parse(content).text(), MAX_CLASSIFIER_SOURCE_LENGTH)
+                .replaceAll("\n", " ");
+
+        final String encoding = Base64.getEncoder().encodeToString((WATSON_USERNAME + ":" + WATSON_PASSWORD).getBytes());
+
+        final HttpPost httppost = new HttpPost(CLASSIFIER_URL);
+        httppost.setHeader("Authorization", "Basic " + encoding);
+
+        final StringEntity requestEntity = new StringEntity("{\"text\":\"" + StringEscapeUtils.escapeJson(fixedContent) + "\"}");
+        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httppost.setEntity(requestEntity);
+
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
+        try {
+            final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
+
+            LOGGER.info(responseBody);
+
+            return responseBody;
+        } finally {
+            loginResponse.close();
+        }
+    }
+
+    /**
+     * Break down a keyword that might be compund (like "REST API") into
+     * a collection that include the original key word and any individual
+     * words.
+     * @param keyword The original possibly compound keyword
+     * @return
+     */
     private List<String> decomposeKeyword(final String keyword) {
         final List<String> decomposedKeywords = new ArrayList<String>();
         decomposedKeywords.add(keyword);

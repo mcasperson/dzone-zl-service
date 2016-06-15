@@ -35,6 +35,8 @@ var ignoreErrors = jQuery("#ignoreErrors");
 var styleGuideViolationsModal = jQuery("#styleGuideViolationsModal");
 var citeAuthor = jQuery("#citeAuthor");
 var tldr = jQuery("#tldr");
+var zone = jQuery("#zone");
+var suggestedZone = jQuery("#suggestedZone");
 
 
 var cookies = null;
@@ -383,4 +385,37 @@ function addWaitAndEmailToDomain(newMvbDomainId, daysBeforePublishing, emailWhen
                 callback();
             }
         });
+}
+
+function classifyContent(content) {
+    jQuery.ajax({
+        method: "POST",
+        url: actionPrefix + "/classifyContent",
+        xhrFields: {
+            withCredentials: true
+        },
+        contentType: "text/plain",
+        data: content
+    }).done(function(classification) {
+        console.log("Classified content as " + classification.top_class);
+
+        /*
+            Select the matching zone
+         */
+        zone.val(classification.top_class);
+
+        /*
+            Find the matching top class in the list of classes
+         */
+        var matchingClass = _.find(classification.classes, function(item) {
+            return item.class_name == classification.top_class;
+        });
+
+        /*
+            Display the confidence level
+         */
+        suggestedZone.html(classification.top_class + " - Confidence (closer to 1 is better): " + matchingClass.confidence + "");
+    }).error(function() {
+        console.log("Failed to classify content")
+    });
 }
