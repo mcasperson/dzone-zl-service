@@ -1,6 +1,7 @@
 package com.matthewcasperson.dzonezl.services.impl;
 
 import com.matthewcasperson.dzonezl.services.HtmlSanitiser;
+import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,7 +25,11 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
         fixUpImages(doc);
         stripParentDivs(doc);
         removeLeadingWhitespace(doc);
-        return doc.toString();
+
+        /*
+            DZone fails when you try to embed emojies
+         */
+        return EmojiParser.removeAllEmojis(doc.toString());
     }
 
     /**
