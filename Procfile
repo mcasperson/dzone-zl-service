@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/dzone-zl-0.0.1.jar
+web: java -Xmx256m -Xss256k -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/dzone-zl-0.0.1.jar
