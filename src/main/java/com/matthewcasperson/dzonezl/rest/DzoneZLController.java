@@ -973,7 +973,6 @@ public class DzoneZLController {
             final Article article = new Article();
             article.setSource(contentUrl);
             entityManager.persist(article);
-            entityManager.close();
         } finally {
             if (entityManager != null) {
                 entityManager.close();
