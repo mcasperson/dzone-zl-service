@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.matthewcasperson.dzonezl.Constants;
 import com.matthewcasperson.dzonezl.entities.ContentImport;
+import com.matthewcasperson.dzonezl.jpa.Article;
 import com.matthewcasperson.dzonezl.services.ContentExtractor;
 import com.matthewcasperson.dzonezl.services.HtmlSanitiser;
 import com.matthewcasperson.dzonezl.services.HttpEntityUtils;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -511,6 +513,11 @@ public class DzoneZLController {
 
                 }
 
+                /*
+                    Save the source URL
+                 */
+                saveContentUrl(url);
+
                 LOGGER.info(responseBody);
 
                 /*
@@ -956,6 +963,21 @@ public class DzoneZLController {
             LOGGER.info("Image Upload Response Body: " + responseBody);
 
             return responseBody.indexOf(Constants.SUCCESS) != -1;
+        }
+    }
+
+    private void saveContentUrl(final String contentUrl) {
+        EntityManager entityManager = null;
+        try {
+            entityManager = emf.createEntityManager();
+            final Article article = new Article();
+            article.setSource(contentUrl);
+            entityManager.persist(article);
+            entityManager.close();
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
         }
     }
 }
