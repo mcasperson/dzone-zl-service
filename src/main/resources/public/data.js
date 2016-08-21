@@ -620,6 +620,16 @@ function importSucceeded(url, content, articleTitle) {
 
     edit.froalaEditor('edit.on');
 
+    jQuery.get(
+        dataPrefix + "/article?filter[article.source]=" + encodeURIComponent(originalSource.val()),
+        function(sourceUrls) {
+            if (sourceUrls.data.length !== 0) {
+                alert("WARNING!!! The article your are importing has already been processed, and if you proceed" +
+                " you will most likely import duplicated content.");
+            }
+        }
+    );
+
     queryDomain(url, function(domainInfo) {
         if (domainInfo.data.length == 0) {
             alert("There was no matching information in the database for this domain");
