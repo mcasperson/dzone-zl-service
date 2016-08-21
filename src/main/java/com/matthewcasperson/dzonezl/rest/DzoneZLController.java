@@ -46,6 +46,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -968,11 +969,19 @@ public class DzoneZLController {
 
     private void saveContentUrl(final String contentUrl) {
         EntityManager entityManager = null;
+        EntityTransaction tx = null;
         try {
             entityManager = emf.createEntityManager();
+            tx = entityManager.getTransaction();
+            tx.begin();
+
             final Article article = new Article();
             article.setSource(contentUrl);
             entityManager.persist(article);
+
+            tx.commit();
+        } catch(final Exception ex) {
+            tx.rollback();
         } finally {
             if (entityManager != null) {
                 entityManager.close();
