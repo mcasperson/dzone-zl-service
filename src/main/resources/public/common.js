@@ -151,7 +151,7 @@ function login(success) {
         username.removeAttr("disabled");
         password.removeAttr("disabled");
 
-        alert("Login failed!");
+        alert("Login failed! Check your DZone credentials are correct!");
     });
 }
 
