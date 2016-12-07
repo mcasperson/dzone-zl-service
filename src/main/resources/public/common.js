@@ -150,6 +150,8 @@ function login(success) {
         loginButton.removeAttr("disabled");
         username.removeAttr("disabled");
         password.removeAttr("disabled");
+
+        alert("Login failed!");
     });
 }
 
