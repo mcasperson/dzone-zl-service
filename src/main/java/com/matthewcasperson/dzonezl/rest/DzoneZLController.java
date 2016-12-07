@@ -291,27 +291,23 @@ public class DzoneZLController {
         httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
-        try {
+        try (final CloseableHttpResponse loginResponse = httpclient.execute(httppost)) {
             final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
 
             LOGGER.info(responseBody);
-        } finally {
-            loginResponse.close();
+
+            final Optional<String> springSecurityCookie = httpEntityUtils.getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
+
+            /*
+                We need this cookie to continue
+             */
+            checkState(springSecurityCookie.isPresent());
+
+            return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
+                    "\"" + Constants.TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
+                    "\"" + Constants.JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
+                    "\"" + Constants.SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
         }
-
-        final Optional<String> springSecurityCookie = httpEntityUtils.getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
-
-        /*
-            We need this cookie to continue
-         */
-        checkState(springSecurityCookie.isPresent());
-
-        return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
-               "\"" + Constants.TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
-                "\"" + Constants.JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
-                "\"" + Constants.SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
-
     }
 
     /**
@@ -465,8 +461,8 @@ public class DzoneZLController {
             httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
             final CloseableHttpClient httpclient = HttpClients.createDefault();
-            final CloseableHttpResponse response = httpclient.execute(httppost);
-            try {
+
+            try (final CloseableHttpResponse response = httpclient.execute(httppost)) {
                 final String responseBody = httpEntityUtils.responseToString(response.getEntity());
                 final Matcher idMatcher = Constants.ID_QUOTE_RE.matcher(responseBody);
 
@@ -532,8 +528,6 @@ public class DzoneZLController {
                     Return failure to the client
                  */
                 return responseBody;
-            } finally {
-                response.close();
             }
         } else {
             LOGGER.error("Failed to upload image");
@@ -654,15 +648,13 @@ public class DzoneZLController {
         httppost.setEntity(requestEntity);
 
         final CloseableHttpClient httpclient = HttpClients.createDefault();
-        final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
-        try {
+
+        try (final CloseableHttpResponse loginResponse = httpclient.execute(httppost)) {
             final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
 
             LOGGER.info(responseBody);
 
             return responseBody;
-        } finally {
-            loginResponse.close();
         }
     }
 
