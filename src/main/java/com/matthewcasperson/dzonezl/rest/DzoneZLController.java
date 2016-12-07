@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * The rest interface to DZone and other services
@@ -263,48 +264,54 @@ public class DzoneZLController {
         final Optional<String> thCsrfCookie = httpEntityUtils.getCookie(initialResponse, Constants.TH_CSRF_COOKIE);
         final Optional<String> jSessionIdCookie = httpEntityUtils.getCookie(initialResponse, Constants.JSESSIONID_COOKIE);
 
-        if (awselbCookie.isPresent() && thCsrfCookie.isPresent() && jSessionIdCookie.isPresent()) {
-            /*
-                Now we do the actual login
-             */
-            final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        /*
+            Ensure we have what we need to continue
+         */
+        checkState(awselbCookie.isPresent());
+        checkState(thCsrfCookie.isPresent());
+        checkState(jSessionIdCookie.isPresent());
 
-            final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
-            httppost.setHeader(Constants.COOKIE_HEADER,
-                Constants.AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
-                Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
-                Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
-                Constants.SESSION_STARTED_COOKIE + "=true");
+        /*
+            Now we do the actual login
+         */
+        final String loginJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
 
-            final StringEntity requestEntity = new StringEntity(loginJson);
-            requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            httppost.setEntity(requestEntity);
+        final HttpPost httppost = new HttpPost("https://dzone.com/services/internal/action/users-login");
+        httppost.setHeader(Constants.COOKIE_HEADER,
+            Constants.AWSELB_COOKIE + "=" + awselbCookie.get() + "; " +
+            Constants.TH_CSRF_COOKIE + "=" + thCsrfCookie.get() + "; " +
+            Constants.JSESSIONID_COOKIE + "=" + jSessionIdCookie.get() + "; " +
+            Constants.SESSION_STARTED_COOKIE + "=true");
 
-            httppost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie.get());
-            httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
+        final StringEntity requestEntity = new StringEntity(loginJson);
+        requestEntity.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httppost.setEntity(requestEntity);
 
-            final CloseableHttpClient httpclient = HttpClients.createDefault();
-            final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
-            try {
-                final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
+        httppost.addHeader(Constants.X_TH_CSRF_HEADER, thCsrfCookie.get());
+        httppost.addHeader(Constants.ACCEPT_HEADER, MediaType.APPLICATION_JSON_VALUE);
 
-                LOGGER.info(responseBody);
-            } finally {
-                loginResponse.close();
-            }
+        final CloseableHttpClient httpclient = HttpClients.createDefault();
+        final CloseableHttpResponse loginResponse = httpclient.execute(httppost);
+        try {
+            final String responseBody = httpEntityUtils.responseToString(loginResponse.getEntity());
 
-            final Optional<String> springSecurityCookie = httpEntityUtils.getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
-
-            if (springSecurityCookie.isPresent()) {
-                return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
-                       "\"" + Constants.TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
-                        "\"" + Constants.JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
-                        "\"" + Constants.SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
-
-            }
+            LOGGER.info(responseBody);
+        } finally {
+            loginResponse.close();
         }
 
-        return null;
+        final Optional<String> springSecurityCookie = httpEntityUtils.getCookie(loginResponse, Constants.SPRING_SECUITY_COOKIE);
+
+        /*
+            We need this cookie to continue
+         */
+        checkState(springSecurityCookie.isPresent());
+
+        return "{\"" + Constants.AWSELB_COOKIE + "\": \"" + awselbCookie.get() + "\", " +
+               "\"" + Constants.TH_CSRF_COOKIE + "\": \"" + thCsrfCookie.get() + "\", " +
+                "\"" + Constants.JSESSIONID_COOKIE + "\": \"" + jSessionIdCookie.get() + "\", " +
+                "\"" + Constants.SPRING_SECUITY_COOKIE + "\": \"" + springSecurityCookie.get() + "\"}";
+
     }
 
     /**
