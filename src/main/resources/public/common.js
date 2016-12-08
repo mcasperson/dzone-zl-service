@@ -390,6 +390,10 @@ function addWaitAndEmailToDomain(newMvbDomainId, daysBeforePublishing, emailWhen
 }
 
 function classifyContent(content) {
+    if (!content) {
+        return;
+    }
+
     jQuery.ajax({
         method: "POST",
         url: actionPrefix + "/classifyContent",
