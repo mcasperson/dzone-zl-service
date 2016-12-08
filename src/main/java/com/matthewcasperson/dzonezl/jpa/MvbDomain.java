@@ -70,7 +70,6 @@ public class MvbDomain implements Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "daysBeforePublishing")
 	public Integer getDaysBeforePublishing() {
 		return this.daysBeforePublishing;
 	}
