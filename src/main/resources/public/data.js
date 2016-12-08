@@ -461,12 +461,13 @@ function validateContent() {
     });
 }
 
-function queryDomain(domain, success) {
+function queryDomain(domain, success, error) {
     var hostname = URI(domain).hostname();
     jQuery.get(
         dataPrefix + "/mvbDomain?include=authors,tagToMvbdomains.tag.tagToImages.image&filter[mvbDomain.domain]=" + hostname,
         success
-    );
+    )
+    .fail(error);
 }
 
 function getPosters() {
@@ -634,40 +635,47 @@ function importSucceeded(url, content, articleTitle) {
         }
     );
 
-    queryDomain(url, function(domainInfo) {
-        if (domainInfo.data.length == 0) {
-            alert("There was no matching information in the database for this domain");
-        }
+    queryDomain(url,
+        function(domainInfo) {
+            if (domainInfo.data.length == 0) {
+                alert("There was no matching information in the database for this domain");
+            }
 
-        getAuthors(domainInfo);
-        getTags(domainInfo, url);
-        getImages(domainInfo);
+            getAuthors(domainInfo);
+            getTags(domainInfo, url);
+            getImages(domainInfo);
 
-        /*
-            We can't do this with an empty domain
-        */
-        if (domainInfo && domainInfo.data && domainInfo.data.length !== 0) {
-            daysBeforePublishing.val(domainInfo.data[0].attributes.daysBeforePublishing);
-            emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
-            emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
-        }
+            /*
+                We can't do this with an empty domain
+            */
+            if (domainInfo && domainInfo.data && domainInfo.data.length !== 0) {
+                daysBeforePublishing.val(domainInfo.data[0].attributes.daysBeforePublishing);
+                emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
+                emailWhenPublishing.val(domainInfo.data[0].attributes.emailWhenPublishing);
+            }
 
-        emailWhenPublishing.removeAttr("disabled");
-        daysBeforePublishing.removeAttr("disabled");
-        suggestedAuthorsList.removeAttr("disabled");
-        posterList.removeAttr("disabled");
-        title.removeAttr("disabled");
-        tldr.removeAttr("disabled");
-        zone.removeAttr("disabled");
-        topics.removeAttr("disabled");
-        submitButtons.removeAttr("disabled");
-        restartButtons.removeAttr("disabled");
-        authors.removeAttr("disabled");
-        poster.removeAttr("disabled");
-        citeAuthor.removeAttr("disabled");
-    });
+            enabledFieldsAfterDomainQuery();
+        },
+        enabledFieldsAfterDomainQuery
+    );
 
     classifyContent(articleTitle + " " + content);
+}
+
+function enabledFieldsAfterDomainQuery() {
+    emailWhenPublishing.removeAttr("disabled");
+    daysBeforePublishing.removeAttr("disabled");
+    suggestedAuthorsList.removeAttr("disabled");
+    posterList.removeAttr("disabled");
+    title.removeAttr("disabled");
+    tldr.removeAttr("disabled");
+    zone.removeAttr("disabled");
+    topics.removeAttr("disabled");
+    submitButtons.removeAttr("disabled");
+    restartButtons.removeAttr("disabled");
+    authors.removeAttr("disabled");
+    poster.removeAttr("disabled");
+    citeAuthor.removeAttr("disabled");
 }
 
 function importFailed(url) {
