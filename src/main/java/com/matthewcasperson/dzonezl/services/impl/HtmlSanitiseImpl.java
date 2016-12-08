@@ -39,7 +39,9 @@ public class HtmlSanitiseImpl implements HtmlSanitiser {
     private void removeLeadingWhitespace(final Document doc) {
         while (doc.getAllElements().size() != 0 &&
                 doc.getAllElements().get(0).text().trim().isEmpty()) {
-            doc.getAllElements().get(0).remove();
+            if (doc.getAllElements().get(0).parentNode() != null) {
+                doc.getAllElements().get(0).remove();
+            }
         }
     }
 
