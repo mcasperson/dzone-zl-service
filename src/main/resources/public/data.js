@@ -571,6 +571,10 @@ function getImages(domainInfo) {
 }
 
 function titleCaps(title) {
+    if (!title) {
+        return '';
+    }
+
     var small = "(a|an|and|as|at|but|by|en|for|if|in|it|its|nor|me|of|on|or|so|the|to|up|yet|v[.]?|via|vs[.]?)";
     var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]*)";
     var parts = [], split = /[:.;?!] |(?: |^)["Ò]/g, index = 0;
@@ -672,7 +676,7 @@ function importFailed(url) {
         importButton.removeAttr("disabled");
         originalSource.removeAttr("disabled");
     } else {
-        importSucceeded(url, '');
+        importSucceeded(url, '', '');
     }
 }
 
