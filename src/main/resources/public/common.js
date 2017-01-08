@@ -15,7 +15,6 @@ var password = jQuery("#password");
 var loginButton = jQuery("#login");
 var importButton = jQuery("#import");
 var originalSource = jQuery("#originalSource");
-var authors = jQuery("#authors");
 var authorsList = jQuery("#suggestedAuthors");
 var imagesElement = jQuery("#images");
 var suggestedAuthorsList = jQuery("#suggestedAuthorsList");

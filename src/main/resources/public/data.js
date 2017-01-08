@@ -1,5 +1,9 @@
 
 var processingCount = 0;
+/*
+    The maximum number of topics to assign
+ */
+var maxTopics = 5;
 
 /*
     Perform some tasks at startup
@@ -385,8 +389,6 @@ function submitArticle() {
     title.attr("disabled", "disabled");
     tldr.attr("disabled", "disabled");
     zone.attr("disabled", "disabled");
-    zone.val("");
-    suggestedZone.html("");
     topics.attr("disabled", "disabled");
     submitButtons.attr("disabled", "disabled");
     restartButtons.attr("disabled", "disabled");
@@ -526,11 +528,11 @@ function getTags(domainInfo, url) {
      */
     jQuery.get(actionPrefix + "/getKeywords?url=" + encodeURIComponent(url), function(dzoneTopics) {
 
-        _.each(dzoneTopics, function(topic) {
-            topics.tagsinput('add', {title: topic});
-        });
-
-
+        _.chain(dzoneTopics)
+            .first(maxTopics)
+            .each(function(topic) {
+                topics.tagsinput('add', {title: topic});
+            });
     }).error(
         /*
             Fall back to loading them from the database
